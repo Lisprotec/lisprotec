@@ -38,7 +38,10 @@ const DISTRICT_SURCHARGES = {
   "Faro": 180,
 };
 
-const euro = new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" });
+const euro = new Intl.NumberFormat("pt-PT", {
+  style: "currency",
+  currency: "EUR",
+});
 
 const byId = (id) => document.getElementById(id);
 
@@ -81,10 +84,10 @@ function calculateEstimate() {
 
   const hasAnyService = mainService !== "" || includeMAP || includeCoordenacao || includeSimulacro;
   const needsUT = mainService !== "" || includeMAP;
-  const needsDistrict = hasAnyService;
 
   function calcAreaBasedPrice(baseRate, minPrice, useUTFactor = true) {
     if (areaNum <= 0) return { total: 0, discount: 0 };
+
     const effectiveRate = getDiscountedM2Rate(baseRate, areaNum);
     const multiplier = useUTFactor && ut ? ut.factor : 1;
     const gross = areaNum * baseRate * multiplier;
@@ -114,11 +117,14 @@ function calculateEstimate() {
   function calcCoordenacaoPrice() {
     if (!includeCoordenacao || areaNum <= 0) return { total: 0, discount: 0 };
 
-    const total = areaNum <= 7500
-      ? 230
-      : 230 + ((areaNum - 7500) * 0.15);
+    if (areaNum <= 7500) {
+      return { total: 230, discount: 0 };
+    }
 
-    return { total, discount: 0 };
+    return {
+      total: 230 + ((areaNum - 7500) * 0.15),
+      discount: 0,
+    };
   }
 
   function calcSimulacroPrice() {
@@ -128,12 +134,12 @@ function calculateEstimate() {
 
     const basePrice = getSimulacroBasePrice(areaNum);
     const discountRate = getSimulacroDiscountRate(areaNum);
-    const discountedPrice = basePrice * (1 - discountRate);
-    const discountValue = basePrice - discountedPrice;
+    const total = basePrice * (1 - discountRate);
+    const discount = basePrice - total;
 
     return {
-      total: discountedPrice,
-      discount: discountValue,
+      total,
+      discount,
       hasDiscount: discountRate > 0,
     };
   }
@@ -143,11 +149,12 @@ function calculateEstimate() {
   const coordenacaoCalc = calcCoordenacaoPrice();
   const simulacroCalc = calcSimulacroPrice();
 
+  const districtSurcharge = getDistrictSurcharge(district);
+
   const mainPrice = mainCalc.total;
   const mapPrice = mapCalc.total;
   const coordenacaoPrice = coordenacaoCalc.total;
   const simulacroPrice = simulacroCalc.total;
-  const districtSurcharge = getDistrictSurcharge(district);
 
   const totalDiscount =
     mainCalc.discount +
@@ -171,17 +178,18 @@ function calculateEstimate() {
     canShow,
     areaNum,
     district,
-    districtSurcharge,
     ut,
-    showDiscountMessage: totalDiscount > 0,
     items: [
-      mainPrice > 0 ? [mainService === "projeto" ? "Projeto SCIE" : "Ficha de Segurança", mainPrice] : null,
+      mainPrice > 0
+        ? [mainService === "projeto" ? "Projeto SCIE" : "Ficha de Segurança", mainPrice]
+        : null,
       mapPrice > 0 ? ["Medidas de Autoproteção", mapPrice] : null,
       coordenacaoPrice > 0 ? ["Coordenação de Segurança — Valor mensal", coordenacaoPrice] : null,
       simulacroPrice > 0 ? ["Simulacro", simulacroPrice] : null,
     ].filter(Boolean),
     totalPrice,
     totalDiscount,
+    showDiscountMessage: totalDiscount > 0,
     services: [
       mainService === "projeto" ? "Projeto SCIE" : "",
       mainService === "ficha" ? "Ficha de Segurança" : "",
@@ -312,6 +320,7 @@ async function openProposalEmail(event) {
     });
 
     form?.reset();
+
     ["mainService", "area", "utIndex", "district"].forEach((id) => {
       if (byId(id)) byId(id).value = "";
     });
@@ -367,7 +376,15 @@ async function openContactEmail(event) {
 function init() {
   byId("year") && (byId("year").textContent = new Date().getFullYear());
 
-  ["mainService", "includeMAP", "includeCoordenacao", "includeSimulacro", "area", "utIndex", "district"].forEach((id) => {
+  [
+    "mainService",
+    "includeMAP",
+    "includeCoordenacao",
+    "includeSimulacro",
+    "area",
+    "utIndex",
+    "district"
+  ].forEach((id) => {
     const el = byId(id);
     el && el.addEventListener("input", renderEstimate);
     el && el.addEventListener("change", renderEstimate);
