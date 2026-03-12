@@ -53,6 +53,14 @@ img { max-width: 100%; display: block; }
   top: 0;
 }
 
+@media (max-width: 720px) {
+  .site-header,
+  .compact-header {
+    position: relative;
+    top: auto;
+  }
+}
+
 .nav-wrap {
   display: flex;
   align-items: center;
