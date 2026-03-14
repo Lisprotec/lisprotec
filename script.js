@@ -200,3 +200,200 @@ function calculateEstimate() {
     ].filter(Boolean),
   };
 }
+
+function renderEstimate() {
+  const result = calculateEstimate();
+  const empty = byId("resultEmpty");
+  const content = byId("resultContent");
+  const list = byId("resultItems");
+  const total = byId("resultTotal");
+  const discount = byId("resultDiscount");
+
+  if (!empty || !content || !list || !total || !discount) return;
+
+  if (!result.canShow) {
+    empty.classList.remove("hidden");
+    content.classList.add("hidden");
+    list.innerHTML = "";
+    total.textContent = euro.format(0);
+    discount.textContent = "";
+    discount.classList.add("hidden");
+    return;
+  }
+
+  empty.classList.add("hidden");
+  content.classList.remove("hidden");
+
+  list.innerHTML = result.items
+    .map(([label, price]) => `<li><span>${label}</span><strong>${euro.format(price)}</strong></li>`)
+    .join("");
+
+  total.textContent = euro.format(result.totalPrice);
+
+  if (result.showDiscountMessage) {
+    discount.textContent = `Desconto aplicado: ${euro.format(result.totalDiscount)}`;
+    discount.classList.remove("hidden");
+  } else {
+    discount.textContent = "";
+    discount.classList.add("hidden");
+  }
+}
+
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mreyeqdq";
+
+function setStatus(elementId, message, type = "") {
+  const el = byId(elementId);
+  if (!el) return;
+  el.textContent = message;
+  el.className = `form-status${type ? ` ${type}` : ""}`;
+}
+
+async function submitToFormspree(payload) {
+  const response = await fetch(FORMSPREE_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Não foi possível enviar o formulário. Tente novamente.";
+    try {
+      const data = await response.json();
+      if (data?.errors?.length) {
+        errorMessage = data.errors.map((item) => item.message).join(" ");
+      }
+    } catch (error) {
+      // ignore parsing errors and keep generic message
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.json().catch(() => ({}));
+}
+
+async function openProposalEmail(event) {
+  event.preventDefault();
+  const result = calculateEstimate();
+
+  if (!result.canShow) {
+    setStatus("proposalStatus", "Preencha primeiro o simulador para gerar uma proposta detalhada.", "error");
+    return;
+  }
+
+  const nome = byId("nome")?.value?.trim();
+  const empresa = byId("empresa")?.value?.trim();
+  const email = byId("email")?.value?.trim();
+  const telefone = byId("telefone")?.value?.trim();
+  const tipoEdificio = byId("tipoEdificio")?.value?.trim();
+  const mensagem = byId("mensagem")?.value?.trim() || "(sem mensagem adicional)";
+  const area = byId("area")?.value?.trim();
+
+  if (!nome || !empresa || !email || !telefone || !tipoEdificio) {
+    setStatus("proposalStatus", "Preencha todos os campos obrigatórios do pedido de proposta.", "error");
+    return;
+  }
+
+  const form = byId("proposal-form");
+  const submitButton = form?.querySelector('button[type="submit"]');
+  submitButton && (submitButton.disabled = true);
+  setStatus("proposalStatus", "A enviar pedido de orçamento...", "");
+
+  try {
+    await submitToFormspree({
+      formType: "Pedido de orçamento",
+      _subject: `Pedido de Proposta – ${result.services.join(" + ")}`,
+      nome,
+      empresa,
+      email,
+      telefone,
+      tipoEdificio,
+      area: `${area} m²`,
+      distrito: result.district || "N/A",
+      utilizacaoTipo: result.ut ? result.ut.label : "N/A",
+      duracaoCoordenacao: byId("includeCoordenacao")?.checked ? "Valor mensal" : "N/A",
+      servicos: result.services.join(", "),
+      estimativa: result.items.map(([label, price]) => `${label}: ${euro.format(price)}`).join(" | "),
+      valorTotal: euro.format(result.totalPrice),
+      mensagem,
+    });
+
+    form?.reset();
+
+    ["mainService", "area", "utIndex", "district"].forEach((id) => {
+      if (byId(id)) byId(id).value = "";
+    });
+
+    ["includeMAP", "includeCoordenacao", "includeSimulacro"].forEach((id) => {
+      if (byId(id)) byId(id).checked = false;
+    });
+
+    renderEstimate();
+    setStatus("proposalStatus", "Pedido enviado com sucesso. Entraremos em contacto em breve.", "success");
+  } catch (error) {
+    setStatus("proposalStatus", error.message || "Não foi possível enviar o formulário.", "error");
+  } finally {
+    submitButton && (submitButton.disabled = false);
+  }
+}
+
+async function openContactEmail(event) {
+  event.preventDefault();
+  const name = byId("contactName")?.value?.trim();
+  const email = byId("contactEmail")?.value?.trim();
+  const phone = byId("contactPhone")?.value?.trim() || "";
+  const message = byId("contactMessage")?.value?.trim();
+
+  if (!name || !email || !message) {
+    setStatus("contactStatus", "Preencha nome, email e mensagem.", "error");
+    return;
+  }
+
+  const form = byId("contact-form");
+  const submitButton = form?.querySelector('button[type="submit"]');
+  submitButton && (submitButton.disabled = true);
+  setStatus("contactStatus", "A enviar mensagem...", "");
+
+  try {
+    await submitToFormspree({
+      formType: "Contacto geral",
+      _subject: `Pedido de contacto — ${name}`,
+      nome: name,
+      email,
+      telefone: phone || "N/A",
+      mensagem: message,
+    });
+    form?.reset();
+    setStatus("contactStatus", "Mensagem enviada com sucesso.", "success");
+  } catch (error) {
+    setStatus("contactStatus", error.message || "Não foi possível enviar a mensagem.", "error");
+  } finally {
+    submitButton && (submitButton.disabled = false);
+  }
+}
+
+function init() {
+  byId("year") && (byId("year").textContent = new Date().getFullYear());
+
+  [
+    "mainService",
+    "includeMAP",
+    "includeCoordenacao",
+    "includeSimulacro",
+    "area",
+    "utIndex",
+    "district"
+  ].forEach((id) => {
+    const el = byId(id);
+    el && el.addEventListener("input", renderEstimate);
+    el && el.addEventListener("change", renderEstimate);
+  });
+
+  byId("proposal-form")?.addEventListener("submit", openProposalEmail);
+  byId("contact-form")?.addEventListener("submit", openContactEmail);
+  renderEstimate();
+}
+
+document.addEventListener("DOMContentLoaded", init);
