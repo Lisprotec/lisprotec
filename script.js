@@ -110,8 +110,9 @@ function calculateEstimate() {
   }
 
   function calcMAPPrice() {
-    if (!includeMAP || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
-    return calcAreaBasedPrice(1.0, 350, true);
+  if (!includeMAP || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
+  return calcAreaBasedPrice(0.6, 350, true);
+}
   }
 
   function calcCoordenacaoPrice() {
