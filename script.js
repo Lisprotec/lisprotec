@@ -179,7 +179,7 @@ function calculateEstimate() {
     areaNum,
     district,
     ut,
-    items: [
+  
      items: [
   mainPrice > 0
     ? [mainService === "projeto" ? "Projeto SCIE" : "Ficha de Segurança", mainPrice]
