@@ -19,18 +19,22 @@ const DISTRICT_SURCHARGES = {
   "Vila Real": 220,
   "Bragança": 220,
   "Porto": 220,
+
   "Aveiro": 180,
   "Viseu": 180,
   "Guarda": 180,
   "Coimbra": 180,
   "Castelo Branco": 180,
   "Leiria": 180,
+
   "Lisboa": 25,
   "Santarém": 40,
   "Setúbal": 40,
+
   "Portalegre": 120,
   "Évora": 120,
   "Beja": 120,
+
   "Faro": 180,
 };
 
@@ -98,8 +102,10 @@ function calculateEstimate() {
 
   function calcMainPrice() {
     if (!mainService || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
+
     const minPrice = mainService === "projeto" ? 450 : 250;
     const baseRate = mainService === "projeto" ? 1.0 : 0.8;
+
     return calcAreaBasedPrice(baseRate, minPrice, true);
   }
 
@@ -110,19 +116,32 @@ function calculateEstimate() {
 
   function calcCoordenacaoPrice() {
     if (!includeCoordenacao || areaNum <= 0) return { total: 0, discount: 0 };
-    if (areaNum <= 7500) return { total: 230, discount: 0 };
-    return { total: 230 + ((areaNum - 7500) * 0.15), discount: 0 };
+
+    if (areaNum <= 7500) {
+      return { total: 230, discount: 0 };
+    }
+
+    return {
+      total: 230 + ((areaNum - 7500) * 0.15),
+      discount: 0,
+    };
   }
 
   function calcSimulacroPrice() {
     if (!includeSimulacro || areaNum <= 0) {
       return { total: 0, discount: 0, hasDiscount: false };
     }
+
     const basePrice = getSimulacroBasePrice(areaNum);
     const discountRate = getSimulacroDiscountRate(areaNum);
     const total = basePrice * (1 - discountRate);
     const discount = basePrice - total;
-    return { total, discount, hasDiscount: discountRate > 0 };
+
+    return {
+      total,
+      discount,
+      hasDiscount: discountRate > 0,
+    };
   }
 
   const mainCalc = calcMainPrice();
@@ -157,8 +176,13 @@ function calculateEstimate() {
 
   return {
     canShow,
+    areaNum,
+    district,
+    ut,
     items: [
-      mainPrice > 0 ? [mainService === "projeto" ? "Projeto SCIE" : "Ficha de Segurança", mainPrice] : null,
+      mainPrice > 0
+        ? [mainService === "projeto" ? "Projeto SCIE" : "Ficha de Segurança", mainPrice]
+        : null,
       mapPrice > 0 ? ["Medidas de Autoproteção", mapPrice] : null,
       coordenacaoPrice > 0 ? ["Coordenação de Segurança — Valor mensal", coordenacaoPrice] : null,
       simulacroPrice > 0 ? ["Simulacro", simulacroPrice] : null,
@@ -167,61 +191,12 @@ function calculateEstimate() {
     totalPrice,
     totalDiscount,
     showDiscountMessage: totalDiscount > 0,
+    services: [
+      mainService === "projeto" ? "Projeto SCIE" : "",
+      mainService === "ficha" ? "Ficha de Segurança" : "",
+      includeMAP ? "Medidas de Autoproteção" : "",
+      includeCoordenacao ? "Coordenação de Segurança (valor mensal)" : "",
+      includeSimulacro ? "Simulacro" : "",
+    ].filter(Boolean),
   };
 }
-
-function renderEstimate() {
-  const result = calculateEstimate();
-  const empty = byId("resultEmpty");
-  const content = byId("resultContent");
-  const list = byId("resultItems");
-  const total = byId("resultTotal");
-  const discount = byId("resultDiscount");
-
-  if (!result.canShow) {
-    empty.classList.remove("hidden");
-    content.classList.add("hidden");
-    list.innerHTML = "";
-    total.textContent = euro.format(0);
-    discount.textContent = "";
-    discount.classList.add("hidden");
-    return;
-  }
-
-  empty.classList.add("hidden");
-  content.classList.remove("hidden");
-
-  list.innerHTML = result.items
-    .map(([label, price]) => `<li><span>${label}</span><strong>${euro.format(price)}</strong></li>`)
-    .join("");
-
-  total.textContent = euro.format(result.totalPrice);
-
-  if (result.showDiscountMessage) {
-    discount.textContent = `Desconto aplicado: ${euro.format(result.totalDiscount)}`;
-    discount.classList.remove("hidden");
-  } else {
-    discount.textContent = "";
-    discount.classList.add("hidden");
-  }
-}
-
-function init() {
-  [
-    "mainService",
-    "includeMAP",
-    "includeCoordenacao",
-    "includeSimulacro",
-    "area",
-    "utIndex",
-    "district"
-  ].forEach((id) => {
-    const el = byId(id);
-    el && el.addEventListener("input", renderEstimate);
-    el && el.addEventListener("change", renderEstimate);
-  });
-
-  renderEstimate();
-}
-
-document.addEventListener("DOMContentLoaded", init);
