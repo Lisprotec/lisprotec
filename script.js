@@ -33,23 +33,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const districtCosts = {
     "Viana do Castelo": 220,
-  "Braga": 220,
-  "Vila Real": 220,
-  "Bragança": 220,
-  "Porto": 220,
-  "Aveiro": 180,
-  "Viseu": 180,
-  "Guarda": 180,
-  "Coimbra": 180,
-  "Castelo Branco": 180,
-  "Leiria": 180,
-  "Lisboa": 25,
-  "Santarém": 40,
-  "Setúbal": 40,
-  "Portalegre": 120,
-  "Évora": 120,
-  "Beja": 120,
-  "Faro": 180,
+    "Braga": 220,
+    "Vila Real": 220,
+    "Bragança": 220,
+    "Porto": 220,
+    "Aveiro": 180,
+    "Viseu": 180,
+    "Guarda": 180,
+    "Coimbra": 180,
+    "Castelo Branco": 180,
+    "Leiria": 180,
+    "Lisboa": 25,
+    "Santarém": 40,
+    "Setúbal": 40,
+    "Portalegre": 120,
+    "Évora": 120,
+    "Beja": 120,
+    "Faro": 180
   };
 
   const utMultipliers = {
@@ -202,13 +202,17 @@ document.addEventListener("DOMContentLoaded", () => {
       includeCoordenacaoEl.checked ||
       includeSimulacroEl.checked;
 
-    if (!mainService && !hasAnyExtra) {
+    const hasOperationalCost =
+      district && districtCosts[district] !== undefined;
+
+    if (!mainService && !hasAnyExtra && !hasOperationalCost) {
       resetResult();
       return;
     }
 
     const items = [];
-    let total = 0;
+    let servicesTotal = 0;
+    let operationalCost = 0;
 
     const utMultiplier =
       utIndex !== "" ? utMultipliers[Number(utIndex)] || 1 : 1;
@@ -222,23 +226,23 @@ document.addEventListener("DOMContentLoaded", () => {
           value: Math.round(mainPrice * 100) / 100
         });
 
-        total += mainPrice;
+        servicesTotal += mainPrice;
       }
     }
 
     const extras = calculateExtras(area);
     extras.forEach((extra) => {
       items.push(extra);
-      total += extra.value;
+      servicesTotal += extra.value;
     });
 
-    if (district && districtCosts[district] !== undefined) {
+    if (hasOperationalCost) {
+      operationalCost = districtCosts[district];
+
       items.push({
         label: `Custos operacionais (${district})`,
-        value: districtCosts[district]
+        value: operationalCost
       });
-
-      total += districtCosts[district];
     }
 
     let discountText = "";
@@ -248,13 +252,14 @@ document.addEventListener("DOMContentLoaded", () => {
       (includeCoordenacaoEl.checked ? 1 : 0) +
       (includeSimulacroEl.checked ? 1 : 0);
 
+    let discountValue = 0;
+
     if (selectedServicesCount >= 3) {
-      const discountValue = total * 0.08;
-      total -= discountValue;
+      discountValue = servicesTotal * 0.08;
       discountText = `Desconto de pacote aplicado: ${formatCurrency(discountValue)}`;
     }
 
-    total = Math.round(total * 100) / 100;
+    const total = Math.round((servicesTotal - discountValue + operationalCost) * 100) / 100;
 
     if (items.length === 0) {
       resetResult();
