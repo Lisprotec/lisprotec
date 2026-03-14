@@ -73,15 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function calculateMainServicePrice(service, area, utMultiplier) {
-    if (!service || !area || !utMultiplier) return 0;
+    if (!service || utMultiplier === undefined || utMultiplier === null) return 0;
 
     if (service === "projeto") {
       let base = 0;
 
       if (area <= 250) {
-        base = 250;
+        base = 420;
       } else if (area <= 500) {
-        base = 350;
+        base = 420;
       } else if (area <= 1000) {
         base = 500;
       } else if (area <= 2500) {
@@ -97,11 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
       let base = 0;
 
       if (area <= 250) {
-        base = 120;
+        base = 250;
       } else if (area <= 500) {
-        base = 160;
+        base = 250;
       } else if (area <= 1000) {
-        base = 220;
+        base = 250;
       } else if (area <= 2500) {
         base = 300;
       } else {
@@ -118,9 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const extras = [];
 
     if (includeMAPEl.checked) {
-      let value = 180;
-      if (area > 500 && area <= 1000) value = 240;
-      else if (area > 1000 && area <= 2500) value = 320;
+      let value = 350;
+      if (area > 500 && area <= 1000) value = 350;
+      else if (area > 1000 && area <= 2500) value = 350;
       else if (area > 2500) value = 450;
 
       extras.push({
@@ -130,8 +130,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (includeCoordenacaoEl.checked) {
-      let value = 150;
-      if (area > 500 && area <= 1000) value = 220;
+      let value = 230;
+      if (area > 500 && area <= 1000) value = 230;
       else if (area > 1000 && area <= 2500) value = 320;
       else if (area > 2500) value = 450;
 
@@ -142,8 +142,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (includeSimulacroEl.checked) {
-      let value = 180;
-      if (area > 500 && area <= 1000) value = 240;
+      let value = 260;
+      if (area > 500 && area <= 1000) value = 260;
       else if (area > 1000 && area <= 2500) value = 300;
       else if (area > 2500) value = 400;
 
