@@ -645,7 +645,7 @@ hr {
 }
 
 .risk-result {
-  display: block;
+  display: none;
   margin-top: 22px;
   padding: 24px;
 }
@@ -813,28 +813,13 @@ hr {
   color: var(--primary);
 }
 
-/* ===== VERIFICADOR SCIE + EXPORTAÇÃO PDF ===== */
-.scie-checker,
+/* ===== EXPORTAÇÃO PDF ===== */
 .pdf-tools {
   width: min(1120px, calc(100% - 32px));
   max-width: 100%;
   box-sizing: border-box;
   margin-left: auto;
   margin-right: auto;
-}
-
-.scie-checker {
-  margin-top: 32px;
-}
-
-.scie-checker .form-panel,
-.pdf-tools {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.pdf-tools {
   margin-top: 28px;
 }
 
