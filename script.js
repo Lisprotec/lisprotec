@@ -398,3 +398,811 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+/* ===== CALCULADORA SCIE ===== */
+
+const SCIE_FIELDS = {
+  I: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "pisosAbaixo", label: "N.º de pisos abaixo do plano de referência", type: "number", min: 0, step: "1" }
+  ],
+  II: [
+    { id: "espaco", label: "Tipo de espaço", type: "select", options: [["edificio", "Espaço coberto e fechado"], ["arlivre", "Ao ar livre"]] },
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "areaBruta", label: "Área bruta da utilização-tipo (m²)", type: "number", min: 0, step: "0.01" },
+    { id: "pisosAbaixo", label: "N.º de pisos abaixo do plano de referência", type: "number", min: 0, step: "1" }
+  ],
+  III: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" }
+  ],
+  IV: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" },
+    { id: "efetivoRisco", label: "Efetivo em locais de risco D ou E", type: "number", min: 0, step: "1" },
+    { id: "saidaIndependente", label: "Locais de risco D/E com saídas independentes diretas ao exterior", type: "select", options: [["sim", "Sim"], ["nao", "Não"]] },
+    { id: "semLocaisDE", label: "Não existem locais de risco D ou E?", type: "select", options: [["nao", "Não"], ["sim", "Sim"]] }
+  ],
+  V: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" },
+    { id: "efetivoRisco", label: "Efetivo em locais de risco D", type: "number", min: 0, step: "1" },
+    { id: "saidaIndependente", label: "Locais de risco D com saídas independentes diretas ao exterior", type: "select", options: [["sim", "Sim"], ["nao", "Não"]] }
+  ],
+  VI: [
+    { id: "espaco", label: "Tipo de espaço", type: "select", options: [["edificio", "Integrado em edifício / recinto coberto"], ["arlivre", "Ao ar livre"]] },
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "pisosAbaixo", label: "N.º de pisos abaixo do plano de referência", type: "number", min: 0, step: "1" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" }
+  ],
+  VII: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" },
+    { id: "efetivoRisco", label: "Efetivo em locais de risco E", type: "number", min: 0, step: "1" },
+    { id: "saidaIndependente", label: "Locais de risco E com saídas independentes diretas ao exterior", type: "select", options: [["sim", "Sim"], ["nao", "Não"]] }
+  ],
+  VIII: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "pisosAbaixo", label: "N.º de pisos abaixo do plano de referência", type: "number", min: 0, step: "1" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" }
+  ],
+  IX: [
+    { id: "espaco", label: "Tipo de espaço", type: "select", options: [["edificio", "Integrado em edifício / recinto coberto"], ["arlivre", "Ao ar livre"]] },
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "pisosAbaixo", label: "N.º de pisos abaixo do plano de referência", type: "number", min: 0, step: "1" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" }
+  ],
+  X: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" }
+  ],
+  XI: [
+    { id: "altura", label: "Altura da utilização-tipo (m)", type: "number", min: 0, step: "0.01" },
+    { id: "pisosAbaixo", label: "N.º de pisos abaixo do plano de referência", type: "number", min: 0, step: "1" },
+    { id: "efetivo", label: "Efetivo", type: "number", min: 0, step: "1" },
+    { id: "carga", label: "Densidade de carga de incêndio modificada (MJ/m²)", type: "number", min: 0, step: "0.01" }
+  ],
+  XII: [
+    { id: "espaco", label: "Tipo de espaço", type: "select", options: [["edificio", "Espaço coberto e fechado"], ["arlivre", "Ao ar livre"]] },
+    { id: "pisosAbaixo", label: "N.º de pisos abaixo do plano de referência", type: "number", min: 0, step: "1" },
+    { id: "carga", label: "Densidade de carga de incêndio modificada (MJ/m²)", type: "number", min: 0, step: "0.01" },
+    { id: "soArmazem", label: "Destina-se exclusivamente a armazém?", type: "select", options: [["nao", "Não"], ["sim", "Sim"]] }
+  ]
+};
+
+const SCIE_UT_LABELS = {
+  I: "UT I – Habitacional",
+  II: "UT II – Estacionamentos",
+  III: "UT III – Administrativos",
+  IV: "UT IV – Escolares",
+  V: "UT V – Hospitalares e Lares",
+  VI: "UT VI – Espetáculos e reuniões públicas",
+  VII: "UT VII – Hoteleiros e restauração",
+  VIII: "UT VIII – Comerciais e gares de transporte",
+  IX: "UT IX – Desportivos e de lazer",
+  X: "UT X – Museus e galerias",
+  XI: "UT XI – Bibliotecas e arquivos",
+  XII: "UT XII – Industrial / Oficinas / Armazéns"
+};
+
+function scieById(id) {
+  return document.getElementById(id);
+}
+
+function scieCriteriaLine(label, ok, detail = "") {
+  return { label, ok, detail };
+}
+
+function highestPassingCategory(checks) {
+  for (const check of checks) {
+    if (check.pass) return check;
+  }
+  return checks[checks.length - 1];
+}
+
+function renderSCIEFields() {
+  const ut = scieById("scie-ut")?.value || "";
+  const wrap = scieById("scie-fields");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+  if (!ut || !SCIE_FIELDS[ut]) return;
+
+  const grid = document.createElement("div");
+  grid.className = "risk-inline-grid";
+
+  SCIE_FIELDS[ut].forEach((field) => {
+    const group = document.createElement("div");
+    group.className = "field-group";
+
+    const label = document.createElement("label");
+    label.setAttribute("for", `scie-${field.id}`);
+    label.textContent = field.label;
+
+    let control;
+
+    if (field.type === "select") {
+      control = document.createElement("select");
+      field.options.forEach(([value, text]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = text;
+        control.appendChild(option);
+      });
+    } else {
+      control = document.createElement("input");
+      control.type = field.type;
+      control.min = field.min ?? "0";
+      control.step = field.step ?? "1";
+    }
+
+    control.id = `scie-${field.id}`;
+    group.appendChild(label);
+    group.appendChild(control);
+    grid.appendChild(group);
+  });
+
+  wrap.appendChild(grid);
+}
+
+function readSCIEData() {
+  const ut = scieById("scie-ut")?.value || "";
+  const data = { ut };
+
+  (SCIE_FIELDS[ut] || []).forEach((field) => {
+    const el = scieById(`scie-${field.id}`);
+    if (!el) return;
+    data[field.id] = el.tagName === "SELECT" ? el.value : (el.value === "" ? null : Number(el.value));
+  });
+
+  return data;
+}
+
+function validateSCIEData(data) {
+  if (!data.ut) return "Selecione a utilização-tipo.";
+
+  for (const field of (SCIE_FIELDS[data.ut] || [])) {
+    const value = data[field.id];
+    if (value === null || value === "") {
+      return `Preencha o campo: ${field.label}`;
+    }
+  }
+
+  return "";
+}
+
+function evalUTI(d) {
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.pisosAbaixo <= 1,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 1", d.pisosAbaixo <= 1, `${d.pisosAbaixo}`)
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.pisosAbaixo <= 3,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 3", d.pisosAbaixo <= 3, `${d.pisosAbaixo}`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 50 && d.pisosAbaixo <= 5,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 50 m", d.altura <= 50, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 5", d.pisosAbaixo <= 5, `${d.pisosAbaixo}`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTII(d) {
+  if (d.espaco === "arlivre") {
+    return {
+      category: 1,
+      pass: true,
+      criteria: [scieCriteriaLine("Estacionamento ao ar livre", true, "Enquadramento direto na 1.ª categoria")]
+    };
+  }
+
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.areaBruta <= 3200 && d.pisosAbaixo <= 1,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Área bruta ≤ 3 200 m²", d.areaBruta <= 3200, `${d.areaBruta} m²`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 1", d.pisosAbaixo <= 1, `${d.pisosAbaixo}`)
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.areaBruta <= 9600 && d.pisosAbaixo <= 3,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Área bruta ≤ 9 600 m²", d.areaBruta <= 9600, `${d.areaBruta} m²`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 3", d.pisosAbaixo <= 3, `${d.pisosAbaixo}`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 28 && d.areaBruta <= 32000 && d.pisosAbaixo <= 5,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Área bruta ≤ 32 000 m²", d.areaBruta <= 32000, `${d.areaBruta} m²`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 5", d.pisosAbaixo <= 5, `${d.pisosAbaixo}`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTIII(d) {
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.efetivo <= 100,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 100", d.efetivo <= 100, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.efetivo <= 1000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 1 000", d.efetivo <= 1000, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 50 && d.efetivo <= 5000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 50 m", d.altura <= 50, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 5 000", d.efetivo <= 5000, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTIVorV(d, isUTIV) {
+  const semLocais = isUTIV && d.semLocaisDE === "sim";
+  const lim2 = semLocais ? 750 : 500;
+  const lim3 = semLocais ? 2250 : 1500;
+  const labelRisco = isUTIV ? "D ou E" : "D";
+
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.efetivo <= 100 && d.efetivoRisco <= 25 && d.saidaIndependente === "sim",
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 100", d.efetivo <= 100, `${d.efetivo}`),
+        scieCriteriaLine(`Efetivo em locais de risco ${labelRisco} ≤ 25`, d.efetivoRisco <= 25, `${d.efetivoRisco}`),
+        scieCriteriaLine("Saídas independentes diretas ao exterior", d.saidaIndependente === "sim", d.saidaIndependente === "sim" ? "Sim" : "Não")
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 9 && d.efetivo <= lim2 && d.efetivoRisco <= 100,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine(`Efetivo ≤ ${lim2}`, d.efetivo <= lim2, `${d.efetivo}`),
+        scieCriteriaLine(`Efetivo em locais de risco ${labelRisco} ≤ 100`, d.efetivoRisco <= 100, `${d.efetivoRisco}`),
+        scieCriteriaLine("Majoração de 50% aplicada ao efetivo", semLocais, semLocais ? "Aplicada" : "Não aplicável")
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 28 && d.efetivo <= lim3 && d.efetivoRisco <= 400,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine(`Efetivo ≤ ${lim3}`, d.efetivo <= lim3, `${d.efetivo}`),
+        scieCriteriaLine(`Efetivo em locais de risco ${labelRisco} ≤ 400`, d.efetivoRisco <= 400, `${d.efetivoRisco}`),
+        scieCriteriaLine("Majoração de 50% aplicada ao efetivo", semLocais, semLocais ? "Aplicada" : "Não aplicável")
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTVIorIX(d, label) {
+  if (d.espaco === "arlivre") {
+    return highestPassingCategory([
+      {
+        category: 1,
+        pass: d.efetivo <= 1000,
+        criteria: [
+          scieCriteriaLine(`${label} ao ar livre`, true),
+          scieCriteriaLine("Efetivo ≤ 1 000", d.efetivo <= 1000, `${d.efetivo}`)
+        ]
+      },
+      {
+        category: 2,
+        pass: d.efetivo <= 15000,
+        criteria: [
+          scieCriteriaLine(`${label} ao ar livre`, true),
+          scieCriteriaLine("Efetivo ≤ 15 000", d.efetivo <= 15000, `${d.efetivo}`)
+        ]
+      },
+      {
+        category: 3,
+        pass: d.efetivo <= 40000,
+        criteria: [
+          scieCriteriaLine(`${label} ao ar livre`, true),
+          scieCriteriaLine("Efetivo ≤ 40 000", d.efetivo <= 40000, `${d.efetivo}`)
+        ]
+      },
+      {
+        category: 4,
+        pass: true,
+        criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+      }
+    ]);
+  }
+
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.pisosAbaixo === 0 && d.efetivo <= 100,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência = 0", d.pisosAbaixo === 0, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 100", d.efetivo <= 100, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.pisosAbaixo <= 1 && d.efetivo <= 1000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 1", d.pisosAbaixo <= 1, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 1 000", d.efetivo <= 1000, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 28 && d.pisosAbaixo <= 2 && d.efetivo <= 5000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 2", d.pisosAbaixo <= 2, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 5 000", d.efetivo <= 5000, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTVII(d) {
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.efetivo <= 100 && d.efetivoRisco <= 50 && d.saidaIndependente === "sim",
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 100", d.efetivo <= 100, `${d.efetivo}`),
+        scieCriteriaLine("Efetivo em locais de risco E ≤ 50", d.efetivoRisco <= 50, `${d.efetivoRisco}`),
+        scieCriteriaLine("Saídas independentes diretas ao exterior", d.saidaIndependente === "sim", d.saidaIndependente === "sim" ? "Sim" : "Não")
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.efetivo <= 500 && d.efetivoRisco <= 200,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 500", d.efetivo <= 500, `${d.efetivo}`),
+        scieCriteriaLine("Efetivo em locais de risco E ≤ 200", d.efetivoRisco <= 200, `${d.efetivoRisco}`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 28 && d.efetivo <= 1500 && d.efetivoRisco <= 800,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 1 500", d.efetivo <= 1500, `${d.efetivo}`),
+        scieCriteriaLine("Efetivo em locais de risco E ≤ 800", d.efetivoRisco <= 800, `${d.efetivoRisco}`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTVIII(d) {
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.pisosAbaixo === 0 && d.efetivo <= 100,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência = 0", d.pisosAbaixo === 0, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 100", d.efetivo <= 100, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.pisosAbaixo <= 1 && d.efetivo <= 1000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 1", d.pisosAbaixo <= 1, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 1 000", d.efetivo <= 1000, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 28 && d.pisosAbaixo <= 2 && d.efetivo <= 5000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 2", d.pisosAbaixo <= 2, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 5 000", d.efetivo <= 5000, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTX(d) {
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.efetivo <= 100,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 100", d.efetivo <= 100, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.efetivo <= 500,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 500", d.efetivo <= 500, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 28 && d.efetivo <= 1500,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Efetivo ≤ 1 500", d.efetivo <= 1500, `${d.efetivo}`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTXI(d) {
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.altura <= 9 && d.pisosAbaixo === 0 && d.efetivo <= 100 && d.carga <= 5000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 9 m", d.altura <= 9, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência = 0", d.pisosAbaixo === 0, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 100", d.efetivo <= 100, `${d.efetivo}`),
+        scieCriteriaLine("Carga de incêndio modificada ≤ 5 000 MJ/m²", d.carga <= 5000, `${d.carga} MJ/m²`)
+      ]
+    },
+    {
+      category: 2,
+      pass: d.altura <= 28 && d.pisosAbaixo <= 1 && d.efetivo <= 500 && d.carga <= 50000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 1", d.pisosAbaixo <= 1, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 500", d.efetivo <= 500, `${d.efetivo}`),
+        scieCriteriaLine("Carga de incêndio modificada ≤ 50 000 MJ/m²", d.carga <= 50000, `${d.carga} MJ/m²`)
+      ]
+    },
+    {
+      category: 3,
+      pass: d.altura <= 28 && d.pisosAbaixo <= 2 && d.efetivo <= 1500 && d.carga <= 150000,
+      criteria: [
+        scieCriteriaLine("Altura ≤ 28 m", d.altura <= 28, `${d.altura} m`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 2", d.pisosAbaixo <= 2, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Efetivo ≤ 1 500", d.efetivo <= 1500, `${d.efetivo}`),
+        scieCriteriaLine("Carga de incêndio modificada ≤ 150 000 MJ/m²", d.carga <= 150000, `${d.carga} MJ/m²`)
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evalUTXII(d) {
+  const factor = d.soArmazem === "sim" ? 10 : 1;
+
+  if (d.espaco === "arlivre") {
+    return highestPassingCategory([
+      {
+        category: 1,
+        pass: d.carga <= 1000 * factor,
+        criteria: [
+          scieCriteriaLine("UT XII ao ar livre", true),
+          scieCriteriaLine(`Carga de incêndio modificada ≤ ${1000 * factor} MJ/m²`, d.carga <= 1000 * factor, `${d.carga} MJ/m²`)
+        ]
+      },
+      {
+        category: 2,
+        pass: d.carga <= 10000 * factor,
+        criteria: [
+          scieCriteriaLine("UT XII ao ar livre", true),
+          scieCriteriaLine(`Carga de incêndio modificada ≤ ${10000 * factor} MJ/m²`, d.carga <= 10000 * factor, `${d.carga} MJ/m²`)
+        ]
+      },
+      {
+        category: 3,
+        pass: d.carga <= 30000 * factor,
+        criteria: [
+          scieCriteriaLine("UT XII ao ar livre", true),
+          scieCriteriaLine(`Carga de incêndio modificada ≤ ${30000 * factor} MJ/m²`, d.carga <= 30000 * factor, `${d.carga} MJ/m²`)
+        ]
+      },
+      {
+        category: 4,
+        pass: true,
+        criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+      }
+    ]);
+  }
+
+  return highestPassingCategory([
+    {
+      category: 1,
+      pass: d.carga <= 500 * factor && d.pisosAbaixo === 0,
+      criteria: [
+        scieCriteriaLine(`Carga de incêndio modificada ≤ ${500 * factor} MJ/m²`, d.carga <= 500 * factor, `${d.carga} MJ/m²`),
+        scieCriteriaLine("Pisos abaixo do plano de referência = 0", d.pisosAbaixo === 0, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Majoração ×10 por armazém exclusivo", d.soArmazem === "sim", d.soArmazem === "sim" ? "Aplicada" : "Não aplicável")
+      ]
+    },
+    {
+      category: 2,
+      pass: d.carga <= 5000 * factor && d.pisosAbaixo <= 1,
+      criteria: [
+        scieCriteriaLine(`Carga de incêndio modificada ≤ ${5000 * factor} MJ/m²`, d.carga <= 5000 * factor, `${d.carga} MJ/m²`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 1", d.pisosAbaixo <= 1, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Majoração ×10 por armazém exclusivo", d.soArmazem === "sim", d.soArmazem === "sim" ? "Aplicada" : "Não aplicável")
+      ]
+    },
+    {
+      category: 3,
+      pass: d.carga <= 15000 * factor && d.pisosAbaixo <= 1,
+      criteria: [
+        scieCriteriaLine(`Carga de incêndio modificada ≤ ${15000 * factor} MJ/m²`, d.carga <= 15000 * factor, `${d.carga} MJ/m²`),
+        scieCriteriaLine("Pisos abaixo do plano de referência ≤ 1", d.pisosAbaixo <= 1, `${d.pisosAbaixo}`),
+        scieCriteriaLine("Majoração ×10 por armazém exclusivo", d.soArmazem === "sim", d.soArmazem === "sim" ? "Aplicada" : "Não aplicável")
+      ]
+    },
+    {
+      category: 4,
+      pass: true,
+      criteria: [scieCriteriaLine("Excede os limites da 3.ª categoria", true)]
+    }
+  ]);
+}
+
+function evaluateSCIECategory(data) {
+  switch (data.ut) {
+    case "I": return evalUTI(data);
+    case "II": return evalUTII(data);
+    case "III": return evalUTIII(data);
+    case "IV": return evalUTIVorV(data, true);
+    case "V": return evalUTIVorV(data, false);
+    case "VI": return evalUTVIorIX(data, "UT VI");
+    case "VII": return evalUTVII(data);
+    case "VIII": return evalUTVIII(data);
+    case "IX": return evalUTVIorIX(data, "UT IX");
+    case "X": return evalUTX(data);
+    case "XI": return evalUTXI(data);
+    case "XII": return evalUTXII(data);
+    default: return null;
+  }
+}
+
+function getSCIEMeasures(ut, category) {
+  const common = [
+    {
+      title: "Instruções de segurança",
+      detail: "Devem existir instruções de segurança adequadas à utilização, ocupação e procedimentos de atuação."
+    },
+    {
+      title: "Registos de segurança",
+      detail: "Devem ser mantidos registos das ocorrências relevantes, manutenção, vistorias, ações de formação, exercícios e incidentes."
+    },
+    {
+      title: "Procedimentos de prevenção",
+      detail: "Devem existir procedimentos para prevenção e controlo dos riscos associados à exploração do edifício."
+    }
+  ];
+
+  const cat2plus = [
+    {
+      title: "Plano de prevenção",
+      detail: "Deve existir plano de prevenção ajustado aos riscos, meios existentes, rotinas de exploração e responsáveis."
+    },
+    {
+      title: "Organização da segurança",
+      detail: "A organização da segurança deve ser definida em função do efetivo, horário de funcionamento e risco da utilização."
+    }
+  ];
+
+  const cat3plus = [
+    {
+      title: "Plano de emergência interno",
+      detail: "Deve existir plano de emergência interno com procedimentos de alarme, alerta, evacuação e primeira intervenção."
+    },
+    {
+      title: "Formação em SCIE",
+      detail: "Os intervenientes com responsabilidades na exploração e emergência devem ter formação adequada."
+    },
+    {
+      title: "Simulacros",
+      detail: "Devem ser realizados exercícios e simulacros para testar os procedimentos de resposta."
+    }
+  ];
+
+  const cat4plus = [
+    {
+      title: "Reforço da organização de segurança",
+      detail: "A organização da segurança, equipas, treino e controlo documental exigem validação técnica mais rigorosa."
+    },
+    {
+      title: "Validação técnica obrigatória",
+      detail: "A verificação final das medidas deve ser confirmada por técnico competente."
+    }
+  ];
+
+  const utSpecific = {
+    IV: [{ title: "Gestão de ocupantes mais vulneráveis", detail: "Devem ser considerados procedimentos próprios para crianças e ocupantes com menor autonomia." }],
+    V: [{ title: "Evacuação assistida", detail: "Devem existir procedimentos específicos para doentes, utentes dependentes e evacuação assistida." }],
+    VI: [{ title: "Controlo de lotação e público", detail: "Devem ser validados procedimentos operacionais associados à lotação, acolhimento de público e evacuação." }],
+    VII: [{ title: "Gestão de ocupação noturna", detail: "Devem ser considerados procedimentos de emergência adequados à ocupação noturna e dormidas." }],
+    VIII: [{ title: "Afluência e gestão de público", detail: "Devem ser validados procedimentos compatíveis com grande afluência e apoio à evacuação." }],
+    IX: [{ title: "Eventos e concentração de pessoas", detail: "Devem ser avaliados procedimentos operacionais em função da lotação e tipo de atividade." }],
+    XI: [{ title: "Carga de incêndio documental", detail: "Devem ser considerados procedimentos ajustados à proteção do acervo e à carga de incêndio." }],
+    XII: [{ title: "Procedimentos de exploração industrial/armazém", detail: "Devem ser avaliados procedimentos específicos para armazenamento, operações e riscos próprios da atividade." }]
+  };
+
+  let measures = [...common];
+  if (category >= 2) measures = measures.concat(cat2plus);
+  if (category >= 3) measures = measures.concat(cat3plus);
+  if (category >= 4) measures = measures.concat(cat4plus);
+  if (utSpecific[ut]) measures = measures.concat(utSpecific[ut]);
+
+  return measures;
+}
+
+function renderSCIEResult(data, result) {
+  const box = scieById("resultado-risco");
+  if (!box) return;
+
+  const catText = `${result.category}.ª Categoria de Risco`;
+  const measures = getSCIEMeasures(data.ut, result.category);
+
+  box.className = "panel risk-result show";
+  box.innerHTML = `
+    <div class="risk-badge cat-${result.category}">${catText}</div>
+    <h3 style="margin-top:0;">${SCIE_UT_LABELS[data.ut]}</h3>
+    <p class="small-note">A categoria apresentada é a mais baixa cujos critérios foram integralmente cumpridos.</p>
+
+    <h4 class="risk-section-title">Critérios verificados para esta categoria</h4>
+    <ul class="criteria-list">
+      ${result.criteria.map((item) => `
+        <li class="${item.ok ? "ok" : "fail"}">
+          <strong>${item.ok ? "Cumpre" : "Não cumpre"} — ${item.label}</strong>
+          ${item.detail ? `<span>${item.detail}</span>` : ""}
+        </li>
+      `).join("")}
+    </ul>
+
+    <h4 class="risk-section-title">Medidas obrigatórias / a validar</h4>
+    <ul class="measures-list">
+      ${measures.map((item) => `
+        <li>
+          <strong>${item.title}</strong>
+          <span>${item.detail}</span>
+        </li>
+      `).join("")}
+    </ul>
+
+    <div class="risk-actions">
+      <a class="btn btn-primary" href="#contacto">Pedir análise técnica</a>
+    </div>
+
+    <p class="risk-legal-note">
+      Resultado indicativo. O enquadramento final deve ser validado tecnicamente, sobretudo em utilizações mistas ou situações especiais.
+    </p>
+  `;
+}
+
+function calcularRiscoSCIE() {
+  const data = readSCIEData();
+  const validationError = validateSCIEData(data);
+
+  if (validationError) {
+    alert(validationError);
+    return;
+  }
+
+  const result = evaluateSCIECategory(data);
+  if (!result) {
+    alert("Não foi possível calcular a categoria de risco.");
+    return;
+  }
+
+  renderSCIEResult(data, result);
+}
+
+function resetSCIECalculator() {
+  const ut = scieById("scie-ut");
+  const fields = scieById("scie-fields");
+  const result = scieById("resultado-risco");
+
+  if (ut) ut.value = "";
+  if (fields) fields.innerHTML = "";
+  if (result) {
+    result.className = "panel risk-result";
+    result.innerHTML = "";
+  }
+}
+
+function initSCIECalculator() {
+  const ut = scieById("scie-ut");
+  const calcBtn = scieById("scie-calculate-btn");
+  const resetBtn = scieById("scie-reset-btn");
+
+  if (!ut || !calcBtn || !resetBtn) return;
+
+  ut.addEventListener("change", () => {
+    renderSCIEFields();
+    const result = scieById("resultado-risco");
+    if (result) {
+      result.className = "panel risk-result";
+      result.innerHTML = "";
+    }
+  });
+
+  calcBtn.addEventListener("click", calcularRiscoSCIE);
+  resetBtn.addEventListener("click", resetSCIECalculator);
+}
+
