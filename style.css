@@ -823,5 +823,149 @@ hr {
   .risk-inline-grid {
     grid-template-columns: 1fr;
   }
+  /* ===== CALCULADORA PROFISSIONAL — DENSIDADE DA CARGA DE INCÊNDIO ===== */
+
+.fireload-pro {
+  grid-column: 1 / -1;
+  margin-top: 32px;
 }
+
+.fireload-pro .form-panel {
+  padding: 28px;
+}
+
+.risk-inline-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.fl-table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: white;
+}
+
+.fl-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.fl-table th,
+.fl-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.fl-table thead th {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+  background: rgba(184,97,28,.04);
+}
+
+.fl-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.fl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(184,97,28,.08);
+  color: var(--primary);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.risk-result {
+  display: none;
+  margin-top: 22px;
+  padding: 24px;
+}
+
+.risk-result.show {
+  display: block;
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.risk-badge.info {
+  color: #175cd3;
+  background: #eff8ff;
+  border-color: #b2ddff;
+}
+
+.criteria-list,
+.measures-list,
+.memory-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.criteria-list li,
+.measures-list li,
+.memory-list li {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.criteria-list strong,
+.measures-list strong,
+.memory-list strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.risk-section-title {
+  margin: 24px 0 10px;
+  font-size: 1.05rem;
+}
+
+.risk-legal-note {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.risk-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+@media (max-width: 900px) {
+  .risk-inline-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 
