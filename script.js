@@ -403,7 +403,25 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
-/* ===== CALCULADORA SCIE ===== */
+
+
+  /* ===== CALCULADORA PROFISSIONAL — DENSIDADE DA CARGA DE INCÊNDIO ===== */
+
+/*
+Base legal de cálculo:
+- Método determinístico:
+  Qs = Σ (Mi × Hi × Ci × Rai)
+  qs = Qs / S
+- Método probabilístico:
+  Atividade: Qs = Σ (qsi × Si × Ci × Rai)
+  Armazenamento: Qs = Σ (qvi × hi × Si × Ci × Rai)
+  qs = Qs / S
+
+Nota:
+Os bancos abaixo são um "banco inicial Lisprotec" para teste e operação.
+Os valores continuam editáveis no frontend e devem ser validados tecnicamente caso a caso.
+*/
+/* ===== CALCULADORA SCIE ÚNICA ===== */
 
 const SCIE_FIELDS = {
   I: [
@@ -1209,25 +1227,9 @@ function initSCIECalculator() {
 
   calcBtn.addEventListener("click", calcularRiscoSCIE);
   resetBtn.addEventListener("click", resetSCIECalculator);
-  }
+}
 
-  /* ===== CALCULADORA PROFISSIONAL — DENSIDADE DA CARGA DE INCÊNDIO ===== */
-
-/*
-Base legal de cálculo:
-- Método determinístico:
-  Qs = Σ (Mi × Hi × Ci × Rai)
-  qs = Qs / S
-- Método probabilístico:
-  Atividade: Qs = Σ (qsi × Si × Ci × Rai)
-  Armazenamento: Qs = Σ (qvi × hi × Si × Ci × Rai)
-  qs = Qs / S
-
-Nota:
-Os bancos abaixo são um "banco inicial Lisprotec" para teste e operação.
-Os valores continuam editáveis no frontend e devem ser validados tecnicamente caso a caso.
-*/
-
+document.addEventListener("DOMContentLoaded", initSCIECalculator);
 const FIRELOAD_PRODUCTS = [
   { id: "papel-cartao", name: "Papel / Cartão", category: "Celulósicos", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
   { id: "madeira-macia", name: "Madeira macia", category: "Madeiras", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
