@@ -1205,5 +1205,469 @@ function initSCIECalculator() {
 
   calcBtn.addEventListener("click", calcularRiscoSCIE);
   resetBtn.addEventListener("click", resetSCIECalculator);
+  /* ===== CALCULADORA PROFISSIONAL — DENSIDADE DA CARGA DE INCÊNDIO ===== */
+
+/*
+Base legal de cálculo:
+- Método determinístico:
+  Qs = Σ (Mi × Hi × Ci × Rai)
+  qs = Qs / S
+- Método probabilístico:
+  Atividade: Qs = Σ (qsi × Si × Ci × Rai)
+  Armazenamento: Qs = Σ (qvi × hi × Si × Ci × Rai)
+  qs = Qs / S
+
+Nota:
+Os bancos abaixo são um "banco inicial Lisprotec" para teste e operação.
+Os valores continuam editáveis no frontend e devem ser validados tecnicamente caso a caso.
+*/
+
+const FIRELOAD_PRODUCTS = [
+  { id: "papel-cartao", name: "Papel / Cartão", category: "Celulósicos", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
+  { id: "madeira-macia", name: "Madeira macia", category: "Madeiras", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
+  { id: "madeira-dura", name: "Madeira dura", category: "Madeiras", hi: 18, c: 1.00, r: 1.00, unit: "kg" },
+  { id: "aglomerado", name: "Aglomerado / MDF", category: "Madeiras", hi: 18, c: 1.05, r: 1.00, unit: "kg" },
+  { id: "texteis-algodao", name: "Têxteis de algodão", category: "Têxteis", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
+  { id: "texteis-sinteticos", name: "Têxteis sintéticos", category: "Têxteis", hi: 25, c: 1.10, r: 1.10, unit: "kg" },
+  { id: "borracha", name: "Borracha", category: "Elastómeros", hi: 33, c: 1.10, r: 1.20, unit: "kg" },
+  { id: "pe", name: "Polietileno (PE)", category: "Plásticos", hi: 43, c: 1.20, r: 1.50, unit: "kg" },
+  { id: "pp", name: "Polipropileno (PP)", category: "Plásticos", hi: 43, c: 1.20, r: 1.50, unit: "kg" },
+  { id: "ps", name: "Poliestireno (PS)", category: "Plásticos", hi: 39, c: 1.20, r: 1.50, unit: "kg" },
+  { id: "pet", name: "PET", category: "Plásticos", hi: 23, c: 1.10, r: 1.30, unit: "kg" },
+  { id: "pvc", name: "PVC", category: "Plásticos", hi: 18, c: 1.00, r: 1.20, unit: "kg" },
+  { id: "espuma-pu", name: "Espuma de poliuretano", category: "Espumas", hi: 26, c: 1.20, r: 1.60, unit: "kg" },
+  { id: "couro", name: "Couro", category: "Orgânicos", hi: 18, c: 1.00, r: 1.00, unit: "kg" },
+  { id: "oleos", name: "Óleos / gorduras", category: "Líquidos combustíveis", hi: 37, c: 1.20, r: 1.40, unit: "kg" },
+  { id: "alcool", name: "Álcool", category: "Líquidos inflamáveis", hi: 27, c: 1.20, r: 1.60, unit: "kg" },
+  { id: "tintas-solvente", name: "Tintas com solvente", category: "Químicos", hi: 30, c: 1.20, r: 1.60, unit: "kg" },
+  { id: "embalagens-mistas", name: "Embalagens mistas", category: "Embalagens", hi: 22, c: 1.10, r: 1.20, unit: "kg" },
+  { id: "livros", name: "Livros / arquivo em papel", category: "Arquivo", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
+  { id: "paletes-madeira", name: "Paletes de madeira", category: "Logística", hi: 17, c: 1.00, r: 1.20, unit: "kg" }
+];
+
+const FIRELOAD_PROB_PRESETS = {
+  atividade: [
+    { id: "arquivo", name: "Arquivo / biblioteca", q: 1200, c: 1.00, r: 1.00, unitLabel: "MJ/m²" },
+    { id: "escritorio", name: "Escritório / administrativo", q: 600, c: 1.00, r: 1.00, unitLabel: "MJ/m²" },
+    { id: "comercial-leve", name: "Comércio ligeiro", q: 900, c: 1.00, r: 1.50, unitLabel: "MJ/m²" },
+    { id: "oficina", name: "Oficina", q: 1300, c: 1.10, r: 1.50, unitLabel: "MJ/m²" },
+    { id: "industrial-geral", name: "Indústria geral", q: 1500, c: 1.10, r: 1.50, unitLabel: "MJ/m²" }
+  ],
+  armazenamento: [
+    { id: "armazem-papel", name: "Armazenamento de papel/cartão", q: 900, c: 1.00, r: 1.50, unitLabel: "MJ/m³" },
+    { id: "armazem-madeira", name: "Armazenamento de madeira", q: 850, c: 1.00, r: 1.50, unitLabel: "MJ/m³" },
+    { id: "armazem-plasticos", name: "Armazenamento de plásticos", q: 1800, c: 1.20, r: 2.00, unitLabel: "MJ/m³" },
+    { id: "armazem-textil", name: "Armazenamento têxtil", q: 1100, c: 1.10, r: 1.50, unitLabel: "MJ/m³" },
+    { id: "armazem-misto", name: "Armazenamento misto", q: 1200, c: 1.10, r: 1.50, unitLabel: "MJ/m³" }
+  ]
+};
+
+let fireloadItems = [];
+
+function flById(id) {
+  return document.getElementById(id);
 }
+
+function flFormatNumber(value, decimals = 2) {
+  return Number(value || 0).toLocaleString("pt-PT", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+}
+
+function flFormatUnit(value, unit) {
+  return `${flFormatNumber(value)} ${unit}`;
+}
+
+function normalizeQuantityToKg(quantity, unit) {
+  if (unit === "t") return quantity * 1000;
+  return quantity;
+}
+
+function getSelectedPreset(list, id) {
+  return (list || []).find((item) => item.id === id) || null;
+}
+
+function populateFireloadProductSelect() {
+  const select = flById("fl-product-select");
+  if (!select) return;
+  select.innerHTML = '<option value="">Selecionar produto</option>';
+
+  FIRELOAD_PRODUCTS.forEach((product) => {
+    const option = document.createElement("option");
+    option.value = product.id;
+    option.textContent = `${product.name} — Hi ${product.hi} MJ/kg`;
+    select.appendChild(option);
+  });
+}
+
+function populateProbabilisticPresets() {
+  const mode = flById("fl-prob-mode")?.value || "";
+  const select = flById("fl-prob-preset");
+  if (!select) return;
+
+  select.innerHTML = '<option value="">Selecionar opção</option>';
+  if (!mode || !FIRELOAD_PROB_PRESETS[mode]) return;
+
+  FIRELOAD_PROB_PRESETS[mode].forEach((preset) => {
+    const option = document.createElement("option");
+    option.value = preset.id;
+    option.textContent = `${preset.name} — ${preset.q} ${preset.unitLabel}`;
+    select.appendChild(option);
+  });
+}
+
+function applyProbabilisticPreset() {
+  const mode = flById("fl-prob-mode")?.value || "";
+  const presetId = flById("fl-prob-preset")?.value || "";
+  const preset = getSelectedPreset(FIRELOAD_PROB_PRESETS[mode], presetId);
+
+  if (!preset) return;
+
+  if (flById("fl-prob-q")) flById("fl-prob-q").value = preset.q;
+  if (flById("fl-prob-c")) flById("fl-prob-c").value = preset.c;
+  if (flById("fl-prob-r")) flById("fl-prob-r").value = preset.r;
+}
+
+function renderFireloadMode() {
+  const method = flById("fl-method")?.value || "";
+  const note = flById("fl-mode-note");
+  const det = flById("fl-deterministico");
+  const prob = flById("fl-probabilistico");
+
+  det?.classList.add("hidden");
+  prob?.classList.add("hidden");
+
+  if (method === "deterministico") {
+    det?.classList.remove("hidden");
+    if (note) note.textContent = "Método determinístico: baseado na quantidade, Hi, C e R dos materiais existentes.";
+  } else if (method === "probabilistico") {
+    prob?.classList.remove("hidden");
+    if (note) note.textContent = "Método probabilístico: baseado em valores estatísticos q e nos coeficientes C e R.";
+  } else {
+    if (note) note.textContent = "";
+  }
+}
+
+function renderFireloadEntryMode() {
+  const mode = flById("fl-entry-mode")?.value || "predefinido";
+  const manual = flById("fl-manual-fields");
+
+  if (!manual) return;
+  if (mode === "manual") manual.classList.remove("hidden");
+  else manual.classList.add("hidden");
+}
+
+function buildFireloadItemFromManual(quantity, unit) {
+  const name = flById("fl-manual-name")?.value?.trim() || "";
+  const category = flById("fl-manual-category")?.value?.trim() || "Manual";
+  const hi = Number(flById("fl-manual-hi")?.value || 0);
+  const c = Number(flById("fl-manual-c")?.value || 0);
+  const r = Number(flById("fl-manual-r")?.value || 0);
+  const manualUnit = flById("fl-manual-unit")?.value || unit || "kg";
+
+  if (!name || hi <= 0 || c <= 0 || r <= 0) {
+    alert("Preencha todos os campos do material manual.");
+    return null;
+  }
+
+  return { name, category, hi, c, r, quantity, unit: manualUnit };
+}
+
+function buildFireloadItemFromPreset(quantity, unit) {
+  const selectedId = flById("fl-product-select")?.value || "";
+  const product = FIRELOAD_PRODUCTS.find((p) => p.id === selectedId);
+
+  if (!product) {
+    alert("Selecione um produto da lista.");
+    return null;
+  }
+
+  return {
+    name: product.name,
+    category: product.category,
+    hi: product.hi,
+    c: product.c,
+    r: product.r,
+    quantity,
+    unit: unit || product.unit || "kg"
+  };
+}
+
+function addFireloadItem() {
+  const mode = flById("fl-entry-mode")?.value || "predefinido";
+  const quantity = Number(flById("fl-quantity")?.value || 0);
+  const unit = flById("fl-unit")?.value || "kg";
+
+  if (quantity <= 0) {
+    alert("Introduza uma quantidade válida.");
+    return;
+  }
+
+  const item = mode === "manual"
+    ? buildFireloadItemFromManual(quantity, unit)
+    : buildFireloadItemFromPreset(quantity, unit);
+
+  if (!item) return;
+
+  fireloadItems.push(item);
+  renderFireloadItems();
+
+  if (flById("fl-quantity")) flById("fl-quantity").value = "";
+}
+
+function getDeterministicPartial(item) {
+  const qKg = normalizeQuantityToKg(item.quantity, item.unit);
+  return qKg * item.hi * item.c * item.r;
+}
+
+function renderFireloadItems() {
+  const body = flById("fl-items-body");
+  if (!body) return;
+
+  body.innerHTML = fireloadItems.map((item, index) => {
+    const partial = getDeterministicPartial(item);
+
+    return `
+      <tr>
+        <td>${item.name}</td>
+        <td><span class="fl-chip">${item.category}</span></td>
+        <td>${flFormatNumber(item.quantity)} ${item.unit}</td>
+        <td>${flFormatNumber(item.hi)} MJ/kg</td>
+        <td>${flFormatNumber(item.c)}</td>
+        <td>${flFormatNumber(item.r)}</td>
+        <td>${flFormatNumber(partial)} MJ</td>
+        <td><button type="button" class="btn btn-outline btn-small" onclick="removeFireloadItem(${index})">Remover</button></td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function removeFireloadItem(index) {
+  fireloadItems.splice(index, 1);
+  renderFireloadItems();
+}
+
+function getDeterministicCalculation(area) {
+  const totalMJ = fireloadItems.reduce((sum, item) => sum + getDeterministicPartial(item), 0);
+  const density = totalMJ / area;
+
+  return {
+    method: "Determinístico",
+    totalMJ,
+    density,
+    memory: fireloadItems.map((item) => {
+      const qKg = normalizeQuantityToKg(item.quantity, item.unit);
+      const partial = getDeterministicPartial(item);
+      return {
+        title: item.name,
+        detail: `${flFormatNumber(qKg)} kg × ${flFormatNumber(item.hi)} × ${flFormatNumber(item.c)} × ${flFormatNumber(item.r)} = ${flFormatNumber(partial)} MJ`
+      };
+    })
+  };
+}
+
+function getProbabilisticCalculation(area) {
+  const mode = flById("fl-prob-mode")?.value || "";
+  const zoneArea = Number(flById("fl-prob-zone-area")?.value || 0);
+  const height = Number(flById("fl-prob-height")?.value || 0);
+  const q = Number(flById("fl-prob-q")?.value || 0);
+  const c = Number(flById("fl-prob-c")?.value || 0);
+  const r = Number(flById("fl-prob-r")?.value || 0);
+  const presetText = flById("fl-prob-preset")?.selectedOptions?.[0]?.textContent || "Manual";
+
+  if (!mode || zoneArea <= 0 || q <= 0 || c <= 0 || r <= 0) {
+    alert("Preencha os campos obrigatórios do cálculo probabilístico.");
+    return null;
+  }
+
+  let totalMJ = 0;
+  let formulaText = "";
+
+  if (mode === "atividade") {
+    totalMJ = q * zoneArea * c * r;
+    formulaText = `${flFormatNumber(q)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
+  } else {
+    if (height <= 0) {
+      alert("Introduza a altura de armazenagem.");
+      return null;
+    }
+    totalMJ = q * height * zoneArea * c * r;
+    formulaText = `${flFormatNumber(q)} × ${flFormatNumber(height)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
+  }
+
+  const density = totalMJ / area;
+
+  return {
+    method: "Probabilístico",
+    totalMJ,
+    density,
+    memory: [
+      {
+        title: `Preset / referência: ${presetText}`,
+        detail: mode === "atividade"
+          ? "Fórmula aplicada: qs = (qsi × Si × Ci × Rai) / S"
+          : "Fórmula aplicada: qs = (qvi × hi × Si × Ci × Rai) / S"
+      },
+      {
+        title: "Memória de cálculo",
+        detail: `${formulaText} = ${flFormatNumber(totalMJ)} MJ`
+      }
+    ]
+  };
+}
+
+function getGeneralMeasures() {
+  return [
+    { title: "Validação técnica", detail: "Confirmar enquadramento da atividade, compartimentação e coeficientes adotados." },
+    { title: "Coerência documental", detail: "As premissas do cálculo devem ser coerentes com o processo SCIE, exploração e layout real." },
+    { title: "Atualização dos dados", detail: "Alterações de materiais, armazenagem ou atividade exigem revisão do cálculo." }
+  ];
+}
+
+function renderFireloadResult(area, calculation) {
+  const box = flById("fl-result");
+  if (!box) return;
+
+  const measures = getGeneralMeasures();
+
+  box.className = "panel risk-result show";
+  box.innerHTML = `
+    <div class="risk-badge info">Resultado</div>
+    <h3 style="margin-top:0;">Cálculo ${calculation.method}</h3>
+
+    <h4 class="risk-section-title">Resultado principal</h4>
+    <ul class="criteria-list">
+      <li><strong>Carga de incêndio modificada (Qs)</strong><span>${flFormatNumber(calculation.totalMJ)} MJ</span></li>
+      <li><strong>Densidade da carga de incêndio modificada (qs)</strong><span>${flFormatNumber(calculation.density)} MJ/m²</span></li>
+      <li><strong>Área útil do compartimento (S)</strong><span>${flFormatNumber(area)} m²</span></li>
+    </ul>
+
+    <h4 class="risk-section-title">Memória de cálculo</h4>
+    <ul class="memory-list">
+      ${calculation.memory.map((item) => `
+        <li>
+          <strong>${item.title}</strong>
+          <span>${item.detail}</span>
+        </li>
+      `).join("")}
+    </ul>
+
+    <h4 class="risk-section-title">Notas de validação</h4>
+    <ul class="measures-list">
+      ${measures.map((item) => `
+        <li>
+          <strong>${item.title}</strong>
+          <span>${item.detail}</span>
+        </li>
+      `).join("")}
+    </ul>
+
+    <div class="risk-actions">
+      <a class="btn btn-primary" href="#contacto">Pedir análise técnica</a>
+    </div>
+
+    <p class="risk-legal-note">
+      Ferramenta indicativa. O cálculo deve ser validado tecnicamente à luz do Despacho n.º 8954/2020 e do enquadramento SCIE aplicável.
+    </p>
+  `;
+}
+
+function calculateFireloadProfessional() {
+  const method = flById("fl-method")?.value || "";
+  const area = Number(flById("fl-area")?.value || 0);
+
+  if (!method) {
+    alert("Selecione o método de cálculo.");
+    return;
+  }
+
+  if (area <= 0) {
+    alert("Introduza a área útil do compartimento.");
+    return;
+  }
+
+  if (method === "deterministico") {
+    if (!fireloadItems.length) {
+      alert("Adicione pelo menos um produto / material.");
+      return;
+    }
+    renderFireloadResult(area, getDeterministicCalculation(area));
+    return;
+  }
+
+  const calc = getProbabilisticCalculation(area);
+  if (!calc) return;
+  renderFireloadResult(area, calc);
+}
+
+function resetFireloadProfessional() {
+  fireloadItems = [];
+  renderFireloadItems();
+
+  [
+    "fl-method",
+    "fl-area",
+    "fl-entry-mode",
+    "fl-product-select",
+    "fl-manual-name",
+    "fl-manual-category",
+    "fl-manual-hi",
+    "fl-manual-c",
+    "fl-manual-r",
+    "fl-manual-unit",
+    "fl-quantity",
+    "fl-unit",
+    "fl-prob-mode",
+    "fl-prob-preset",
+    "fl-prob-zone-area",
+    "fl-prob-height",
+    "fl-prob-q",
+    "fl-prob-c",
+    "fl-prob-r"
+  ].forEach((id) => {
+    const el = flById(id);
+    if (!el) return;
+    if (el.tagName === "SELECT") el.selectedIndex = 0;
+    else el.value = "";
+  });
+
+  flById("fl-deterministico")?.classList.add("hidden");
+  flById("fl-probabilistico")?.classList.add("hidden");
+  flById("fl-manual-fields")?.classList.add("hidden");
+
+  const note = flById("fl-mode-note");
+  if (note) note.textContent = "";
+
+  const result = flById("fl-result");
+  if (result) {
+    result.className = "panel risk-result";
+    result.innerHTML = "";
+  }
+}
+
+function initFireloadCalculator() {
+  if (!flById("fl-method")) return;
+
+  populateFireloadProductSelect();
+  populateProbabilisticPresets();
+  renderFireloadEntryMode();
+  renderFireloadItems();
+
+  flById("fl-method")?.addEventListener("change", renderFireloadMode);
+  flById("fl-entry-mode")?.addEventListener("change", renderFireloadEntryMode);
+
+  flById("fl-prob-mode")?.addEventListener("change", () => {
+    populateProbabilisticPresets();
+    if (flById("fl-prob-q")) flById("fl-prob-q").value = "";
+    if (flById("fl-prob-c")) flById("fl-prob-c").value = "";
+    if (flById("fl-prob-r")) flById("fl-prob-r").selectedIndex = 0;
+  });
+
+  flById("fl-prob-preset")?.addEventListener("change", applyProbabilisticPreset);
+  flById("fl-add-item-btn")?.addEventListener("click", addFireloadItem);
+  flById("fl-calc-btn")?.addEventListener("click", calculateFireloadProfessional);
+  flById("fl-reset-btn")?.addEventListener("click", resetFireloadProfessional);
+}
+
 
