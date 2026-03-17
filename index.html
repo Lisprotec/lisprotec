@@ -271,6 +271,50 @@
               </form>
             </div>
           </div>
+         <!-- CALCULADORA DE CATEGORIA DE RISCO SCIE -->
+<div class="risk-calculator">
+  <div class="section-head center narrow" style="margin-top: 28px;">
+    <div class="eyebrow subtle">Categoria de Risco</div>
+    <h2>Calcule a categoria de risco da sua utilização-tipo</h2>
+    <p>
+      Ferramenta indicativa para enquadramento da categoria de risco segundo o RJ-SCIE.
+    </p>
+  </div>
+
+  <div class="panel form-panel">
+    <div class="field-group">
+      <label for="scie-ut">Utilização-Tipo</label>
+      <select id="scie-ut" name="scie-ut">
+        <option value="">Selecionar</option>
+        <option value="I">UT I – Habitacional</option>
+        <option value="II">UT II – Estacionamentos</option>
+        <option value="III">UT III – Administrativos</option>
+        <option value="IV">UT IV – Escolares</option>
+        <option value="V">UT V – Hospitalares e Lares</option>
+        <option value="VI">UT VI – Espetáculos e reuniões públicas</option>
+        <option value="VII">UT VII – Hoteleiros e restauração</option>
+        <option value="VIII">UT VIII – Comerciais e gares de transporte</option>
+        <option value="IX">UT IX – Desportivos e de lazer</option>
+        <option value="X">UT X – Museus e galerias</option>
+        <option value="XI">UT XI – Bibliotecas e arquivos</option>
+        <option value="XII">UT XII – Industrial / Oficinas / Armazéns</option>
+      </select>
+    </div>
+
+    <div id="scie-fields"></div>
+
+    <div class="hero-actions" style="margin: 18px 0 0;">
+      <button type="button" class="btn btn-primary" id="scie-calculate-btn">Calcular categoria</button>
+      <button type="button" class="btn btn-outline" id="scie-reset-btn">Limpar</button>
+    </div>
+
+    <p class="small-note" style="margin-top: 14px;">
+      Resultado indicativo sujeito a validação técnica.
+    </p>
+
+    <div id="resultado-risco" class="panel risk-result"></div>
+  </div>
+</div>
         </div>
       </section>
 
