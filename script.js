@@ -396,6 +396,7 @@ function init() {
   byId("contact-form")?.addEventListener("submit", openContactEmail);
   renderEstimate();
   initSCIECalculator();
+  initFireloadCalculator();
 }
 
 document.addEventListener("DOMContentLoaded", init);
