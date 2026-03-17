@@ -397,6 +397,9 @@ function init() {
   renderEstimate();
   initSCIECalculator();
   initFireloadCalculator();
+  initSCIECheck();
+  initPdfExports();
+
 }
 
 document.addEventListener("DOMContentLoaded", init);
