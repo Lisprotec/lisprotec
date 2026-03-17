@@ -1790,7 +1790,11 @@ function renderCheckResult(data, assessment) {
   if (!box) return;
 
   const badgeClass = assessment.level === "baixo" ? "cat-1" : assessment.level === "medio" ? "cat-3" : "cat-4";
-  const badgeLabel = assessment.level === "baixo" ? "Enquadramento simples" : assessment.level === "medio" ? "Enquadramento intermédio" : "Enquadramento técnico reforçado";
+const badgeLabel = assessment.level === "baixo"
+  ? "Tendência para 1.ª / 2.ª categoria"
+  : assessment.level === "medio"
+  ? "Tendência para 2.ª / 3.ª categoria"
+  : "Tendência para 3.ª / 4.ª categoria";
 
   box.className = "panel risk-result show";
   box.innerHTML = `
