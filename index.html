@@ -125,95 +125,7 @@
             </article>
           </div>
         </div>
-      </section>
-<!-- VERIFICADOR DE ENQUADRAMENTO SCIE -->
-<div class="scie-checker">
-  <div class="section-head center narrow" style="margin-top: 28px;">
-    <div class="eyebrow subtle">Verificador SCIE</div>
-    <h2>Verifique o enquadramento SCIE do seu caso</h2>
-    <p>
-      Ferramenta orientadora para perceber se o caso tende para ficha de segurança,
-      projeto SCIE, medidas de autoproteção e análise técnica.
-    </p>
-  </div>
-
-  <div class="panel form-panel">
-    <div class="risk-inline-grid">
-      <div class="field-group">
-        <label for="check-ut">Utilização-Tipo</label>
-        <select id="check-ut">
-          <option value="">Selecionar</option>
-          <option value="I">UT I – Habitacional</option>
-          <option value="II">UT II – Estacionamentos</option>
-          <option value="III">UT III – Administrativos</option>
-          <option value="IV">UT IV – Escolares</option>
-          <option value="V">UT V – Hospitalares e Lares</option>
-          <option value="VI">UT VI – Espetáculos e reuniões públicas</option>
-          <option value="VII">UT VII – Hoteleiros e restauração</option>
-          <option value="VIII">UT VIII – Comerciais e gares de transporte</option>
-          <option value="IX">UT IX – Desportivos e de lazer</option>
-          <option value="X">UT X – Museus e galerias</option>
-          <option value="XI">UT XI – Bibliotecas e arquivos</option>
-          <option value="XII">UT XII – Industrial / Oficinas / Armazéns</option>
-        </select>
-      </div>
-
-      <div class="field-group">
-        <label for="check-area">Área (m²)</label>
-        <input id="check-area" type="number" min="0" step="0.01" />
-      </div>
-
-      <div class="field-group">
-        <label for="check-height">Altura da utilização-tipo (m)</label>
-        <input id="check-height" type="number" min="0" step="0.01" />
-      </div>
-
-      <div class="field-group">
-        <label for="check-effective">Efetivo</label>
-        <input id="check-effective" type="number" min="0" step="1" />
-      </div>
-
-      <div class="field-group">
-        <label for="check-pisos">Pisos abaixo do plano de referência</label>
-        <input id="check-pisos" type="number" min="0" step="1" />
-      </div>
-
-      <div class="field-group">
-        <label for="check-public">Atendimento ao público?</label>
-        <select id="check-public">
-          <option value="">Selecionar</option>
-          <option value="sim">Sim</option>
-          <option value="nao">Não</option>
-        </select>
-      </div>
-
-      <div class="field-group">
-        <label for="check-sleep">Existe dormida / pernoita?</label>
-        <select id="check-sleep">
-          <option value="">Selecionar</option>
-          <option value="sim">Sim</option>
-          <option value="nao">Não</option>
-        </select>
-      </div>
-
-      <div class="field-group">
-        <label for="check-storage">Existe armazenamento relevante / carga de incêndio significativa?</label>
-        <select id="check-storage">
-          <option value="">Selecionar</option>
-          <option value="sim">Sim</option>
-          <option value="nao">Não</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="hero-actions" style="margin-top: 18px;">
-      <button type="button" class="btn btn-primary" id="check-calc-btn">Verificar enquadramento</button>
-      <button type="button" class="btn btn-outline" id="check-reset-btn">Limpar</button>
-    </div>
-
-    <div id="check-result" class="panel risk-result"></div>
-  </div>
-</div>
+      
 
 <!-- BOTÕES DE EXPORTAÇÃO PDF -->
 <div class="pdf-tools panel" style="margin-top: 28px;">
@@ -374,9 +286,103 @@
                 <p id="proposalStatus" class="form-status" aria-live="polite"></p>
               </form>
             </div>
-          </div>
-         <!-- CALCULADORA DE CATEGORIA DE RISCO SCIE -->
-<div class="risk-calculator">
+</div>
+</section>
+
+<!-- VERIFICADOR DE ENQUADRAMENTO SCIE -->
+<section class="section">
+  <div class="scie-checker">
+  <div class="section-head center narrow" style="margin-top: 28px;">
+    <div class="eyebrow subtle">Verificador SCIE</div>
+    <h2>Verifique o enquadramento SCIE do seu caso</h2>
+    <p>
+      Ferramenta orientadora para perceber se o caso tende para ficha de segurança,
+      projeto SCIE, medidas de autoproteção e análise técnica.
+    </p>
+  </div>
+
+  <div class="panel form-panel">
+    <div class="risk-inline-grid">
+      <div class="field-group">
+        <label for="check-ut">Utilização-Tipo</label>
+        <select id="check-ut">
+          <option value="">Selecionar</option>
+          <option value="I">UT I – Habitacional</option>
+          <option value="II">UT II – Estacionamentos</option>
+          <option value="III">UT III – Administrativos</option>
+          <option value="IV">UT IV – Escolares</option>
+          <option value="V">UT V – Hospitalares e Lares</option>
+          <option value="VI">UT VI – Espetáculos e reuniões públicas</option>
+          <option value="VII">UT VII – Hoteleiros e restauração</option>
+          <option value="VIII">UT VIII – Comerciais e gares de transporte</option>
+          <option value="IX">UT IX – Desportivos e de lazer</option>
+          <option value="X">UT X – Museus e galerias</option>
+          <option value="XI">UT XI – Bibliotecas e arquivos</option>
+          <option value="XII">UT XII – Industrial / Oficinas / Armazéns</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="check-area">Área (m²)</label>
+        <input id="check-area" type="number" min="0" step="0.01" />
+      </div>
+
+      <div class="field-group">
+        <label for="check-height">Altura da utilização-tipo (m)</label>
+        <input id="check-height" type="number" min="0" step="0.01" />
+      </div>
+
+      <div class="field-group">
+        <label for="check-effective">Efetivo</label>
+        <input id="check-effective" type="number" min="0" step="1" />
+      </div>
+
+      <div class="field-group">
+        <label for="check-pisos">Pisos abaixo do plano de referência</label>
+        <input id="check-pisos" type="number" min="0" step="1" />
+      </div>
+
+      <div class="field-group">
+        <label for="check-public">Atendimento ao público?</label>
+        <select id="check-public">
+          <option value="">Selecionar</option>
+          <option value="sim">Sim</option>
+          <option value="nao">Não</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="check-sleep">Existe dormida / pernoita?</label>
+        <select id="check-sleep">
+          <option value="">Selecionar</option>
+          <option value="sim">Sim</option>
+          <option value="nao">Não</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label for="check-storage">Existe armazenamento relevante / carga de incêndio significativa?</label>
+        <select id="check-storage">
+          <option value="">Selecionar</option>
+          <option value="sim">Sim</option>
+          <option value="nao">Não</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="hero-actions" style="margin-top: 18px;">
+      <button type="button" class="btn btn-primary" id="check-calc-btn">Verificar enquadramento</button>
+      <button type="button" class="btn btn-outline" id="check-reset-btn">Limpar</button>
+    </div>
+
+    <div id="check-result" class="panel risk-result"></div>
+  </div>
+</div>
+</section>
+
+<!-- CALCULADORA DE CATEGORIA DE RISCO SCIE -->
+<section class="section">
+  <div class="risk-calculator">
   <div class="section-head center narrow" style="margin-top: 28px;">
     <div class="eyebrow subtle">Categoria de Risco</div>
     <h2>Calcule a categoria de risco da sua utilização-tipo</h2>
@@ -418,9 +424,12 @@
 
     <div id="resultado-risco" class="panel risk-result"></div>
   </div>
-  </div>
-        <!-- CALCULADORA PROFISSIONAL — DENSIDADE DA CARGA DE INCÊNDIO -->
-<div class="fireload-pro">
+</div>
+</section>
+
+<!-- CALCULADORA PROFISSIONAL — DENSIDADE DA CARGA DE INCÊNDIO -->
+<section class="section">
+  <div class="fireload-pro">
   <div class="section-head center narrow" style="margin-top: 28px;">
     <div class="eyebrow subtle">Densidade da Carga de Incêndio</div>
     <h2>Calcule a densidade da carga de incêndio modificada</h2>
