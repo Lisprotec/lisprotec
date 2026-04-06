@@ -1,9 +1,9 @@
 :root {
-  --bg: #f5f7fa;
+  --bg: #fffaf5;
   --bg-soft: #fafbfc;
-  --card: rgba(255, 255, 255, 0.92);
+  --card: #ffffff;
   --card-strong: #ffffff;
-  --alt: #eef2f6;
+  --alt: #f4ede4;
   --text: #0f172a;
   --muted: #5b6472;
   --muted-strong: #334155;
