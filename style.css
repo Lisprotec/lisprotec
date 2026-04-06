@@ -496,6 +496,91 @@ textarea {
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.22);
 }
 
+/* SECÇÃO "SIMULADOR" COM IMAGEM DE FUNDO */
+#simulador {
+  position: relative;
+  background:
+    linear-gradient(rgba(15, 23, 42, 0.56), rgba(15, 23, 42, 0.56)),
+    url("/scie-183906.jpg") center center / cover no-repeat;
+  overflow: hidden;
+}
+
+#simulador::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.22) 100%);
+  pointer-events: none;
+}
+
+#simulador .container {
+  position: relative;
+  z-index: 1;
+}
+
+#simulador .section-head h2,
+#simulador .section-head p,
+#simulador .panel-kicker,
+#simulador .field-group label,
+#simulador .checkbox-group label,
+#simulador .small-note,
+#simulador .result-empty,
+#simulador .result-items li span,
+#simulador .result-total,
+#simulador .result-total strong,
+#simulador .result-discount,
+#simulador .panel h3,
+#simulador .panel p {
+  color: #ffffff;
+}
+
+#simulador .panel {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+#simulador .panel:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.22);
+}
+
+#simulador input,
+#simulador select,
+#simulador textarea {
+  background: rgba(255, 255, 255, 0.94);
+  color: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+#simulador input::placeholder,
+#simulador textarea::placeholder {
+  color: #64748b;
+}
+
+#simulador input:focus,
+#simulador select:focus,
+#simulador textarea:focus {
+  background: #ffffff;
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14);
+}
+
+#simulador .checkbox-group input {
+  accent-color: #ffffff;
+}
+
+#simulador .result-items li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#simulador hr {
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
 .simulator-wrap {
   max-width: 1120px;
 }
