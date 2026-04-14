@@ -12,6 +12,21 @@
 
   gtag('config', 'AW-18018421067');
 </script>
+    <!-- Event snippet for lead conversion -->
+  <script>
+    function gtag_report_conversion(url) {
+      var callback = function () {
+        if (typeof(url) != 'undefined') {
+          window.location = url;
+        }
+      };
+      gtag('event', 'conversion', {
+        'send_to': 'AW-18018421067/RJ1BCICO3pgcEMuS7Y9D',
+        'event_callback': callback
+      });
+      return false;
+    }
+  </script>
     <title>Lisprotec — Segurança Contra Incêndios em Edifícios</title>
     <meta
       name="description"
@@ -235,7 +250,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <p class="small-note" style="margin-top:16px;">
                   Esta estimativa é indicativa. Peça uma proposta detalhada para confirmar o enquadramento técnico e evitar atrasos no processo.
                 </p>
-                <a class="btn btn-primary full" href="#contacto" style="margin-top:14px;">Pedir análise técnica</a>
+               <a class="btn btn-primary full"
+   href="#contacto"
+   style="margin-top:14px;"
+   onclick="return gtag_report_conversion('#contacto');">
+   Pedir análise técnica
+</a>
               </div>
 
               <hr />
@@ -643,7 +663,11 @@ Por isso, ter a SCIE regularizada não é apenas uma obrigação legal — é ta
           <div style="text-align:center; margin-top:40px;">
             <h3 style="margin-bottom:12px;">Ainda tem dúvidas?</h3>
             <p style="margin-bottom:18px;">Peça uma análise técnica e receba orientação ajustada ao seu caso.</p>
-            <a class="btn btn-primary" href="#contacto">Pedir análise técnica</a>
+           <a class="btn btn-primary"
+   href="#contacto"
+   onclick="return gtag_report_conversion('#contacto');">
+   Pedir análise técnica
+</a>
           </div>
         </div>
       </section>
