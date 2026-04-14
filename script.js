@@ -303,25 +303,27 @@ async function openProposalEmail(event) {
   setStatus("proposalStatus", "A enviar pedido de orçamento...", "");
 
   try {
-    await submitToFormspree({
-      formType: "Pedido de orçamento",
-      _subject: `Pedido de Proposta – ${result.services.join(" + ")}`,
-      nome,
-      empresa,
-      email,
-      telefone,
-      tipoEdificio,
-      area: `${area} m²`,
-      distrito: result.district || "N/A",
-      utilizacaoTipo: result.ut ? result.ut.label : "N/A",
-      duracaoCoordenacao: byId("includeCoordenacao")?.checked ? "Valor mensal" : "N/A",
-      servicos: result.services.join(", "),
-      estimativa: result.items.map(([label, price]) => `${label}: ${euro.format(price)}`).join(" | "),
-      valorTotal: euro.format(result.totalPrice),
-      mensagem,
-    });
+  await submitToFormspree({
+    formType: "Pedido de orçamento",
+    _subject: `Pedido de Proposta – ${result.services.join(" + ")}`,
+    nome,
+    empresa,
+    email,
+    telefone,
+    tipoEdificio,
+    area: `${area} m²`,
+    distrito: result.district || "N/A",
+    utilizacaoTipo: result.ut ? result.ut.label : "N/A",
+    duracaoCoordenacao: byId("includeCoordenacao")?.checked ? "Valor mensal" : "N/A",
+    servicos: result.services.join(", "),
+    estimativa: result.items.map(([label, price]) => `${label}: ${euro.format(price)}`).join(" | "),
+    valorTotal: euro.format(result.totalPrice),
+    mensagem,
+  });
 
-    form?.reset();
+  gtag_report_conversion();
+
+  form?.reset();
 
     ["mainService", "area", "utIndex", "district"].forEach((id) => {
       if (byId(id)) byId(id).value = "";
@@ -358,15 +360,18 @@ async function openContactEmail(event) {
   setStatus("contactStatus", "A enviar mensagem...", "");
 
   try {
-    await submitToFormspree({
-      formType: "Contacto geral",
-      _subject: `Pedido de contacto — ${name}`,
-      nome: name,
-      email,
-      telefone: phone || "N/A",
-      mensagem: message,
-    });
-    form?.reset();
+  await submitToFormspree({
+    formType: "Contacto geral",
+    _subject: `Pedido de contacto — ${name}`,
+    nome: name,
+    email,
+    telefone: phone || "N/A",
+    mensagem: message,
+  });
+
+  gtag_report_conversion();
+
+  form?.reset();
     setStatus("contactStatus", "Mensagem enviada com sucesso.", "success");
   } catch (error) {
     setStatus("contactStatus", error.message || "Não foi possível enviar a mensagem.", "error");
