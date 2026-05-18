@@ -104,14 +104,14 @@ function calculateEstimate() {
     if (!mainService || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
 
     const minPrice = mainService === "projeto" ? 450 : 250;
-    const baseRate = mainService === "projeto" ? 1.0 : 0.8;
+    const baseRate = mainService === "projeto" ? 0.75 : 0.5;
 
     return calcAreaBasedPrice(baseRate, minPrice, true);
   }
 
   function calcMAPPrice() {
   if (!includeMAP || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
-  return calcAreaBasedPrice(0.6, 350, true);
+  return calcAreaBasedPrice(0.4, 350, true);
 }
 
   function calcCoordenacaoPrice() {
