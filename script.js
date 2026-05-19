@@ -58,7 +58,13 @@ function getDiscountedM2Rate(baseRate, area) {
 function getDistrictSurcharge(district) {
   return DISTRICT_SURCHARGES[district] || 0;
 }
+function getFloorFactor(floors) {
+  if (floors <= 2) return 1;
 
+  const factor = 1 + (0.10 + ((floors - 3) * 0.05));
+
+  return Math.min(factor, 2.35);
+}
 function getSimulacroBasePrice(area) {
   if (area <= 0) return 0;
   if (area <= 900) return 280;
@@ -78,6 +84,7 @@ function calculateEstimate() {
   const includeCoordenacao = byId("includeCoordenacao")?.checked || false;
   const includeSimulacro = byId("includeSimulacro")?.checked || false;
   const areaNum = parseFloat(byId("area")?.value || "0") || 0;
+  const floors = parseInt(byId("floors")?.value || "1") || 1;
   const district = byId("district")?.value || "";
   const utIndexValue = byId("utIndex")?.value;
   const ut = utIndexValue === "" ? null : UT_OPTIONS[Number(utIndexValue)];
@@ -89,7 +96,11 @@ function calculateEstimate() {
     if (areaNum <= 0) return { total: 0, discount: 0 };
 
     const effectiveRate = getDiscountedM2Rate(baseRate, areaNum);
-    const multiplier = useUTFactor && ut ? ut.factor : 1;
+    const floorFactor = getFloorFactor(floors);
+
+const multiplier =
+  (useUTFactor && ut ? ut.factor : 1) *
+  floorFactor;
     const gross = areaNum * baseRate * multiplier;
     const discounted = areaNum * effectiveRate * multiplier;
     const total = Math.max(discounted, minPrice);
@@ -383,15 +394,16 @@ async function openContactEmail(event) {
 function init() {
   byId("year") && (byId("year").textContent = new Date().getFullYear());
 
-  [
-    "mainService",
-    "includeMAP",
-    "includeCoordenacao",
-    "includeSimulacro",
-    "area",
-    "utIndex",
-    "district"
-  ].forEach((id) => {
+ [
+  "mainService",
+  "includeMAP",
+  "includeCoordenacao",
+  "includeSimulacro",
+  "area",
+  "utIndex",
+  "district",
+  "floors"
+].forEach((id) => {
     const el = byId(id);
     el && el.addEventListener("input", renderEstimate);
     el && el.addEventListener("change", renderEstimate);
