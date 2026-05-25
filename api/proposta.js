@@ -176,10 +176,14 @@ const pdf =
 
   // ===== RESPOSTA =====
 
-  res.setHeader(
-    "Content-Type",
-    "application/pdf"
-  );
+ res.setHeader(
+  "Content-Type",
+  "application/pdf"
+);
 
-  res.send(pdf);
-}
+res.setHeader(
+  "Content-Disposition",
+  "attachment; filename=proposta.pdf"
+);
+
+res.status(200).end(pdf);
