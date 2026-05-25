@@ -1,3 +1,15 @@
+export default async function handler(req, res) {
+
+  if (req.method !== "POST") {
+
+    return res.status(200).json({
+      ok: true,
+      message: "API funcional"
+    });
+
+  }
+
+  const data = req.body;
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 
