@@ -177,7 +177,8 @@ if (ut.factor >= 1.8) {
 
   if (areaNum <= includedArea) {
     return {
-      total: minPrice,
+      total:
+  minPrice * floorFactor,
       discount: 0,
     };
   }
@@ -202,17 +203,18 @@ if (ut.factor >= 1.8) {
 
   // total final
   const total =
-    minPrice + extraPrice;
+  (minPrice * floorFactor) +
+  extraPrice;
 
   // valor bruto sem desconto
-  const gross =
-    minPrice +
-    (
-      extraArea *
-      baseRate *
-      multiplier
-    );
-
+ 
+const gross =
+  (minPrice * floorFactor) +
+  (
+    extraArea *
+    baseRate *
+    multiplier
+  );
   return {
     total,
     discount: Math.max(0, gross - total),
