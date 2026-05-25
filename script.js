@@ -148,8 +148,19 @@ function calcMAPPrice() {
 
   // ===== CONFIGURAÇÃO =====
 
-  // preço base fixo até 200 m²
-  const minPrice = 295;
+ // ===== PREÇO MÍNIMO DINÂMICO =====
+
+let minPrice = 295;
+
+// UT médias
+if (ut.factor >= 1.3) {
+  minPrice = 345;
+}
+
+// UT complexas
+if (ut.factor >= 1.8) {
+  minPrice = 420;
+}
 
   // área incluída no preço mínimo
   const includedArea = 200;
