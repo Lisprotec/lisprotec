@@ -122,7 +122,7 @@ const multiplier =
 
   function calcMAPPrice() {
   if (!includeMAP || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
-  return calcAreaBasedPrice(0.4, 295, true);
+  return calcAreaBasedPrice(0.4, 270, true);
 }
 
   function calcCoordenacaoPrice() {
