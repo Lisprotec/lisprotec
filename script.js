@@ -44,11 +44,32 @@ const euro = new Intl.NumberFormat("pt-PT", {
 });
 
 const byId = (id) => document.getElementById(id);
-
 function getProgressiveDiscountRate(area) {
   if (area <= 750) return 0;
   if (area >= 2500) return 0.6;
   return ((area - 750) / (2500 - 750)) * 0.6;
+}
+
+function getDiscountedM2Rate(baseRate, area) {
+  return baseRate * (1 - getProgressiveDiscountRate(area));
+}
+
+/* ===== DESCONTO EXCLUSIVO MAP ===== */
+
+function getMAPDiscountRate(area) {
+
+  // sem desconto até 400 m²
+  if (area <= 400) return 0;
+
+  // desconto máximo de 40%
+  if (area >= 2500) return 0.4;
+
+  // desconto progressivo
+  return ((area - 400) / (2500 - 400)) * 0.4;
+}
+
+function getMAPDiscountedM2Rate(baseRate, area) {
+  return baseRate * (1 - getMAPDiscountRate(area));
 }
 
 function getDiscountedM2Rate(baseRate, area) {
@@ -119,10 +140,51 @@ const multiplier =
 
     return calcAreaBasedPrice(baseRate, minPrice, true);
   }
+function calcMAPPrice() {
 
-  function calcMAPPrice() {
-  if (!includeMAP || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
-  return calcAreaBasedPrice(0.4, 270, true);
+  if (!includeMAP || areaNum <= 0 || !ut) {
+    return { total: 0, discount: 0 };
+  }
+
+  // taxa base MAP
+  const baseRate = 0.48;
+
+  // preço mínimo
+  const minPrice = 240;
+
+  // taxa ajustada com desconto progressivo
+  const effectiveRate =
+    getMAPDiscountedM2Rate(baseRate, areaNum);
+
+  // fator pisos
+  const floorFactor =
+    getFloorFactor(floors);
+
+  // multiplicador UT + pisos
+  const multiplier =
+    (ut ? ut.factor : 1) *
+    floorFactor;
+
+  // valor bruto
+  const gross =
+    areaNum *
+    baseRate *
+    multiplier;
+
+  // valor com desconto
+  const discounted =
+    areaNum *
+    effectiveRate *
+    multiplier;
+
+  // proteção de preço mínimo
+  const total =
+    Math.max(discounted, minPrice);
+
+  return {
+    total,
+    discount: Math.max(0, gross - total),
+  }; 
 }
 
   function calcCoordenacaoPrice() {
