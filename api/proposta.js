@@ -160,20 +160,36 @@ if (
  const page =
   await browser.newPage();
 
-await page.setContent(html);
-
-await page.waitForNetworkIdle();
+await page.setContent(html, {
+  waitUntil: "networkidle0"
+});
 
 const pdf =
   await page.pdf({
 
     format: "A4",
 
-    printBackground: true
+    printBackground: true,
+
+    preferCSSPageSize: true
 });
 
-  await browser.close();
+await browser.close();
 
+
+// ===== RESPOSTA =====
+
+res.setHeader(
+  "Content-Type",
+  "application/pdf"
+);
+
+res.setHeader(
+  "Content-Disposition",
+  "attachment; filename=proposta.pdf"
+);
+
+res.status(200).end(pdf);
   // ===== RESPOSTA =====
 
  res.setHeader(
