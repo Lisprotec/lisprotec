@@ -61,7 +61,7 @@ function getDistrictSurcharge(district) {
 function getFloorFactor(floors) {
   if (floors <= 2) return 1;
 
-  const factor = 1 + (0.10 + ((floors - 3) * 0.05));
+  const factor = 1 + (0.10 + ((floors - 3) * 0.10));
 
   return Math.min(factor, 2.35);
 }
@@ -122,7 +122,7 @@ const multiplier =
 
   function calcMAPPrice() {
   if (!includeMAP || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
-  return calcAreaBasedPrice(0.4, 350, true);
+  return calcAreaBasedPrice(0.4, 295, true);
 }
 
   function calcCoordenacaoPrice() {
