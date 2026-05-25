@@ -58,14 +58,14 @@ function getDiscountedM2Rate(baseRate, area) {
 
 function getMAPDiscountRate(area) {
 
-  // sem desconto até 400 m²
-  if (area <= 400) return 0;
+  // sem desconto até 500 m²
+  if (area <= 500) return 0;
 
-  // desconto máximo de 40%
-  if (area >= 2500) return 0.4;
+  // desconto máximo de 35%
+  if (area >= 2500) return 0.35;
 
   // desconto progressivo
-  return ((area - 400) / (2500 - 400)) * 0.4;
+  return ((area - 500) / (2500 - 500)) * 0.35;
 }
 
 function getMAPDiscountedM2Rate(baseRate, area) {
@@ -146,47 +146,71 @@ function calcMAPPrice() {
     return { total: 0, discount: 0 };
   }
 
-  // taxa base MAP
-  const baseRate = 0.48;
+  // ===== CONFIGURAÇÃO =====
 
-  // preço mínimo
-  const minPrice = 240;
+  // preço base fixo até 200 m²
+  const minPrice = 295;
 
-  // taxa ajustada com desconto progressivo
-  const effectiveRate =
-    getMAPDiscountedM2Rate(baseRate, areaNum);
+  // área incluída no preço mínimo
+  const includedArea = 200;
 
-  // fator pisos
+  // taxa por m² adicional
+  const baseRate = 0.62;
+
+  // ===== MULTIPLICADORES =====
+
   const floorFactor =
     getFloorFactor(floors);
 
-  // multiplicador UT + pisos
   const multiplier =
     (ut ? ut.factor : 1) *
     floorFactor;
 
-  // valor bruto
-  const gross =
-    areaNum *
-    baseRate *
-    multiplier;
+  // ===== ATÉ 200 m² =====
 
-  // valor com desconto
-  const discounted =
-    areaNum *
+  if (areaNum <= includedArea) {
+    return {
+      total: minPrice,
+      discount: 0,
+    };
+  }
+
+  // ===== ÁREA EXTRA =====
+
+  const extraArea =
+    areaNum - includedArea;
+
+  // desconto progressivo exclusivo MAP
+  const effectiveRate =
+    getMAPDiscountedM2Rate(
+      baseRate,
+      areaNum
+    );
+
+  // valor extra
+  const extraPrice =
+    extraArea *
     effectiveRate *
     multiplier;
 
-  // proteção de preço mínimo
+  // total final
   const total =
-    Math.max(discounted, minPrice);
+    minPrice + extraPrice;
+
+  // valor bruto sem desconto
+  const gross =
+    minPrice +
+    (
+      extraArea *
+      baseRate *
+      multiplier
+    );
 
   return {
     total,
     discount: Math.max(0, gross - total),
-  }; 
+  };
 }
-
   function calcCoordenacaoPrice() {
     if (!includeCoordenacao || areaNum <= 0) return { total: 0, discount: 0 };
 
