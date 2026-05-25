@@ -50,10 +50,6 @@ function getProgressiveDiscountRate(area) {
   return ((area - 750) / (2500 - 750)) * 0.6;
 }
 
-function getDiscountedM2Rate(baseRate, area) {
-  return baseRate * (1 - getProgressiveDiscountRate(area));
-}
-
 /* ===== DESCONTO EXCLUSIVO MAP ===== */
 
 function getMAPDiscountRate(area) {
