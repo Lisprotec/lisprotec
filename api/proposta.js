@@ -150,9 +150,7 @@ if (
       chromium.defaultViewport,
 
     executablePath:
-  await chromium.executablePath(
-    "https://github.com/Sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
-  ),
+  await chromium.executablePath(),
 
     headless: true,
 
@@ -191,4 +189,6 @@ res.setHeader(
   "attachment; filename=proposta.pdf"
 );
 
-res.status(200).end(pdf);
+return res
+  .status(200)
+  .send(Buffer.from(pdf));
