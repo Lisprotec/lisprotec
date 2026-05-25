@@ -434,77 +434,7 @@ async function openProposalEmail(event) {
     valorTotal: euro.format(result.totalPrice),
     mensagem,
   });
-// ===== GERAR PDF =====
 
-const response =
-  await fetch("/api/proposta", {
-
-    method: "POST",
-
-    headers: {
-      "Content-Type":
-        "application/json"
-    },
-
-    body: JSON.stringify({
-
-      nome,
-      empresa,
-      email,
-
-      morada: "",
-
-      services:
-        result.services,
-
-      items:
-        result.items.map(
-          ([label, price]) => ({
-            label,
-            price
-          })
-        ),
-
-      total:
-        result.totalPrice
-    })
-
-});
-
-
-// ===== DOWNLOAD PDF =====
-
-// ===== VALIDAR RESPOSTA =====
-
-if (!response.ok) {
-
-  const errorText =
-    await response.text();
-
-  console.error(errorText);
-
-  alert(errorText);
-
-  return;
-}
-
-// ===== DOWNLOAD PDF =====
-
-const blob =
-  await response.blob();
-
-const url =
-  window.URL.createObjectURL(blob);
-
-const a =
-  document.createElement("a");
-
-a.href = url;
-
-a.download =
-  "proposta.pdf";
-
-a.click();
     
 // ===== GOOGLE ADS =====
  if (
