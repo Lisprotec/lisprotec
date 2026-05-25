@@ -443,7 +443,7 @@ const response =
       email,
 
       morada:
-        result.address || "",
+        morada: "",
 
       services:
         result.services,
@@ -461,13 +461,6 @@ const response =
     })
 
 });
-
-
-// ===== DEBUG =====
-
-console.log(response);
-
-alert(response.status);
 
 
 // ===== DOWNLOAD PDF =====
