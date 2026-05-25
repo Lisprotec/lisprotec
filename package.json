@@ -1,6 +1,4 @@
 {
-  "name": "lisprotec",
-  "version": "1.0.0",
   "type": "module",
   "dependencies": {
     "@sparticuz/chromium": "^123.0.0",
