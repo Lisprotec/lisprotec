@@ -120,11 +120,19 @@ const multiplier =
   floorFactor;
     const gross = areaNum * baseRate * multiplier;
     const discounted = areaNum * effectiveRate * multiplier;
-    const total = Math.max(discounted, minPrice);
+   const minimum =
+  minPrice * floorFactor;
+
+const total =
+  Math.max(discounted, minimum);
 
     return {
       total,
-      discount: Math.max(0, gross - total),
+      discount:
+  Math.max(
+    0,
+    gross - total
+  ),
     };
   }
 
