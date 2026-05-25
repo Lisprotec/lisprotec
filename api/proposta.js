@@ -19,6 +19,7 @@ export default async function handler(req, res) {
   // ===== DADOS =====
 
   const data = req.body;
+  console.log(data);
 
   // ===== TÍTULO =====
 
