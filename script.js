@@ -428,7 +428,7 @@ async function openProposalEmail(event) {
 
 const response =
   await fetch("/api/proposta", {
-
+alert("A gerar proposta PDF");
     method: "POST",
 
     headers: {
