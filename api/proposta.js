@@ -150,7 +150,9 @@ if (
       chromium.defaultViewport,
 
     executablePath:
-      await chromium.executablePath(),
+  await chromium.executablePath(
+    "https://github.com/Sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+  ),
 
     headless: true,
 
