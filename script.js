@@ -424,7 +424,58 @@ async function openProposalEmail(event) {
     valorTotal: euro.format(result.totalPrice),
     mensagem,
   });
+// ===== GERAR PDF =====
 
+const response =
+  await fetch("/api/proposta", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type":
+        "application/json"
+    },
+
+    body: JSON.stringify({
+
+      nome,
+      empresa,
+      email,
+
+      services:
+        result.services,
+
+      items:
+        result.items.map(
+          ([label, price]) => ({
+            label,
+            price
+          })
+        ),
+
+      total:
+        result.totalPrice
+    })
+});
+
+const blob =
+  await response.blob();
+
+const url =
+  window.URL.createObjectURL(blob);
+
+const a =
+  document.createElement("a");
+
+a.href = url;
+
+a.download =
+  "proposta.pdf";
+
+a.click();
+
+
+// ===== GOOGLE ADS =====
   gtag_report_conversion();
 
   form?.reset();
