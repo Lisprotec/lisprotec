@@ -1,0 +1,459 @@
+# Template Completo HTML — Proposta SCIE Lisprotec
+
+```html
+<html>
+
+<head>
+
+<style>
+
+@page {
+  size: A4;
+  margin: 25mm;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  color: #222;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.topo {
+  border-bottom: 2px solid #111;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+h2 {
+  font-size: 18px;
+  margin-top: 30px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+}
+
+h3 {
+  font-size: 15px;
+  margin-top: 20px;
+}
+
+.bloco {
+  margin-top: 25px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th {
+  background: #111;
+  color: white;
+}
+
+td, th {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+footer {
+  margin-top: 60px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  font-size: 10px;
+  color: #666;
+}
+
+.small {
+  font-size: 10px;
+  color: #666;
+}
+
+ul {
+  padding-left: 20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="topo">
+
+<p>
+Nº: {{NUMERO_PROPOSTA}}
+</p>
+
+<h1>
+Projetos de segurança contra incêndios em edifícios
+</h1>
+
+<h2>
+{{TITULO}}
+</h2>
+
+</header>
+
+<section class="bloco">
+
+<h2>
+1. Identificação do Projeto
+</h2>
+
+<p>
+<strong>Nome do Projeto:</strong>
+{{NOME_PROJETO}}
+</p>
+
+<p>
+<strong>Localização:</strong>
+{{MORADA}}
+</p>
+
+<p>
+<strong>Proponente:</strong>
+{{NOME}}
+</p>
+
+<p>
+<strong>Data:</strong>
+{{DATA}}
+</p>
+
+<p>
+<strong>Contactos:</strong>
+{{EMAIL}}
+</p>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+2. Objetivo da Proposta
+</h2>
+
+<p>
+
+Esta proposta visa a elaboração e execução de
+{{TIPO_SERVICO}},
+em estrita conformidade com o Regime Jurídico de Segurança Contra Incêndio em Edifícios (Lei n.º123/2019).
+
+O principal objetivo é garantir a conformidade com as normas técnicas, a legislação aplicável e as exigências da Autoridade Nacional de Emergência e Proteção Civil (ANEPC), protegendo vidas, património e assegurando a segurança operacional do edifício.
+
+</p>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+3. Descrição de Trabalhos
+</h2>
+
+<p>
+Os serviços propostos abrangem as seguintes etapas:
+</p>
+
+<ul>
+
+<li>
+Levantamento e Análise: Realização de um levantamento detalhado das características do edifício e suas utilizações, seguido de uma análise aprofundada.
+</li>
+
+<li>
+Avaliação de Riscos: Avaliação dos riscos de incêndio e identificação precisa dos locais de risco.
+</li>
+
+<li>
+Desenvolvimento das Peças Desenhadas: Criação de plantas de emergência de todos os pisos, com indicação clara das vias de evacuação, saídas de emergência, equipamentos e sistemas de segurança contra incêndios.
+</li>
+
+<li>
+Preparação e Submissão de Documentos: Organização e entrega de todos os documentos necessários para o pedido de parecer junto à ANEPC, incluindo o termo de responsabilidade e demais anexos exigidos por lei. A presente proposta exclui valores de taxas de submissão.
+</li>
+
+<li>
+Acompanhamento Técnico: Prestação de acompanhamento técnico durante todo o processo de aprovação do projeto junto às entidades competentes.
+</li>
+
+</ul>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+4. Metodologia e Normas Aplicáveis
+</h2>
+
+<p>
+
+A metodologia a ser empregue baseia-se na aplicação rigorosa do Decreto-Lei n.º 123/2019, da Portaria n.º 135/2020 e de toda a legislação complementar pertinente.
+
+Serão igualmente tidas em consideração as Instruções Técnicas da ANEPC e as normas portuguesas de segurança contra incêndios.
+
+Para a justificação técnica, quando solicitado, serão utilizados métodos reconhecidos, como o método GRETENER ou ARICA:2019, conforme a aplicabilidade ao projeto em questão.
+
+</p>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+5. Cronograma Estimado
+</h2>
+
+<table>
+
+<tr>
+<th>Fase</th>
+<th>Duração Estimada</th>
+</tr>
+
+<tr>
+<td>Levantamento e Diagnóstico Inicial</td>
+<td>5 dias</td>
+</tr>
+
+<tr>
+<td>Desenvolvimento do Projeto Técnico</td>
+<td>20 dias</td>
+</tr>
+
+<tr>
+<td>Prazo Total Estimado</td>
+<td>25 dias</td>
+</tr>
+
+<tr>
+<td>Prazo Total Estimado Revisão e Ajustes (Mediante parecer técnico ANEPC)</td>
+<td>10 dias úteis</td>
+</tr>
+
+</table>
+
+<p class="small">
+
+Nota: Este cronograma é uma estimativa e poderá ser ajustado em função da complexidade específica do projeto e da celeridade na obtenção de informações e aprovações por parte das entidades envolvidas.
+
+</p>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+6. Confidencialidade
+</h2>
+
+<p>
+
+É assegurado por nós o sigilo profissional relativamente a todas as informações obtidas no exercício das funções e atividades no âmbito dos serviços a prestar decorrentes da legislação aplicável, exceto no que respeita às comunicações a que está obrigado junto das autoridades competentes.
+
+</p>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+7. Condições Comerciais
+</h2>
+
+<p>
+
+Nos termos legais, os serviços realizados deverão ser faturados 50% na adjudicação e 50% nos 5 dias subsequentes ao da submissão do projeto que, para este efeito, se presume que seja o da submissão do projeto de segurança contra incêndios.
+
+</p>
+
+<p>
+
+Se, por motivos alheios ao autor do projeto, o Cliente, voluntária ou involuntariamente, praticar algum ato de expediente dilatório (atraso na disponibilização de informação, pedido de alteração ao projeto, fatura e do seu destinatário, etc.) que condicione a emissão da fatura nos termos do ponto anterior, o prazo de pagamento acordado será contado a partir do momento da exigência legal para a faturação do serviço e não da data efetiva de emissão da fatura.
+
+</p>
+
+<p>
+
+A fatura deverá ser paga até ao prazo acima indicado. Findo o prazo de pagamento serão cobrados juros de mora à taxa legal em vigor.
+
+</p>
+
+<p>
+
+Os montantes faturados são devidos independentemente dos resultados obtidos nos pareceres técnicos emitidos pelas entidades.
+
+</p>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+8. Preço
+</h2>
+
+<table>
+
+<tr>
+<th>Descritivo</th>
+<th>Total (€)</th>
+</tr>
+
+{{TABELA_PRECOS}}
+
+<tr class="total">
+<td>Total</td>
+<td>{{TOTAL}}€</td>
+</tr>
+
+</table>
+
+<p class="small">
+*Exclui taxas de submissão a entidades.
+</p>
+
+<p class="small">
+Taxas disponíveis no Despacho n.º 7546/2024, de 11 de julho.
+</p>
+
+<p class="small">
+*A Lisprotec é uma marca de constituição pessoal e neste momento encontra-se em isenção de IVA, sendo o preço da proposta o final a ser cobrado ao cliente.
+</p>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+9. Condições de Pagamento
+</h2>
+
+<p>
+
+O pagamento deverá ser efetuado 50% na adjudicação e 50% após submissão do projeto e medidas de autoproteção.
+
+</p>
+
+<p>
+
+IBAN - PT50004587404033037974259
+
+</p>
+
+<p>
+
+Em nome de Lisprotec – Hilto Correia de Barros.
+
+</p>
+
+<h3>
+Serviços Excluídos
+</h3>
+
+<ul>
+
+<li>
+Acompanhamento de eventuais reparações.
+</li>
+
+<li>
+A realização de exames, medições e ensaios, que se considerem necessários e adequados para verificar se as soluções adotadas satisfazem os requisitos normativos.
+</li>
+
+<li>
+Custos de viagem, deslocação, estadia, aluguer de viatura e transporte de equipamentos fora de Portugal Continental.
+</li>
+
+<li>
+Outras deslocações/reuniões para esclarecimento ou realização de ensaios complementares.
+</li>
+
+<li>
+Revisões de projeto por erros não imputáveis ao autor do projeto.
+</li>
+
+<li>
+Possíveis danos ocorridos nos equipamentos na sequência dos ensaios realizados.
+</li>
+
+<li>
+Outras avaliações devido às não conformidades resultantes da verificação efetuada.
+</li>
+
+</ul>
+
+</section>
+
+<section class="bloco">
+
+<h2>
+10. Validade da Proposta
+</h2>
+
+<p>
+
+A proposta é válida pelo período de 30 dias.
+
+</p>
+
+<p>
+
+A confirmação da adjudicação desta proposta deverá ser efetuada por escrito através do envio de e-mail para:
+
+<strong>
+lisprotec@outlook.com
+</strong>
+
+com comprovativo de pagamento da percentagem de adjudicação.
+
+</p>
+
+<p>
+
+Qualquer alteração às condições propostas no presente documento será objeto de revisão da nossa parte podendo dar origem à emissão de nova proposta.
+
+</p>
+
+</section>
+
+<footer>
+
+Lisprotec © 2026
+
+</footer>
+
+</body>
+
+</html>
+```
+
+# Variáveis dinâmicas
+
+Estas variáveis serão substituídas automaticamente pelo backend:
+
+```txt
+{{NUMERO_PROPOSTA}}
+{{TITULO}}
+{{NOME_PROJETO}}
+{{MORADA}}
+{{NOME}}
+{{DATA}}
+{{EMAIL}}
+{{TIPO_SERVICO}}
+{{TABELA_PRECOS}}
+{{TOTAL}}
+```
