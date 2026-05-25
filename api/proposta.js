@@ -137,32 +137,40 @@ if (
 
   // ===== PUPPETEER =====
 
-  const browser =
-    await puppeteer.launch({
+ const browser =
+  await puppeteer.launch({
 
-      args: chromium.args,
+    args: [
+      ...chromium.args,
+      "--hide-scrollbars",
+      "--disable-web-security"
+    ],
 
-      executablePath:
-        await chromium.executablePath(),
+    defaultViewport:
+      chromium.defaultViewport,
 
-      headless: chromium.headless,
-    });
+    executablePath:
+      await chromium.executablePath(),
 
-  const page =
-    await browser.newPage();
+    headless: true,
 
-  await page.setContent(
-    html,
-    {
-      waitUntil: "networkidle0"
-    }
-  );
+    ignoreHTTPSErrors: true,
+});
 
-  const pdf =
-    await page.pdf({
-      format: "A4",
-      printBackground: true
-    });
+ const page =
+  await browser.newPage();
+
+await page.setContent(html);
+
+await page.waitForNetworkIdle();
+
+const pdf =
+  await page.pdf({
+
+    format: "A4",
+
+    printBackground: true
+});
 
   await browser.close();
 
