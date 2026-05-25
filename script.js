@@ -146,10 +146,10 @@ function calcMAPPrice() {
 
  // ===== PREÇO MÍNIMO DINÂMICO =====
 
-let minPrice = 295;
+let minPrice = 270;
 
 // UT médias
-if (ut.factor >= 1.3) {
+if (ut.factor >= 1.4) {
   minPrice = 345;
 }
 
