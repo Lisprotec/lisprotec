@@ -1,4 +1,9 @@
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
+
 export default async function handler(req, res) {
+
+  // ===== TESTE GET =====
 
   if (req.method !== "POST") {
 
@@ -9,11 +14,7 @@ export default async function handler(req, res) {
 
   }
 
-  const data = req.body;
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
-
-export default async function handler(req, res) {
+  // ===== DADOS =====
 
   const data = req.body;
 
