@@ -474,6 +474,22 @@ const response =
 
 // ===== DOWNLOAD PDF =====
 
+// ===== VALIDAR RESPOSTA =====
+
+if (!response.ok) {
+
+  const errorText =
+    await response.text();
+
+  console.error(errorText);
+
+  alert(errorText);
+
+  return;
+}
+
+// ===== DOWNLOAD PDF =====
+
 const blob =
   await response.blob();
 
