@@ -1,9 +1,11 @@
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
+import fs from "fs";
+import path from "path";
 
 export default async function handler(req, res) {
 
-  // ===== TESTE GET =====
+  // ===== TESTE API =====
 
   if (req.method !== "POST") {
 
@@ -29,7 +31,7 @@ export default async function handler(req, res) {
     )
   ) {
     titulo =
-      "Proposta para Projeto SCIE";
+      "Projeto de Segurança Contra Incêndio";
   }
 
   if (
@@ -38,90 +40,99 @@ export default async function handler(req, res) {
     )
   ) {
     titulo =
-      "Proposta para Medidas de Autoproteção";
+      "Medidas de Autoproteção";
   }
 
-  // ===== HTML =====
+  // ===== NÚMERO PROPOSTA =====
 
-  const html = `
-  <html>
+  const numeroProposta =
+    Math.floor(
+      1000 + Math.random() * 9000
+    );
 
-  <head>
+  // ===== LER TEMPLATE =====
 
-    <style>
+  const filePath =
+    path.join(
+      process.cwd(),
+      "templates",
+      "proposta.html"
+    );
 
-      body {
-        font-family: Arial;
-        padding: 40px;
-      }
+  let html =
+    fs.readFileSync(
+      filePath,
+      "utf8"
+    );
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
+  // ===== TABELA PREÇOS =====
 
-      td, th {
-        border: 1px solid #ccc;
-        padding: 10px;
-      }
-
-    </style>
-
-  </head>
-
-  <body>
-
-    <h1>${titulo}</h1>
-
-    <h2>Identificação do Projeto</h2>
-
-    <p>
-      <strong>Projeto:</strong>
-      ${data.empresa}
-    </p>
-
-    <p>
-      <strong>Proponente:</strong>
-      ${data.nome}
-    </p>
-
-    <p>
-      <strong>Email:</strong>
-      ${data.email}
-    </p>
-
-    <p>
-      <strong>Data:</strong>
-      ${new Date().toLocaleDateString()}
-    </p>
-
-    <h2>Preço</h2>
-
-    <table>
-
+  const tabela =
+    data.items.map(item => `
       <tr>
-        <th>Serviço</th>
-        <th>Valor</th>
+        <td>${item.label}</td>
+        <td>${item.price}€</td>
       </tr>
+    `).join("");
 
-      ${data.items.map(item => `
-        <tr>
-          <td>${item.label}</td>
-          <td>${item.price}€</td>
-        </tr>
-      `).join("")}
+  // ===== TIPO SERVIÇO =====
 
-    </table>
+  const tipoServico =
+    data.services.join(", ");
 
-    <h2>
-      Total:
-      ${data.total}€
-    </h2>
+  // ===== SUBSTITUIR VARIÁVEIS =====
 
-  </body>
+  html = html
 
-  </html>
-  `;
+    .replaceAll(
+      "{{NUMERO_PROPOSTA}}",
+      numeroProposta
+    )
+
+    .replaceAll(
+      "{{TITULO}}",
+      titulo
+    )
+
+    .replaceAll(
+      "{{NOME_PROJETO}}",
+      data.empresa || ""
+    )
+
+    .replaceAll(
+      "{{MORADA}}",
+      data.morada || ""
+    )
+
+    .replaceAll(
+      "{{NOME}}",
+      data.nome || ""
+    )
+
+    .replaceAll(
+      "{{EMAIL}}",
+      data.email || ""
+    )
+
+    .replaceAll(
+      "{{DATA}}",
+      new Date().toLocaleDateString()
+    )
+
+    .replaceAll(
+      "{{TIPO_SERVICO}}",
+      tipoServico
+    )
+
+    .replaceAll(
+      "{{TABELA_PRECOS}}",
+      tabela
+    )
+
+    .replaceAll(
+      "{{TOTAL}}",
+      data.total
+    );
 
   // ===== PUPPETEER =====
 
@@ -139,11 +150,17 @@ export default async function handler(req, res) {
   const page =
     await browser.newPage();
 
-  await page.setContent(html);
+  await page.setContent(
+    html,
+    {
+      waitUntil: "networkidle0"
+    }
+  );
 
   const pdf =
     await page.pdf({
-      format: "A4"
+      format: "A4",
+      printBackground: true
     });
 
   await browser.close();
