@@ -428,8 +428,8 @@ async function openProposalEmail(event) {
 
 const response =
   await fetch("/api/proposta", {
-console.log(response);
-alert(response.status);
+
+    method: "POST",
 
     headers: {
       "Content-Type":
@@ -461,6 +461,13 @@ alert(response.status);
     })
 
 });
+
+
+// ===== DEBUG =====
+
+console.log(response);
+
+alert(response.status);
 
 
 // ===== DOWNLOAD PDF =====
