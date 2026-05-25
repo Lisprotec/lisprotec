@@ -69,7 +69,7 @@ if (
   // ===== TABELA PREÇOS =====
 
   const tabela =
-    data.items.map(item => `
+  (data.items || []).map(item => `
       <tr>
         <td>${item.label}</td>
         <td>${item.price}€</td>
@@ -79,7 +79,7 @@ if (
   // ===== TIPO SERVIÇO =====
 
   const tipoServico =
-    data.services.join(", ");
+  (data.services || []).join(", ");
 
   // ===== SUBSTITUIR VARIÁVEIS =====
 
