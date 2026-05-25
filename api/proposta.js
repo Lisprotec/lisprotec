@@ -25,23 +25,23 @@ export default async function handler(req, res) {
   let titulo =
     "Proposta Comercial";
 
-  if (
-    data.services.includes(
-      "Projeto SCIE"
-    )
-  ) {
-    titulo =
-      "Projeto de Segurança Contra Incêndio";
-  }
+ if (
+  (data.services || []).includes(
+    "Projeto SCIE"
+  )
+) {
+  titulo =
+    "Projeto de Segurança Contra Incêndio";
+}
 
-  if (
-    data.services.includes(
-      "Medidas de Autoproteção"
-    )
-  ) {
-    titulo =
-      "Medidas de Autoproteção";
-  }
+if (
+  (data.services || []).includes(
+    "Medidas de Autoproteção"
+  )
+) {
+  titulo =
+    "Medidas de Autoproteção";
+}
 
   // ===== NÚMERO PROPOSTA =====
 
