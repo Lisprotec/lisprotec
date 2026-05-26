@@ -139,7 +139,7 @@ const total =
   function calcMainPrice() {
     if (!mainService || areaNum <= 0 || !ut) return { total: 0, discount: 0 };
 
-    const minPrice = mainService === "projeto" ? 450 : 250;
+    const minPrice = mainService === "projeto" ? 450 : 225;
     const baseRate = mainService === "projeto" ? 0.70 : 0.5;
 
     return calcAreaBasedPrice(baseRate, minPrice, true);
