@@ -274,6 +274,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               <h4>Pedir proposta detalhada</h4>
               <form id="proposal-form" class="proposal-form">
+                <input type="hidden" name="gclid" id="gclid_field">
                 <div class="two-col">
                   <div class="field-group">
                     <label for="nome">Nome</label>
@@ -707,6 +708,7 @@ Por isso, ter a SCIE regularizada não é apenas uma obrigação legal — é ta
     </div>
 
     <form id="contact-form" class="panel contact-form">
+      <input type="hidden" name="gclid" id="gclid_contact">
       <div class="field-group">
         <label for="contactName">Nome</label>
         <input id="contactName" name="name" required />
@@ -749,5 +751,35 @@ Por isso, ter a SCIE regularizada não é apenas uma obrigação legal — é ta
 </footer>
 
 <script src="./script.js"></script>
+
+<script>
+function getParam(p){
+  var match = RegExp('[?&]' + p + '=([^&]*)').exec(window.location.search);
+  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+var gclid = getParam('gclid');
+
+if(gclid){
+  localStorage.setItem('gclid', gclid);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  var storedGclid = localStorage.getItem('gclid');
+
+  var field1 = document.getElementById('gclid_field');
+  if(field1 && storedGclid){
+    field1.value = storedGclid;
+  }
+
+  var field2 = document.getElementById('gclid_contact');
+  if(field2 && storedGclid){
+    field2.value = storedGclid;
+  }
+
+});
+</script>
+
 </body>
 </html>
