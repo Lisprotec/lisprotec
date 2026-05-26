@@ -758,24 +758,28 @@ function getParam(p){
   return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 
-var gclid = getParam('gclid');
-
-if(gclid){
-  localStorage.setItem('gclid', gclid);
-}
-
 document.addEventListener("DOMContentLoaded", function() {
 
+  var gclid = getParam('gclid');
+
+  if(gclid){
+    localStorage.setItem('gclid', gclid);
+  }
+
   var storedGclid = localStorage.getItem('gclid');
+
+  console.log("GCLID guardado:", storedGclid);
 
   var field1 = document.getElementById('gclid_field');
   if(field1 && storedGclid){
     field1.value = storedGclid;
+    console.log("Campo proposal preenchido");
   }
 
   var field2 = document.getElementById('gclid_contact');
   if(field2 && storedGclid){
     field2.value = storedGclid;
+    console.log("Campo contact preenchido");
   }
 
 });
