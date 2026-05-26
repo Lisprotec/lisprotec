@@ -179,10 +179,6 @@ const total =
 }
 
 function calcMAPPrice() {
-  ...
-}
-
-function calcMAPPrice() {
   if (!includeMAP || areaNum <= 0 || !ut) {
     return { total: 0, discount: 0 };
   }
