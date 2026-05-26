@@ -78,7 +78,7 @@ function getDistrictSurcharge(district) {
 function getFloorFactor(floors) {
   if (floors <= 2) return 1;
 
-  const factor = 1 + (0.10 + ((floors - 3) * 0.10));
+  const factor = 1 + (0.10 + ((floors - 2) * 0.10));
 
   return Math.min(factor, 2.35);
 }
