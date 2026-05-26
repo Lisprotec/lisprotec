@@ -172,11 +172,21 @@ const total =
   }
 
   return calcAreaBasedPrice(
-    baseRate,
-    minPrice,
-    true
-  );
+  baseRate,
+  minPrice,
+  true
+);
 }
+
+function calcMAPPrice() {
+  ...
+}
+
+function calcMAPPrice() {
+  if (!includeMAP || areaNum <= 0 || !ut) {
+    return { total: 0, discount: 0 };
+  }
+
   // ===== CONFIGURAÇÃO =====
 
  // ===== PREÇO MÍNIMO DINÂMICO =====
