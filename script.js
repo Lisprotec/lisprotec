@@ -453,6 +453,9 @@ async function openProposalEmail(event) {
   await submitToFormspree({
     formType: "Pedido de orçamento",
     _subject: `Pedido de Proposta – ${result.services.join(" + ")}`,
+
+    gclid: document.getElementById('gclid_field')?.value || "",
+    
     nome,
     empresa,
     email,
@@ -516,6 +519,9 @@ async function openContactEmail(event) {
   try {
   await submitToFormspree({
     formType: "Contacto geral",
+
+    gclid: document.getElementById('gclid_contact')?.value || "",
+    
     _subject: `Pedido de contacto — ${name}`,
     nome: name,
     email,
