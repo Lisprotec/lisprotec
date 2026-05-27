@@ -491,7 +491,7 @@ async function openProposalEmail(event) {
     });
 
     renderEstimate();
-    setStatus("proposalStatus", "Pedido enviado com sucesso. Entraremos em contacto em breve.", "success");
+   window.location.href = "/obrigado.html";
   } catch (error) {
     setStatus("proposalStatus", error.message || "Não foi possível enviar o formulário.", "error");
   } finally {
@@ -532,7 +532,7 @@ async function openContactEmail(event) {
   gtag_report_conversion();
 
   form?.reset();
-    setStatus("contactStatus", "Mensagem enviada com sucesso.", "success");
+    window.location.href = "/obrigado.html";
   } catch (error) {
     setStatus("contactStatus", error.message || "Não foi possível enviar a mensagem.", "error");
   } finally {
