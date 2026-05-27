@@ -1,80 +1,705 @@
 <!doctype html>
+<html lang="pt-PT">
 
-      <div class="why-item">
-        Experiência operacional real em segurança e socorro.
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-      <div class="why-item">
-        Acompanhamento técnico durante todo o processo.
-      </div>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18018421067"></script>
 
-      <div class="why-item">
-        Apoio ao licenciamento e regularização documental.
-      </div>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-      <div class="why-item">
-        Serviço disponível em todo o território nacional.
-      </div>
+    gtag('config', 'AW-18018421067');
+  </script>
 
-    </div>
+  <title>Sobre — Lisprotec</title>
 
-  </div>
-</section>
+  <meta
+    name="description"
+    content="Conheça a Lisprotec, especializada em Segurança Contra Incêndios em Edifícios, medidas de autoproteção e consultoria técnica."
+  />
 
-<section class="section">
-  <div class="container panel" style="text-align:center; padding:3rem;">
+  <link rel="icon" href="./simbolo lisprotec cortado.png" />
 
-    <div class="eyebrow subtle">Contacto</div>
+  <!-- IMPORTANTE -->
+  <!-- ESTE É O MESMO CSS DO SITE -->
+  <link rel="stylesheet" href="./style.css" />
 
-    <h2>
-      Tem um edifício para regularizar?
-    </h2>
+  <style>
 
-    <p class="lead">
-      Fale connosco e receba acompanhamento técnico especializado.
-    </p>
+    .about-page{
+      padding-top:120px;
+    }
 
-    <div class="hero-actions" style="justify-content:center;">
-      <a class="btn btn-primary" href="./index.html#contacto">
-        Pedir análise técnica
+    .about-hero{
+      padding:80px 0;
+    }
+
+    .about-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:40px;
+      align-items:center;
+    }
+
+    .about-badge{
+      display:inline-block;
+      padding:10px 18px;
+      border-radius:999px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      margin-bottom:24px;
+      font-size:.9rem;
+    }
+
+    .about-title{
+      font-size:clamp(2.8rem,5vw,5rem);
+      line-height:1.05;
+      margin-bottom:24px;
+    }
+
+    .about-description{
+      font-size:1.1rem;
+      line-height:1.8;
+      opacity:.8;
+      max-width:700px;
+      margin-bottom:32px;
+    }
+
+    .about-actions{
+      display:flex;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .about-card{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:24px;
+      padding:36px;
+      backdrop-filter:blur(10px);
+    }
+
+    .about-card h3{
+      margin-bottom:24px;
+    }
+
+    .credential-list{
+      display:grid;
+      gap:18px;
+    }
+
+    .credential-item{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      line-height:1.6;
+    }
+
+    .credential-dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#ff5a36;
+      margin-top:10px;
+      flex-shrink:0;
+    }
+
+    .section-spacing{
+      padding:100px 0;
+    }
+
+    .experience-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:40px;
+    }
+
+    .experience-content h2{
+      margin-bottom:24px;
+    }
+
+    .experience-content p{
+      margin-bottom:24px;
+      line-height:1.8;
+      opacity:.8;
+    }
+
+    .stats-grid{
+      display:grid;
+      gap:20px;
+    }
+
+    .stat-box{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:24px;
+      padding:32px;
+    }
+
+    .stat-number{
+      font-size:3rem;
+      font-weight:700;
+      color:#ff5a36;
+      margin-bottom:10px;
+    }
+
+    .section-header{
+      text-align:center;
+      max-width:800px;
+      margin:0 auto 60px;
+    }
+
+    .section-header p{
+      margin-top:20px;
+      line-height:1.8;
+      opacity:.8;
+    }
+
+    .areas-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:24px;
+    }
+
+    .area-card{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:24px;
+      padding:32px;
+      transition:.3s;
+    }
+
+    .area-card:hover{
+      transform:translateY(-6px);
+      border-color:#ff5a36;
+    }
+
+    .area-card h3{
+      margin-bottom:16px;
+    }
+
+    .area-card p{
+      line-height:1.7;
+      opacity:.8;
+    }
+
+    .why-list{
+      display:grid;
+      gap:20px;
+      max-width:1000px;
+      margin:0 auto;
+    }
+
+    .why-item{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-left:4px solid #ff5a36;
+      border-radius:20px;
+      padding:28px;
+      line-height:1.7;
+    }
+
+    .cta-box{
+      text-align:center;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:32px;
+      padding:70px 40px;
+    }
+
+    .cta-box h2{
+      margin-bottom:20px;
+    }
+
+    .cta-box p{
+      max-width:700px;
+      margin:0 auto 32px;
+      line-height:1.8;
+      opacity:.8;
+    }
+
+    @media(max-width:900px){
+
+      .about-grid,
+      .experience-grid{
+        grid-template-columns:1fr;
+      }
+
+      .about-title{
+        font-size:3rem;
+      }
+
+      .about-page{
+        padding-top:90px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+  <iframe
+    src="https://www.googletagmanager.com/ns.html?id=GTM-P43ZWRFB"
+    height="0"
+    width="0"
+    style="display:none;visibility:hidden">
+  </iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<header class="site-header">
+
+  <div class="container nav-wrap">
+
+    <a class="brand" href="./index.html" aria-label="Lisprotec">
+
+      <img
+        src="./logo-lisprotec.png"
+        alt="Lisprotec"
+        class="site-logo"
+      >
+
+    </a>
+
+    <nav class="desktop-nav" aria-label="Navegação principal">
+
+      <a href="./projetos-scie.html">
+        Projetos SCIE
       </a>
-    </div>
+
+      <a href="./medidas-autoprotecao.html">
+        Medidas de Autoproteção
+      </a>
+
+      <a href="./simulacros-incendio.html">
+        Simulacros
+      </a>
+
+      <a href="./fichas-seguranca-incendio.html">
+        Fichas de Segurança
+      </a>
+
+      <a href="./index.html#simulador">
+        Simulador
+      </a>
+
+      <a href="./sobre.html">
+        Sobre
+      </a>
+
+    </nav>
 
   </div>
-</section>
+
+</header>
+
+<main class="about-page">
+
+  <!-- HERO -->
+
+  <section class="about-hero">
+
+    <div class="container about-grid">
+
+      <div>
+
+        <div class="about-badge">
+          Sobre a Lisprotec
+        </div>
+
+        <h1 class="about-title">
+          Formação técnica rigorosa.<br>
+          Experiência real em segurança e socorro.
+        </h1>
+
+        <p class="about-description">
+          A Lisprotec é conduzida por um Engenheiro de Proteção Civil especializado em Segurança Contra Incêndios em Edifícios, com experiência operacional e técnica nas áreas da segurança e socorro.
+        </p>
+
+        <div class="about-actions">
+
+          <a
+            class="btn btn-primary"
+            href="./index.html#contacto"
+          >
+            Pedir análise técnica
+          </a>
+
+          <a
+            class="btn btn-outline"
+            href="./index.html#simulador"
+          >
+            Simular preço
+          </a>
+
+        </div>
+
+      </div>
+
+      <aside class="about-card">
+
+        <h3>
+          Credenciais
+        </h3>
+
+        <div class="credential-list">
+
+          <div class="credential-item">
+            <div class="credential-dot"></div>
+            <div>Engenharia de Proteção Civil</div>
+          </div>
+
+          <div class="credential-item">
+            <div class="credential-dot"></div>
+            <div>Especialização em Segurança Contra Incêndios</div>
+          </div>
+
+          <div class="credential-item">
+            <div class="credential-dot"></div>
+            <div>Especialização em Segurança do Trabalho</div>
+          </div>
+
+          <div class="credential-item">
+            <div class="credential-dot"></div>
+            <div>Inscrição ativa na OET</div>
+          </div>
+
+          <div class="credential-item">
+            <div class="credential-dot"></div>
+            <div>Registo ANEPC para categorias de risco 2ª, 3ª e 4ª</div>
+          </div>
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </section>
+
+  <!-- EXPERIÊNCIA -->
+
+  <section class="section-spacing">
+
+    <div class="container experience-grid">
+
+      <div class="experience-content">
+
+        <h2>
+          12 anos a trabalhar onde a segurança tem consequências reais.
+        </h2>
+
+        <p>
+          O trabalho em segurança e socorro durante mais de uma década permitiu desenvolver uma abordagem técnica, prática e profundamente orientada para a realidade operacional dos edifícios e organizações.
+        </p>
+
+        <p>
+          A Lisprotec foi criada para oferecer soluções profissionais em Segurança Contra Incêndios em Edifícios, medidas de autoproteção, simulacros e consultoria técnica especializada.
+        </p>
+
+        <p>
+          O objetivo é garantir conformidade legal, segurança real e acompanhamento técnico sério durante todo o processo.
+        </p>
+
+      </div>
+
+      <div class="stats-grid">
+
+        <div class="stat-box">
+
+          <div class="stat-number">
+            12+
+          </div>
+
+          <div>
+            anos de experiência em segurança e socorro
+          </div>
+
+        </div>
+
+        <div class="stat-box">
+
+          <div class="stat-number">
+            2ª–4ª
+          </div>
+
+          <div>
+            categorias de risco habilitadas pela ANEPC
+          </div>
+
+        </div>
+
+        <div class="stat-box">
+
+          <div class="stat-number">
+            OET
+          </div>
+
+          <div>
+            responsabilidade deontológica garantida
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ÁREAS -->
+
+  <section class="section-spacing">
+
+    <div class="container">
+
+      <div class="section-header">
+
+        <h2>
+          Áreas de atuação
+        </h2>
+
+        <p>
+          A experiência acumulada em diferentes contextos reforça a qualidade técnica dos serviços prestados.
+        </p>
+
+      </div>
+
+      <div class="areas-grid">
+
+        <article class="area-card">
+
+          <h3>
+            Projetos SCIE
+          </h3>
+
+          <p>
+            Elaboração de projetos de segurança contra incêndios para licenciamento e regularização.
+          </p>
+
+        </article>
+
+        <article class="area-card">
+
+          <h3>
+            Medidas de Autoproteção
+          </h3>
+
+          <p>
+            Planos, procedimentos e documentação obrigatória para diferentes utilizações-tipo.
+          </p>
+
+        </article>
+
+        <article class="area-card">
+
+          <h3>
+            Segurança no Trabalho
+          </h3>
+
+          <p>
+            Avaliação de riscos, prevenção e medidas de proteção laboral.
+          </p>
+
+        </article>
+
+        <article class="area-card">
+
+          <h3>
+            Simulacros e Formação
+          </h3>
+
+          <p>
+            Formação certificada e simulacros adaptados ao edifício e atividade.
+          </p>
+
+        </article>
+
+        <article class="area-card">
+
+          <h3>
+            Proteção Civil
+          </h3>
+
+          <p>
+            Planeamento de emergência e apoio técnico especializado.
+          </p>
+
+        </article>
+
+        <article class="area-card">
+
+          <h3>
+            Licenciamento
+          </h3>
+
+          <p>
+            Acompanhamento técnico junto das entidades competentes.
+          </p>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- DIFERENCIAIS -->
+
+  <section class="section-spacing">
+
+    <div class="container">
+
+      <div class="section-header">
+
+        <h2>
+          Porque escolher a Lisprotec
+        </h2>
+
+      </div>
+
+      <div class="why-list">
+
+        <div class="why-item">
+          Registo ANEPC válido para categorias de risco mais exigentes.
+        </div>
+
+        <div class="why-item">
+          Experiência operacional real em segurança e socorro.
+        </div>
+
+        <div class="why-item">
+          Acompanhamento técnico durante todo o processo.
+        </div>
+
+        <div class="why-item">
+          Apoio ao licenciamento e regularização documental.
+        </div>
+
+        <div class="why-item">
+          Serviço disponível em todo o território nacional.
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- CTA -->
+
+  <section class="section-spacing">
+
+    <div class="container">
+
+      <div class="cta-box">
+
+        <h2>
+          Tem um edifício para regularizar?
+        </h2>
+
+        <p>
+          Fale connosco e receba acompanhamento técnico especializado para o seu processo.
+        </p>
+
+        <a
+          class="btn btn-primary"
+          href="./index.html#contacto"
+        >
+          Pedir análise técnica
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
 
 </main>
 
 <footer class="site-footer">
-  <div class="container footer-grid">
 
-    <div>
-      <img src="./logo-lisprotec.png" alt="Lisprotec" class="site-logo footer-logo">
-      <p>
-        Segurança Contra Incêndios em Edifícios, medidas de autoproteção, simulacros e consultoria técnica.
-      </p>
+  <div class="container footer-wrap">
+
+    <div style="margin-bottom: 15px;">
+
+      <img
+        src="./logo-lisprotec.png"
+        alt="Lisprotec"
+        style="height: 55px; width: auto; display: block; margin: auto;"
+      />
+
     </div>
 
-    <div>
-      <h4>Links</h4>
-      <ul>
-        <li><a href="./projetos-scie.html">Projetos SCIE</a></li>
-        <li><a href="./medidas-autoprotecao.html">Medidas de Autoproteção</a></li>
-        <li><a href="./simulacros-incendio.html">Simulacros</a></li>
-        <li><a href="./fichas-seguranca-incendio.html">Fichas de Segurança</a></li>
-      </ul>
+    <p>
+      Segurança Contra Incêndios em Edifícios
+    </p>
+
+    <div class="footer-links">
+
+      <a href="./privacy.html">
+        Política de Privacidade
+      </a>
+
+      <a href="./terms.html">
+        Condições de Utilização
+      </a>
+
     </div>
 
-    <div>
-      <h4>Contacto</h4>
-      <ul>
-        <li><a href="tel:+351926102410">+351 926 102 410</a></li>
-        <li><a href="mailto:geral@lisprotec.com">geral@lisprotec.com</a></li>
-      </ul>
-    </div>
+    <small>
+      © <span id="year"></span> Lisprotec. Todos os direitos reservados.
+    </small>
 
   </div>
+
 </footer>
+
+<script src="./script.js"></script>
+
+<script>
+
+function getParam(p){
+  var match = RegExp('[?&]' + p + '=([^&]*)').exec(window.location.search);
+  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+
+var gclid = getParam('gclid');
+
+if(gclid){
+  localStorage.setItem('gclid', gclid);
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  var storedGclid = localStorage.getItem('gclid');
+
+  var field1 = document.getElementById('gclid_field');
+
+  if(field1 && storedGclid){
+    field1.value = storedGclid;
+  }
+
+  var field2 = document.getElementById('gclid_contact');
+
+  if(field2 && storedGclid){
+    field2.value = storedGclid;
+  }
+
+});
+
+</script>
 
 </body>
 </html>
