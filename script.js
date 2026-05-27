@@ -210,9 +210,14 @@ if (ut.factor >= 1.8) {
   const floorFactor =
     getFloorFactor(floors);
 
-  const multiplier =
-    (ut ? ut.factor : 1) *
-    floorFactor;
+ const mapFactor =
+  ut?.factor >= 1.8
+    ? 1.6
+    : ut?.factor || 1;
+
+const multiplier =
+  mapFactor *
+  floorFactor;
 
   // ===== ATÉ 200 m² =====
 
