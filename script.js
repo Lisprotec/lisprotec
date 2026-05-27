@@ -143,8 +143,8 @@ const total =
 
   const baseRate =
     mainService === "projeto"
-      ? 0.55
-      : 0.38;
+      ? 0.50
+      : 0.35;
 
   // ===== PREÇO MÍNIMO BASE =====
 
@@ -203,7 +203,7 @@ if (ut.factor >= 1.8) {
   const includedArea = 200;
 
   // taxa por m² adicional
-  const baseRate = 0.42;
+  const baseRate = 0.35;
 
   // ===== MULTIPLICADORES =====
 
