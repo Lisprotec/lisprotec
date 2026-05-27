@@ -736,7 +736,7 @@ Por isso, ter a SCIE regularizada não é apenas uma obrigação legal — é ta
           </div>
 <div class="faq-toggle-wrap">
   <button id="faqToggleBtn" class="btn btn-outline">
-    Ver todas as perguntas
+    Ver mais perguntas frequentes
   </button>
 </div>
           <div style="text-align:center; margin-top:40px;">
@@ -917,5 +917,21 @@ document.addEventListener("DOMContentLoaded", function() {
 
   <span>Falar pelo WhatsApp</span>
 </a>
+<script>
+  const faqBtn = document.getElementById("faqToggleBtn");
+
+  if (faqBtn) {
+    faqBtn.addEventListener("click", () => {
+
+      const hiddenFaqs = document.querySelectorAll(".faq-hidden");
+
+      hiddenFaqs.forEach((faq) => {
+        faq.style.display = "block";
+      });
+
+      faqBtn.style.display = "none";
+    });
+  }
+</script>    
 </body>
 </html>
