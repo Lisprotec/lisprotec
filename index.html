@@ -784,6 +784,72 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 </script>
+<!-- =============================================
+     BOTÃO WHATSAPP FLUTUANTE
+     Colar antes do </body>
+============================================= -->
 
+<style>
+  .wa-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 12px 20px 12px 14px;
+    border-radius: 50px;
+    box-shadow: 0 4px 16px rgba(37,211,102,0.35);
+    transition: transform .2s, box-shadow .2s;
+    white-space: nowrap;
+  }
+
+  .wa-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37,211,102,0.45);
+  }
+
+  .wa-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    .wa-btn {
+      padding: 14px;
+      border-radius: 50%;
+    }
+
+    .wa-btn span {
+      display: none;
+    }
+  }
+</style>
+
+<a
+  class="wa-btn"
+  href="https://wa.me/351926102410?text=Olá%2C%20gostaria%20de%20obter%20mais%20informações%20sobre%20os%20serviços%20da%20Lisprotec."
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Contactar pelo WhatsApp"
+>
+
+  <!-- Ícone WhatsApp -->
+  <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16.002 3C8.833 3 3 8.833 3 16.002c0 2.29.607 4.442 1.664 6.302L3 29l6.865-1.636A12.942 12.942 0 0 0 16.002 29C23.17 29 29 23.167 29 16.002 29 8.833 23.17 3 16.002 3z" fill="#fff"/>
+    <path d="M16.002 5.4C9.155 5.4 3.6 10.955 3.6 16.002c0 2.157.677 4.16 1.83 5.81L4.2 27.8l6.19-1.218A12.537 12.537 0 0 0 16.002 28c6.848 0 12.398-5.55 12.398-11.998C28.4 10.955 22.85 5.4 16.002 5.4zm6.22 16.44c-.26.73-1.51 1.39-2.08 1.47-.53.07-1.2.1-1.94-.12-.45-.13-1.02-.31-1.76-.61-3.08-1.28-5.09-4.33-5.25-4.53-.15-.2-1.25-1.6-1.25-3.05 0-1.45.78-2.17 1.05-2.46.27-.29.59-.37.79-.37.2 0 .4.002.57.01.18.01.43-.07.67.5.25.58.85 2.03.93 2.18.08.15.13.32.03.51-.1.2-.15.32-.3.49-.15.17-.31.38-.44.51-.15.14-.3.3-.13.58.17.28.76 1.22 1.63 1.97 1.12.97 2.06 1.27 2.35 1.41.29.14.46.12.63-.07.17-.19.73-.82.93-1.1.2-.28.4-.23.67-.14.27.09 1.73.79 2.03.94.3.15.5.22.57.34.07.12.07.69-.19 1.42z" fill="#25D366"/>
+  </svg>
+
+  <span>Falar pelo WhatsApp</span>
+</a>
 </body>
 </html>
