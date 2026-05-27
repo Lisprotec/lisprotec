@@ -5,17 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18018421067"></script>
-
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'AW-18018421067');
-  </script>
-
   <title>Sobre — Lisprotec</title>
 
   <meta
@@ -23,23 +12,30 @@
     content="Conheça a Lisprotec, especializada em Segurança Contra Incêndios em Edifícios, medidas de autoproteção e consultoria técnica."
   />
 
-  <link rel="icon" href="./simbolo lisprotec cortado.png" />
-
-  <!-- IMPORTANTE -->
-  <!-- ESTE É O MESMO CSS DO SITE -->
   <link rel="stylesheet" href="./style.css" />
 
+  <link rel="icon" href="./simbolo lisprotec cortado.png" />
+
   <style>
+
+    /* ===== PAGE ===== */
 
     .about-page{
       padding-top:120px;
     }
 
-    .about-hero{
-      padding:80px 0;
+    .about-section{
+      padding:100px 0;
     }
 
-    .about-grid{
+    .about-container{
+      width:min(1180px,92%);
+      margin:auto;
+    }
+
+    /* ===== HERO ===== */
+
+    .about-hero-grid{
       display:grid;
       grid-template-columns:1.2fr .8fr;
       gap:40px;
@@ -47,7 +43,9 @@
     }
 
     .about-badge{
-      display:inline-block;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
       padding:10px 18px;
       border-radius:999px;
       background:rgba(255,255,255,.05);
@@ -64,10 +62,10 @@
 
     .about-description{
       font-size:1.1rem;
-      line-height:1.8;
-      opacity:.8;
-      max-width:700px;
-      margin-bottom:32px;
+      line-height:1.9;
+      opacity:.82;
+      max-width:720px;
+      margin-bottom:34px;
     }
 
     .about-actions{
@@ -76,17 +74,26 @@
       flex-wrap:wrap;
     }
 
-    .about-card{
-      background:rgba(255,255,255,.04);
+    /* ===== GLASS CARD ===== */
+
+    .glass-card{
+      background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
-      border-radius:24px;
+      border-radius:28px;
       padding:36px;
-      backdrop-filter:blur(10px);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      box-shadow:
+        0 10px 40px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.04);
     }
 
-    .about-card h3{
-      margin-bottom:24px;
+    .glass-card h3{
+      margin-bottom:28px;
+      font-size:1.4rem;
     }
+
+    /* ===== CREDENTIALS ===== */
 
     .credential-list{
       display:grid;
@@ -97,7 +104,7 @@
       display:flex;
       gap:14px;
       align-items:flex-start;
-      line-height:1.6;
+      line-height:1.7;
     }
 
     .credential-dot{
@@ -107,11 +114,10 @@
       background:#ff5a36;
       margin-top:10px;
       flex-shrink:0;
+      box-shadow:0 0 12px rgba(255,90,54,.7);
     }
 
-    .section-spacing{
-      padding:100px 0;
-    }
+    /* ===== EXPERIENCE ===== */
 
     .experience-grid{
       display:grid;
@@ -120,96 +126,121 @@
     }
 
     .experience-content h2{
-      margin-bottom:24px;
+      margin-bottom:28px;
     }
 
     .experience-content p{
       margin-bottom:24px;
-      line-height:1.8;
-      opacity:.8;
+      line-height:1.9;
+      opacity:.82;
     }
 
     .stats-grid{
       display:grid;
-      gap:20px;
+      gap:22px;
     }
 
-    .stat-box{
-      background:rgba(255,255,255,.04);
+    .stat-card{
+      background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
       border-radius:24px;
-      padding:32px;
+      padding:34px;
+      box-shadow:
+        0 10px 40px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.03);
     }
 
     .stat-number{
       font-size:3rem;
       font-weight:700;
       color:#ff5a36;
-      margin-bottom:10px;
+      margin-bottom:12px;
+      line-height:1;
     }
+
+    /* ===== SECTION HEADER ===== */
 
     .section-header{
       text-align:center;
-      max-width:800px;
-      margin:0 auto 60px;
+      max-width:850px;
+      margin:0 auto 70px;
     }
 
     .section-header p{
       margin-top:20px;
-      line-height:1.8;
-      opacity:.8;
+      line-height:1.9;
+      opacity:.82;
     }
+
+    /* ===== AREAS ===== */
 
     .areas-grid{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:24px;
+      gap:26px;
     }
 
     .area-card{
-      background:rgba(255,255,255,.04);
+      background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
-      border-radius:24px;
-      padding:32px;
-      transition:.3s;
+      border-radius:28px;
+      padding:34px;
+      transition:.35s;
+      box-shadow:
+        0 10px 40px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.03);
     }
 
     .area-card:hover{
-      transform:translateY(-6px);
+      transform:translateY(-8px);
       border-color:#ff5a36;
+      box-shadow:
+        0 18px 50px rgba(0,0,0,.28),
+        0 0 0 1px rgba(255,90,54,.15);
     }
 
     .area-card h3{
       margin-bottom:16px;
+      font-size:1.2rem;
     }
 
     .area-card p{
-      line-height:1.7;
-      opacity:.8;
+      line-height:1.8;
+      opacity:.82;
     }
+
+    /* ===== WHY ===== */
 
     .why-list{
       display:grid;
-      gap:20px;
+      gap:24px;
       max-width:1000px;
-      margin:0 auto;
+      margin:auto;
     }
 
     .why-item{
-      background:rgba(255,255,255,.04);
+      background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
       border-left:4px solid #ff5a36;
-      border-radius:20px;
-      padding:28px;
-      line-height:1.7;
+      border-radius:24px;
+      padding:30px;
+      line-height:1.8;
+      box-shadow:
+        0 10px 35px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.03);
     }
+
+    /* ===== CTA ===== */
 
     .cta-box{
       text-align:center;
-      background:rgba(255,255,255,.04);
+      background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
-      border-radius:32px;
+      border-radius:34px;
       padding:70px 40px;
+      box-shadow:
+        0 14px 50px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.03);
     }
 
     .cta-box h2{
@@ -217,15 +248,21 @@
     }
 
     .cta-box p{
-      max-width:700px;
-      margin:0 auto 32px;
-      line-height:1.8;
-      opacity:.8;
+      max-width:720px;
+      margin:0 auto 34px;
+      line-height:1.9;
+      opacity:.82;
     }
+
+    /* ===== RESPONSIVE ===== */
 
     @media(max-width:900px){
 
-      .about-grid,
+      .about-page{
+        padding-top:90px;
+      }
+
+      .about-hero-grid,
       .experience-grid{
         grid-template-columns:1fr;
       }
@@ -234,8 +271,11 @@
         font-size:3rem;
       }
 
-      .about-page{
-        padding-top:90px;
+      .glass-card,
+      .area-card,
+      .stat-card,
+      .why-item{
+        padding:26px;
       }
 
     }
@@ -246,22 +286,11 @@
 
 <body>
 
-<!-- Google Tag Manager (noscript) -->
-<noscript>
-  <iframe
-    src="https://www.googletagmanager.com/ns.html?id=GTM-P43ZWRFB"
-    height="0"
-    width="0"
-    style="display:none;visibility:hidden">
-  </iframe>
-</noscript>
-<!-- End Google Tag Manager (noscript) -->
-
 <header class="site-header">
 
   <div class="container nav-wrap">
 
-    <a class="brand" href="./index.html" aria-label="Lisprotec">
+    <a class="brand" href="./index.html">
 
       <img
         src="./logo-lisprotec.png"
@@ -271,7 +300,7 @@
 
     </a>
 
-    <nav class="desktop-nav" aria-label="Navegação principal">
+    <nav class="desktop-nav">
 
       <a href="./projetos-scie.html">
         Projetos SCIE
@@ -307,9 +336,9 @@
 
   <!-- HERO -->
 
-  <section class="about-hero">
+  <section class="about-section">
 
-    <div class="container about-grid">
+    <div class="about-container about-hero-grid">
 
       <div>
 
@@ -329,15 +358,15 @@
         <div class="about-actions">
 
           <a
-            class="btn btn-primary"
             href="./index.html#contacto"
+            class="btn btn-primary"
           >
             Pedir análise técnica
           </a>
 
           <a
-            class="btn btn-outline"
             href="./index.html#simulador"
+            class="btn btn-outline"
           >
             Simular preço
           </a>
@@ -346,7 +375,7 @@
 
       </div>
 
-      <aside class="about-card">
+      <aside class="glass-card">
 
         <h3>
           Credenciais
@@ -376,7 +405,7 @@
 
           <div class="credential-item">
             <div class="credential-dot"></div>
-            <div>Registo ANEPC para categorias de risco 2ª, 3ª e 4ª</div>
+            <div>Registo ANEPC para categorias 2ª, 3ª e 4ª</div>
           </div>
 
         </div>
@@ -389,9 +418,9 @@
 
   <!-- EXPERIÊNCIA -->
 
-  <section class="section-spacing">
+  <section class="about-section">
 
-    <div class="container experience-grid">
+    <div class="about-container experience-grid">
 
       <div class="experience-content">
 
@@ -415,7 +444,7 @@
 
       <div class="stats-grid">
 
-        <div class="stat-box">
+        <div class="stat-card">
 
           <div class="stat-number">
             12+
@@ -427,7 +456,7 @@
 
         </div>
 
-        <div class="stat-box">
+        <div class="stat-card">
 
           <div class="stat-number">
             2ª–4ª
@@ -439,7 +468,7 @@
 
         </div>
 
-        <div class="stat-box">
+        <div class="stat-card">
 
           <div class="stat-number">
             OET
@@ -459,9 +488,9 @@
 
   <!-- ÁREAS -->
 
-  <section class="section-spacing">
+  <section class="about-section">
 
-    <div class="container">
+    <div class="about-container">
 
       <div class="section-header">
 
@@ -557,9 +586,9 @@
 
   <!-- DIFERENCIAIS -->
 
-  <section class="section-spacing">
+  <section class="about-section">
 
-    <div class="container">
+    <div class="about-container">
 
       <div class="section-header">
 
@@ -599,9 +628,9 @@
 
   <!-- CTA -->
 
-  <section class="section-spacing">
+  <section class="about-section">
 
-    <div class="container">
+    <div class="about-container">
 
       <div class="cta-box">
 
@@ -614,8 +643,8 @@
         </p>
 
         <a
-          class="btn btn-primary"
           href="./index.html#contacto"
+          class="btn btn-primary"
         >
           Pedir análise técnica
         </a>
@@ -632,12 +661,12 @@
 
   <div class="container footer-wrap">
 
-    <div style="margin-bottom: 15px;">
+    <div style="margin-bottom:15px;">
 
       <img
         src="./logo-lisprotec.png"
         alt="Lisprotec"
-        style="height: 55px; width: auto; display: block; margin: auto;"
+        style="height:55px;width:auto;display:block;margin:auto;"
       />
 
     </div>
@@ -668,38 +697,6 @@
 
 <script src="./script.js"></script>
 
-<script>
-
-function getParam(p){
-  var match = RegExp('[?&]' + p + '=([^&]*)').exec(window.location.search);
-  return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-}
-
-var gclid = getParam('gclid');
-
-if(gclid){
-  localStorage.setItem('gclid', gclid);
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-
-  var storedGclid = localStorage.getItem('gclid');
-
-  var field1 = document.getElementById('gclid_field');
-
-  if(field1 && storedGclid){
-    field1.value = storedGclid;
-  }
-
-  var field2 = document.getElementById('gclid_contact');
-
-  if(field2 && storedGclid){
-    field2.value = storedGclid;
-  }
-
-});
-
-</script>
-
 </body>
+
 </html>
