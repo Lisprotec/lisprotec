@@ -1448,3 +1448,15 @@ hr {
     grid-template-columns: 1fr;
   }
 }
+.faq-hidden {
+  display: none;
+}
+
+.faq-toggle-wrap {
+  text-align: center;
+  margin-top: 28px;
+}
+
+.faq-list details {
+  scroll-margin-top: 120px;
+}
