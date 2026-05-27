@@ -490,8 +490,11 @@ async function openProposalEmail(event) {
       if (byId(id)) byId(id).checked = false;
     });
 
-    renderEstimate();
-   window.location.href = "/obrigado.html";
+   renderEstimate();
+
+setTimeout(() => {
+  window.location.href = "/obrigado.html";
+}, 800);
   } catch (error) {
     setStatus("proposalStatus", error.message || "Não foi possível enviar o formulário.", "error");
   } finally {
@@ -528,11 +531,19 @@ async function openContactEmail(event) {
     telefone: phone || "N/A",
     mensagem: message,
   });
-
+if (
+  typeof gtag_report_conversion ===
+  "function"
+) {
   gtag_report_conversion();
+}
 
-  form?.reset();
-    window.location.href = "/obrigado.html";
+form?.reset();
+
+setTimeout(() => {
+  window.location.href = "/obrigado.html";
+}, 800);
+  
   } catch (error) {
     setStatus("contactStatus", error.message || "Não foi possível enviar a mensagem.", "error");
   } finally {
