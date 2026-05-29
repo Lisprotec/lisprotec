@@ -1460,3 +1460,11 @@ hr {
 .faq-list details {
   scroll-margin-top: 120px;
 }
+.process-section .section-heading h2,
+.process-section .section-heading .eyebrow {
+    color: #ffffff;
+}
+
+.process-section .section-heading .section-lead {
+    color: rgba(255,255,255,0.85);
+}
