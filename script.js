@@ -440,11 +440,12 @@ async function openProposalEmail(event) {
   const empresa = byId("empresa")?.value?.trim();
   const email = byId("email")?.value?.trim();
   const telefone = byId("telefone")?.value?.trim();
+  const morada = byId("morada")?.value?.trim();
   const tipoEdificio = byId("tipoEdificio")?.value?.trim();
   const mensagem = byId("mensagem")?.value?.trim() || "(sem mensagem adicional)";
   const area = byId("area")?.value?.trim();
-
-  if (!nome || !empresa || !email || !telefone || !tipoEdificio) {
+if (!nome || !empresa || !email || !telefone || !morada || !tipoEdificio) {
+ 
     setStatus("proposalStatus", "Preencha todos os campos obrigatórios do pedido de proposta.", "error");
     return;
   }
@@ -465,6 +466,7 @@ async function openProposalEmail(event) {
     empresa,
     email,
     telefone,
+    morada,
     tipoEdificio,
     area: `${area} m²`,
     distrito: result.district || "N/A",
