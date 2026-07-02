@@ -1583,3 +1583,36 @@ hr {
 .page-hero-video .panel-kicker {
     color: #ffffff;
 }
+/* FORÇAR VÍDEO NAS PÁGINAS INTERNAS */
+
+.page-hero.page-hero-video {
+    position: relative !important;
+    overflow: hidden !important;
+    background: transparent !important;
+    min-height: 100vh !important;
+}
+
+.page-hero.page-hero-video .page-grid {
+    position: relative;
+    z-index: 2;
+}
+
+.page-hero.page-hero-video .page-main,
+.page-hero.page-hero-video .page-side {
+    background: rgba(255,255,255,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.page-hero.page-hero-video h1,
+.page-hero.page-hero-video h2,
+.page-hero.page-hero-video p,
+.page-hero.page-hero-video li,
+.page-hero.page-hero-video .lead,
+.page-hero.page-hero-video .breadcrumbs,
+.page-hero.page-hero-video .breadcrumbs a,
+.page-hero.page-hero-video .eyebrow,
+.page-hero.page-hero-video .panel-kicker {
+    color: #fff !important;
+}
