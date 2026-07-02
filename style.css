@@ -1539,19 +1539,15 @@ hr {
     position: relative;
     overflow: hidden;
     background: transparent;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
+    padding: 72px 0 28px;
 }
 
-.page-hero.page-hero-video::before {
-    display: none;
-}
 .page-video {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 100%;
+    height: 100%;   /* acompanha a altura total da secção */
     object-fit: cover;
     z-index: 0;
 }
@@ -1563,14 +1559,19 @@ hr {
     z-index: 1;
 }
 
-.page-hero.page-hero-video .page-grid {
+.page-hero.page-hero-video .container {
     position: relative;
     z-index: 2;
 }
 
 .page-hero.page-hero-video .page-main,
 .page-hero.page-hero-video .page-side {
-    background: rgba(255,255,255,0.15) !important;
+    position: relative;
+    z-index: 3;
+
+    background: rgba(255,255,255,0.12) !important;
+    border: 1px solid rgba(255,255,255,0.18);
+
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
