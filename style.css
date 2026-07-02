@@ -1504,3 +1504,32 @@ hr {
     position: relative;
     z-index: 2;
 }
+/* TEXTO DA HERO A BRANCO */
+.hero h1,
+.hero .lead,
+.hero .eyebrow,
+.hero .panel-kicker,
+.hero .hero-panel h2,
+.hero .check-list,
+.hero .check-list li {
+    color: #ffffff;
+}
+
+/* Cartões de contacto */
+.hero .contact-card {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.hero .contact-card strong,
+.hero .contact-card span {
+    color: #ffffff;
+}
+
+/* Painel da direita */
+.hero .hero-panel {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+}
