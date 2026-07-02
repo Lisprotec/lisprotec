@@ -1540,6 +1540,8 @@ hr {
     overflow: hidden;
     background: transparent;
     min-height: 100vh;
+    display: flex;
+    align-items: center;
 }
 
 .page-hero.page-hero-video::before {
