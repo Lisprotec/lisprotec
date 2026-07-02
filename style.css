@@ -1533,3 +1533,53 @@ hr {
     background: rgba(255,255,255,0.12);
     border: 1px solid rgba(255,255,255,0.18);
 }
+/* HERO DAS PÁGINAS INTERNAS COM VÍDEO */
+.page-hero-video {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.page-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.page-video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        rgba(15,23,42,0.75),
+        rgba(15,23,42,0.85)
+    );
+    z-index: 1;
+}
+
+.page-hero-video .container {
+    position: relative;
+    z-index: 2;
+}
+
+.page-hero-video .page-main,
+.page-hero-video .page-side {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.page-hero-video h1,
+.page-hero-video h2,
+.page-hero-video h3,
+.page-hero-video p,
+.page-hero-video li,
+.page-hero-video .lead,
+.page-hero-video .breadcrumbs,
+.page-hero-video .breadcrumbs a,
+.page-hero-video .panel-kicker {
+    color: #ffffff;
+}
