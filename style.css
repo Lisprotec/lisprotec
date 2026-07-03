@@ -1540,6 +1540,10 @@ hr {
     overflow: hidden;
     background: transparent;
     padding: 72px 0 28px;
+
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
 }
 
 .page-video {
