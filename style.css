@@ -1,7 +1,7 @@
 :root {
   --bg: #eef2f6;
   --bg-soft: #e8edf3;
-  --card: #fcfcfd;
+  --card: #ffffff;
   --card-strong: #ffffff;
   --alt: #e3e9f0;
   --text: #111111;
@@ -21,8 +21,8 @@
   --info: #1d4ed8;
   --info-soft: #eff6ff;
   --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-sm: 0 10px 30px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 24px 60px rgba(15, 23, 42, 0.08);
+  --shadow-sm: 0 14px 40px rgba(15,23,42,.08);
+  --shadow-md: 0 26px 70px rgba(15,23,42,.12);
   --shadow-lg: 0 34px 90px rgba(15, 23, 42, 0.12);
   --radius-sm: 14px;
   --radius: 20px;
@@ -41,12 +41,15 @@ html {
 body {
   margin: 0;
   font-family: Inter, Arial, sans-serif;
-  background: var(--bg);
+  background:#F8FAFC;
   color: var(--text);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   padding-top: 76px;
+  position: relative;
+  overflow-x: hidden;
+
 }
 
 a {
@@ -1591,4 +1594,19 @@ hr {
 .page-hero.page-hero-video .breadcrumbs a,
 .page-hero.page-hero-video .eyebrow {
     color: #fff !important;
+}
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+
+    background:
+        radial-gradient(circle at 15% 10%, rgba(255,102,0,.14), transparent 30%),
+        radial-gradient(circle at 85% 15%, rgba(190,24,93,.10), transparent 28%),
+        radial-gradient(circle at 50% 100%, rgba(255,145,0,.08), transparent 35%);
+
+    filter: blur(60px);
+
+    z-index:-1;
 }
