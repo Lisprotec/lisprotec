@@ -455,7 +455,7 @@ textarea {
 #servicos {
   position: relative;
   background:
-    linear-gradient(rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.62)),
+    linear-gradient(rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.48)),
     url("/pscie-204133.jpg") center center / cover no-repeat;
   overflow: hidden;
 }
@@ -510,7 +510,7 @@ textarea {
 #contacto {
   position: relative;
   background:
-    linear-gradient(rgba(15, 23, 42, 0.60), rgba(15, 23, 42, 0.60)),
+    linear-gradient(rgba(15, 23, 42, 0.60), rgba(15, 23, 42, 0.48)),
     url("/UCC_3aCAT-1024x466.jpg") center center / cover no-repeat;
   overflow: hidden;
 }
@@ -582,10 +582,8 @@ textarea {
   padding: 88px 0;
   border-radius: 0;
   overflow: hidden;
-  background:
-    linear-gradient(rgba(15, 23, 42, 0.58), rgba(15, 23, 42, 0.58)),
-    url("/Compartmentation-Plans-1.webp") center center / cover no-repeat;
-  box-shadow: none;
+ background: var(--bg);
+  box-shadow:none;
 }
 
 .fireload-pro::before {
@@ -1076,7 +1074,54 @@ hr {
   background: rgba(252, 252, 253, 0.94);
   font-weight: 600;
 }
+/* SECÇÃO CATEGORIA DE RISCO */
 
+#enquadramento{
+    position:relative;
+
+    background:
+        linear-gradient(rgba(15,23,42,.55),
+                        rgba(15,23,42,.55)),
+        url("/Compartmentation-Plans-1.webp")
+        center center/cover no-repeat;
+
+    overflow:hidden;
+}
+
+#enquadramento::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:linear-gradient(
+        180deg,
+        rgba(15,23,42,.10),
+        rgba(15,23,42,.24)
+    );
+
+    pointer-events:none;
+}
+
+#enquadramento .container{
+    position:relative;
+    z-index:1;
+}
+
+#enquadramento h2,
+#enquadramento p,
+#enquadramento label,
+#enquadramento .eyebrow{
+    color:#fff;
+}
+
+#enquadramento .form-panel{
+
+    background:rgba(255,255,255,.10);
+
+    border:1px solid rgba(255,255,255,.18);
+
+    backdrop-filter:blur(10px);
+}
 .risk-calculator {
   width: min(1120px, calc(100% - 32px));
   margin: 28px auto 0;
@@ -1370,7 +1415,7 @@ hr {
 .process-section {
   position: relative;
   background:
-    linear-gradient(rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.62)),
+    linear-gradient(rgba(15, 23, 42, 0.62), rgba(15, 23, 42, 0.48)),
     url("/scie-183906.jpg") center center / cover no-repeat;
   overflow: hidden;
 }
