@@ -516,7 +516,13 @@ textarea {
 
 /* SECÇÃO "SIMULADOR" COM IMAGEM DE FUNDO */
 #simulador {
-  background: var(--bg);
+  background:
+    linear-gradient(
+        rgba(15,23,42,.55),
+        rgba(15,23,42,.45)
+    ),
+    url("/Compartmentation-Plans-1.webp")
+    center center / cover no-repeat;
 }
 #simulador .checkbox-group input {
   accent-color: var(--text);
@@ -614,12 +620,17 @@ textarea {
   box-shadow:none;
 }
 
-.fireload-pro::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.24) 100%);
-  pointer-events: none;
+.fireload-pro::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:linear-gradient(
+        rgba(15,23,42,.10),
+        rgba(15,23,42,.28)
+    );
+
+    pointer-events:none;
 }
 
 .fireload-pro > * {
