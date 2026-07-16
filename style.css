@@ -516,13 +516,7 @@ textarea {
 
 /* SECÇÃO "SIMULADOR" COM IMAGEM DE FUNDO */
 #simulador {
-  background:
-    linear-gradient(
-        rgba(15,23,42,.55),
-        rgba(15,23,42,.45)
-    ),
-    url("/Compartmentation-Plans-1.webp")
-    center center / cover no-repeat;
+  background: var(--bg);
 }
 #simulador .checkbox-group input {
   accent-color: var(--text);
