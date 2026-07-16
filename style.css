@@ -616,8 +616,16 @@ textarea {
   padding: 88px 0;
   border-radius: 0;
   overflow: hidden;
- background: var(--bg);
-  box-shadow:none;
+
+  background:
+      linear-gradient(
+          rgba(15,23,42,.55),
+          rgba(15,23,42,.45)
+      ),
+      url("/Compartmentation-Plans-1.webp")
+      center center / cover no-repeat;
+
+  box-shadow: none;
 }
 
 .fireload-pro::before{
