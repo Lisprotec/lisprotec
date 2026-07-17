@@ -67,5 +67,8 @@ Consulte a <a href="./cookies.html" target="_blank">Política de Cookies</a>.
     localStorage.setItem(STORAGE_KEY,"rejected");
     banner.remove();
   };
+console.log("Cookies.js carregado");
+console.log(banner);
+console.log(banner.innerHTML);
 
 })();
