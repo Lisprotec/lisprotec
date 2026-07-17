@@ -14,9 +14,11 @@ position:fixed;
 bottom:20px;
 left:20px;
 right:20px;
+max-width:1400px;
+margin:auto;
 background:#1f2937;
 color:#fff;
-padding:20px;
+padding:20px 24px;
 border-radius:12px;
 box-shadow:0 10px 30px rgba(0,0,0,.25);
 z-index:99999;
@@ -25,10 +27,22 @@ display:flex;
 gap:20px;
 align-items:center;
 justify-content:space-between;
-flex-wrap:wrap;
+flex-wrap:nowrap;
 }
-#cookie-banner p{margin:0;flex:1;line-height:1.6;font-size:15px;}
+#cookie-banner p{
+margin:0;
+flex:1 1 auto;
+min-width:0;
+padding-right:20px;
+line-height:1.6;
+font-size:15px;
+white-space:normal;
+word-break:normal;
+}
 #cookie-banner .cookie-buttons{display:flex;gap:10px;flex-wrap:wrap;}
+.cookie-buttons{
+flex-shrink:0;
+}
 #cookie-banner button{border:none;padding:11px 18px;border-radius:8px;cursor:pointer;font-weight:600;transition:.2s;}
 #cookie-accept{background:#f97316;color:#fff;}
 #cookie-accept:hover{background:#ea580c;}
