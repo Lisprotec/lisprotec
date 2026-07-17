@@ -74,12 +74,22 @@ Consulte a <a href="./cookies.html" target="_blank">Política de Cookies</a>.
   document.getElementById("cookie-accept").onclick=function(){
     localStorage.setItem(STORAGE_KEY,"accepted");
     window.dispatchEvent(new Event("cookieConsentAccepted"));
+    banner.style.opacity = "0";
+banner.style.pointerEvents = "none";
+
+setTimeout(() => {
     banner.remove();
+}, 300);
   };
 
   document.getElementById("cookie-reject").onclick=function(){
     localStorage.setItem(STORAGE_KEY,"rejected");
+    banner.style.opacity = "0";
+banner.style.pointerEvents = "none";
+
+setTimeout(() => {
     banner.remove();
+}, 300);
   };
 console.log("Cookies.js carregado");
 console.log(banner);
