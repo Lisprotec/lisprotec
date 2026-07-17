@@ -27,19 +27,25 @@ display:flex;
 gap:20px;
 align-items:center;
 justify-content:space-between;
-flex-wrap:nowrap;
+flex-wrap:wrap;
 }
 #cookie-banner p{
 margin:0;
 flex:1 1 auto;
-min-width:0;
+min-width:320px;
 padding-right:20px;
 line-height:1.6;
 font-size:15px;
 white-space:normal;
 word-break:normal;
 }
-#cookie-banner .cookie-buttons{display:flex;gap:10px;flex-wrap:wrap;}
+#cookie-banner .cookie-buttons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:flex-end;
+margin-left:auto;
+}
 .cookie-buttons{
 flex-shrink:0;
 }
