@@ -4,9 +4,37 @@
 
 (function () {
 
-  const STORAGE_KEY = "lisprotec_cookie_consent";
+ const STORAGE_KEY = "lisprotec_cookie_consent";
 
-  if (localStorage.getItem(STORAGE_KEY)) return;
+const saved = localStorage.getItem(STORAGE_KEY);
+
+if(saved === "accepted"){
+
+    if (typeof gtag === "function") {
+        gtag('consent','update',{
+            ad_storage:'granted',
+            analytics_storage:'granted',
+            ad_user_data:'granted',
+            ad_personalization:'granted'
+        });
+    }
+
+    return;
+}
+
+if(saved === "rejected"){
+
+    if (typeof gtag === "function") {
+        gtag('consent','update',{
+            ad_storage:'denied',
+            analytics_storage:'denied',
+            ad_user_data:'denied',
+            ad_personalization:'denied'
+        });
+    }
+
+    return;
+}
 
   const css = `
 #cookie-banner{
@@ -28,6 +56,8 @@ gap:20px;
 align-items:center;
 justify-content:space-between;
 flex-wrap:wrap;
+opacity:1;
+transition:opacity .3s ease;
 }
 #cookie-banner p{
 margin:0;
@@ -79,6 +109,15 @@ Consulte a <a href="./cookies.html" target="_blank">Política de Cookies</a>.
 
   document.getElementById("cookie-accept").onclick=function(){
     localStorage.setItem(STORAGE_KEY,"accepted");
+
+if (typeof gtag === "function") {
+    gtag('consent', 'update', {
+        ad_storage: 'granted',
+        analytics_storage: 'granted',
+        ad_user_data: 'granted',
+        ad_personalization: 'granted'
+    });
+}
     window.dispatchEvent(new Event("cookieConsentAccepted"));
     banner.style.opacity = "0";
 banner.style.pointerEvents = "none";
@@ -90,6 +129,15 @@ setTimeout(() => {
 
   document.getElementById("cookie-reject").onclick=function(){
     localStorage.setItem(STORAGE_KEY,"rejected");
+
+if (typeof gtag === "function") {
+    gtag('consent', 'update', {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied'
+    });
+}
     banner.style.opacity = "0";
 banner.style.pointerEvents = "none";
 
