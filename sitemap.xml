@@ -3,7 +3,7 @@
 
 <url>
 <loc>https://lisprotec.com/</loc>
-<lastmod>2026-03-16T08:26:26+00:00</lastmod>
+<lastmod>2026-07-19T00:00:00+00:00</lastmod>
 <priority>1.00</priority>
 </url>
 
@@ -14,7 +14,55 @@
 </url>
 
 <url>
+<loc>https://lisprotec.com/projeto-scie-licenciamento.html</loc>
+<lastmod>2026-06-11T12:00:00+00:00</lastmod>
+<priority>0.90</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/preco-projeto-scie.html</loc>
+<lastmod>2026-07-19T00:00:00+00:00</lastmod>
+<priority>0.90</priority>
+</url>
+
+<url>
 <loc>https://lisprotec.com/medidas-autoprotecao.html</loc>
+<lastmod>2026-03-16T08:26:26+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/preco-medidas-autoprotecao.html</loc>
+<lastmod>2026-07-19T00:00:00+00:00</lastmod>
+<priority>0.90</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/medidas-autoprotecao-condominios.html</loc>
+<lastmod>2026-06-11T12:00:00+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/medidas-autoprotecao-escolas.html</loc>
+<lastmod>2026-06-11T12:00:00+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/medidas-autoprotecao-hotel.html</loc>
+<lastmod>2026-07-19T00:00:00+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/seguranca-contra-incendio-armazens.html</loc>
+<lastmod>2026-06-11T12:00:00+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/fichas-seguranca-incendio.html</loc>
 <lastmod>2026-03-16T08:26:26+00:00</lastmod>
 <priority>0.80</priority>
 </url>
@@ -26,8 +74,14 @@
 </url>
 
 <url>
-<loc>https://lisprotec.com/fichas-seguranca-incendio.html</loc>
-<lastmod>2026-03-16T08:26:26+00:00</lastmod>
+<loc>https://lisprotec.com/simulacros-incendio-empresas.html</loc>
+<lastmod>2026-06-11T12:00:00+00:00</lastmod>
+<priority>0.80</priority>
+</url>
+
+<url>
+<loc>https://lisprotec.com/sobre.html</loc>
+<lastmod>2026-05-27T00:00:00+00:00</lastmod>
 <priority>0.80</priority>
 </url>
 
@@ -44,55 +98,9 @@
 </url>
 
 <url>
-<loc><url>
-<loc>https://lisprotec.com/terms.html</loc>
-<lastmod>2026-03-16T08:26:26+00:00</lastmod>
-<priority>0.30</priority>
-</url></loc>
-<lastmod>2026-03-16T08:26:26+00:00</lastmod>
+<loc>https://lisprotec.com/cookies.html</loc>
+<lastmod>2026-07-19T00:00:00+00:00</lastmod>
 <priority>0.30</priority>
 </url>
-
-<url>
-<loc>https://lisprotec.com/medidas-autoprotecao-condominios.html</loc>
-<lastmod>2026-06-11T12:00:00+00:00</lastmod>
-<priority>0.80</priority>
-</url>
-
-<url>
-<loc>https://lisprotec.com/medidas-autoprotecao-escolas.html</loc>
-<lastmod>2026-06-11T12:00:00+00:00</lastmod>
-<priority>0.80</priority>
-</url>
-
-<url>
-<loc>https://lisprotec.com/medidas-autoprotecao-hoteis.html</loc>
-<lastmod>2026-06-11T12:00:00+00:00</lastmod>
-<priority>0.80</priority>
-</url>
-
-<url>
-<loc>https://lisprotec.com/projeto-scie-licenciamento.html</loc>
-<lastmod>2026-06-11T12:00:00+00:00</lastmod>
-<priority>0.90</priority>
-</url>
-
-<url>
-<loc>https://lisprotec.com/simulacros-incendio-empresas.html</loc>
-<lastmod>2026-06-11T12:00:00+00:00</lastmod>
-<priority>0.80</priority>
-</url>
-
-<url>
-<loc>https://lisprotec.com/seguranca-contra-incendio-armazens.html</loc>
-<lastmod>2026-06-11T12:00:00+00:00</lastmod>
-<priority>0.80</priority>
-</url>
-   
-   <url>
-    <loc>https://lisprotec.com/sobre.html</loc>
-    <lastmod>2026-05-27</lastmod>
-    <priority>0.80</priority>
-  </url>
 
 </urlset>
