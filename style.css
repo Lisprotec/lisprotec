@@ -1735,3 +1735,45 @@ body::before{
 
     z-index:-1;
 }
+.footer-links{
+    display:flex;
+    justify-content:center;
+    gap:35px;
+    flex-wrap:wrap;
+    margin:20px 0;
+}
+
+.footer-dropdown{
+    text-align:left;
+}
+
+.footer-dropdown summary{
+    cursor:pointer;
+    color:#d7d7d7;
+    font-weight:600;
+    list-style:none;
+    user-select:none;
+    margin-bottom:8px;
+}
+
+.footer-dropdown summary:hover{
+    color:#ffffff;
+}
+
+.footer-dropdown a{
+    display:block;
+    text-decoration:none;
+    color:#cfcfcf;
+    font-size:14px;
+    padding:4px 0;
+}
+
+.footer-dropdown a:hover{
+    color:#ffffff;
+}
+
+.footer-legal{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
