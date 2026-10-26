@@ -2762,100 +2762,251 @@ function resetFireloadProfessional() {
 
 
 /* =========================================================
+   INICIALIZAÇÃO — CALCULADORA DENSIDADE CARGA DE INCÊNDIO
+   ========================================================= */
+
+function ensureFireloadPresetCoefficients() {
+
+  const productSelect = flById("fl-product-select");
+
+  if (!productSelect) return;
+
+  /*
+   * Cria automaticamente os campos Ci e Rai caso
+   * não existam no HTML original.
+   */
+
+  let container = document.getElementById("fl-product-coefficients");
+
+  if (!container) {
+
+    container = document.createElement("div");
+
+    container.id = "fl-product-coefficients";
+
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "1fr 1fr";
+    container.style.gap = "12px";
+    container.style.marginTop = "12px";
+
+    const ciWrapper = document.createElement("div");
+
+    ciWrapper.innerHTML = `
+      <label for="fl-product-c">
+        Coeficiente de combustibilidade — Ci
+      </label>
+
+      <select id="fl-product-c">
+        <option value="">Selecionar Ci</option>
+      </select>
+    `;
+
+    const raiWrapper = document.createElement("div");
+
+    raiWrapper.innerHTML = `
+      <label for="fl-product-r">
+        Coeficiente de ativação — Rai
+      </label>
+
+      <select id="fl-product-r">
+        <option value="">Selecionar Rai</option>
+      </select>
+    `;
+
+    container.appendChild(ciWrapper);
+    container.appendChild(raiWrapper);
+
+    /*
+     * Coloca os campos imediatamente depois
+     * do campo de seleção do produto.
+     */
+    productSelect.parentNode.insertBefore(
+      container,
+      productSelect.nextSibling
+    );
+  }
+
+  const cSelect = flById("fl-product-c");
+  const rSelect = flById("fl-product-r");
+
+  if (cSelect) {
+
+    cSelect.innerHTML =
+      '<option value="">Selecionar Ci</option>';
+
+    FIRELOAD_CI_OPTIONS.forEach(optionData => {
+
+      const option = document.createElement("option");
+
+      option.value = optionData.ci;
+
+      option.textContent =
+        optionData.label;
+
+      cSelect.appendChild(option);
+
+    });
+  }
+
+  if (rSelect) {
+
+    rSelect.innerHTML =
+      '<option value="">Selecionar Rai</option>';
+
+    FIRELOAD_RAI_OPTIONS.forEach(optionData => {
+
+      const option = document.createElement("option");
+
+      option.value = optionData.rai;
+
+      option.textContent =
+        optionData.label;
+
+      rSelect.appendChild(option);
+
+    });
+  }
+}
+
+
+/* =========================================================
+   MODO DE ENTRADA
+   ========================================================= */
+
+function renderFireloadEntryMode() {
+
+  const mode =
+    flById("fl-entry-mode")?.value ||
+    "predefinido";
+
+  const manual =
+    flById("fl-manual-fields");
+
+  if (manual) {
+
+    if (mode === "manual") {
+
+      manual.classList.remove("hidden");
+
+    } else {
+
+      manual.classList.add("hidden");
+
+    }
+  }
+
+  /*
+   * No modo predefinido mostramos Ci e Rai.
+   * No modo manual usamos os campos manuais.
+   */
+
+  const presetCoefficients =
+    document.getElementById(
+      "fl-product-coefficients"
+    );
+
+  if (presetCoefficients) {
+
+    if (mode === "manual") {
+
+      presetCoefficients.style.display =
+        "none";
+
+    } else {
+
+      presetCoefficients.style.display =
+        "grid";
+
+    }
+  }
+}
+
+
+/* =========================================================
    INICIALIZAÇÃO
    ========================================================= */
 
 function initFireloadCalculator() {
 
-  if (!flById("fl-method")) return;
+  if (!flById("fl-method")) {
+    return;
+  }
 
-
+  /*
+   * Produtos
+   */
   populateFireloadProductSelect();
 
+  /*
+   * Campos Ci / Rai do modo manual
+   */
   populateFireloadCoefficientSelects();
 
+  /*
+   * Campos Ci / Rai do modo predefinido
+   */
+  ensureFireloadPresetCoefficients();
+
+  /*
+   * Estado inicial
+   */
   renderFireloadEntryMode();
+
+  renderFireloadMode();
 
   renderFireloadItems();
 
 
-  flById(
-    "fl-method"
-  )?.addEventListener(
-    "change",
-    renderFireloadMode
-  );
+  /* =======================================================
+     EVENTOS
+     ======================================================= */
+
+  flById("fl-method")
+    ?.addEventListener(
+      "change",
+      renderFireloadMode
+    );
 
 
-  flById(
-    "fl-entry-mode"
-  )?.addEventListener(
-    "change",
-    renderFireloadEntryMode
-  );
+  flById("fl-entry-mode")
+    ?.addEventListener(
+      "change",
+      renderFireloadEntryMode
+    );
 
 
-  /*
-   * Botão adicionar
-   */
-
-  flById(
-    "fl-add-item-btn"
-  )?.addEventListener(
-    "click",
-    addFireloadItem
-  );
+  flById("fl-add-item-btn")
+    ?.addEventListener(
+      "click",
+      addFireloadItem
+    );
 
 
-  /*
-   * Botão calcular
-   */
-
-  flById(
-    "fl-calc-btn"
-  )?.addEventListener(
-    "click",
-    calculateFireloadProfessional
-  );
+  flById("fl-calc-btn")
+    ?.addEventListener(
+      "click",
+      calculateFireloadProfessional
+    );
 
 
-  /*
-   * Botão limpar
-   */
-
-  flById(
-    "fl-reset-btn"
-  )?.addEventListener(
-    "click",
-    resetFireloadProfessional
-  );
+  flById("fl-reset-btn")
+    ?.addEventListener(
+      "click",
+      resetFireloadProfessional
+    );
 
 }
-document.addEventListener("DOMContentLoaded", initSCIECalculator);
 
-  if (!flById("fl-method")) return;
 
-  populateFireloadProductSelect();
-  populateProbabilisticPresets();
-  renderFireloadEntryMode();
-  renderFireloadItems();
-
-  flById("fl-method")?.addEventListener("change", renderFireloadMode);
-  flById("fl-entry-mode")?.addEventListener("change", renderFireloadEntryMode);
-
-  flById("fl-prob-mode")?.addEventListener("change", () => {
-    populateProbabilisticPresets();
-    if (flById("fl-prob-q")) flById("fl-prob-q").value = "";
-    if (flById("fl-prob-c")) flById("fl-prob-c").value = "";
-    if (flById("fl-prob-r")) flById("fl-prob-r").selectedIndex = 0;
-  });
-
-  flById("fl-prob-preset")?.addEventListener("change", applyProbabilisticPreset);
-  flById("fl-add-item-btn")?.addEventListener("click", addFireloadItem);
-  flById("fl-calc-btn")?.addEventListener("click", calculateFireloadProfessional);
-  flById("fl-reset-btn")?.addEventListener("click", resetFireloadProfessional);
-   }
-  /* ===== VERIFICADOR DE ENQUADRAMENTO SCIE ===== */
+/*
+ * Inicialização correta da calculadora.
+ *
+ * NÃO usar aqui initSCIECalculator().
+ */
+document.addEventListener(
+  "DOMContentLoaded",
+  initFireloadCalculator
+);
 
 const CHECK_UT_LABELS = {
   I: "UT I – Habitacional",
