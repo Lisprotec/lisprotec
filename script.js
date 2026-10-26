@@ -1609,6 +1609,40 @@ const FIRELOAD_CI_OPTIONS = [
   { value: "1.6", label: "Alto — Ci = 1,60", ci: 1.60 }
 ];
 
+const FIRELOAD_CI_BY_CATEGORY = {
+  "Gases": 1.60,
+  "Líquidos inflamáveis": 1.60,
+  "Explosivos": 1.60,
+
+  "Líquidos combustíveis": 1.30,
+  "Combustíveis": 1.30,
+  "Plásticos": 1.30,
+  "Celulósicos": 1.30,
+  "Madeiras": 1.30,
+  "Fibras": 1.30,
+  "Têxteis": 1.30,
+  "Resinas": 1.30,
+  "Elastómeros": 1.30,
+  "Orgânicos": 1.30,
+  "Alimentares": 1.30,
+  "Resíduos": 1.30,
+  "Químicos": 1.30,
+
+  "Metais": 1.00
+};
+
+function getFireloadCi(product) {
+  if (!product) return 0;
+  return Number(FIRELOAD_CI_BY_CATEGORY[product.category] || 0);
+}
+
+function fireloadCiLabel(value) {
+  if (Number(value) === 1.60) return "Alto";
+  if (Number(value) === 1.30) return "Médio";
+  if (Number(value) === 1.00) return "Baixo";
+  return "—";
+}
+
 const FIRELOAD_RAI_OPTIONS = [
   { value: "1", label: "Baixo — Rai = 1,00", rai: 1.00 },
   { value: "1.5", label: "Médio — Rai = 1,50", rai: 1.50 },
@@ -2158,6 +2192,7 @@ function ensureFireloadPresetCoefficients() {
   if (!productSelect) return;
 
   let container = document.getElementById("fl-product-coefficients");
+
   if (!container) {
     container = document.createElement("div");
     container.id = "fl-product-coefficients";
@@ -2165,7 +2200,11 @@ function ensureFireloadPresetCoefficients() {
     container.style.gridTemplateColumns = "1fr 1fr";
     container.style.gap = "12px";
     container.style.marginTop = "12px";
-    productSelect.parentNode.insertBefore(container, productSelect.nextSibling);
+
+    productSelect.parentNode.insertBefore(
+      container,
+      productSelect.nextSibling
+    );
   }
 
   container.innerHTML = `
@@ -2177,69 +2216,123 @@ function ensureFireloadPresetCoefficients() {
         <option value="armazenamento">Armazenamento</option>
       </select>
     </div>
+
     <div>
       <label for="fl-activity-select">Atividade — Quadro II</label>
       <select id="fl-activity-select" disabled>
         <option value="">Selecionar atividade</option>
       </select>
     </div>
+
     <div>
-      <label for="fl-product-c">Coeficiente de combustibilidade — Ci</label>
-      <select id="fl-product-c">
-        <option value="">Selecionar Ci</option>
-      </select>
+      <label>Coeficiente de combustibilidade — Ci</label>
+      <div id="fl-auto-ci"
+        style="padding:10px 12px;border:1px solid rgba(127,127,127,.25);border-radius:8px;min-height:20px;">
+        Selecione o produto/material.
+      </div>
     </div>
+
     <div>
       <label>Coeficiente de ativação — Rai</label>
-      <div id="fl-auto-rai" style="padding:10px 12px;border:1px solid rgba(127,127,127,.25);border-radius:8px;min-height:20px;">
+      <div id="fl-auto-rai"
+        style="padding:10px 12px;border:1px solid rgba(127,127,127,.25);border-radius:8px;min-height:20px;">
         Selecione o tipo e a atividade.
       </div>
     </div>
   `;
-
-  const cSelect = flById("fl-product-c");
-  FIRELOAD_CI_OPTIONS.forEach(o => {
-    const option = document.createElement("option");
-    option.value = o.ci; option.textContent = o.label; cSelect.appendChild(option);
-  });
 
   const typeSelect = flById("fl-activity-type");
   const activitySelect = flById("fl-activity-select");
 
   function updateActivities() {
     const type = typeSelect.value;
-    activitySelect.innerHTML = '<option value="">Selecionar atividade</option>';
+
+    activitySelect.innerHTML =
+      '<option value="">Selecionar atividade</option>';
+
     activitySelect.disabled = !type;
-    if (!type) { updateFireloadAutomaticFields(); return; }
+
+    if (!type) {
+      updateFireloadAutomaticFields();
+      return;
+    }
+
     FIRELOAD_ACTIVITY_DATA.forEach(a => {
       const rai = getFireloadActivityRai(a, type);
       const q = getFireloadActivityQ(a, type);
+
       if (rai > 0 && q > 0) {
         const option = document.createElement("option");
+
         option.value = a[0];
-        option.textContent = `${a[0]} — Rai ${fireloadRiskLabel(rai)}`;
+        option.textContent =
+          `${a[0]} — Rai ${fireloadRiskLabel(rai)}`;
+
         activitySelect.appendChild(option);
       }
     });
+
     updateFireloadAutomaticFields();
   }
 
   typeSelect.addEventListener("change", updateActivities);
-  activitySelect.addEventListener("change", updateFireloadAutomaticFields);
-  productSelect.addEventListener("change", updateFireloadAutomaticFields);
+  activitySelect.addEventListener(
+    "change",
+    updateFireloadAutomaticFields
+  );
+
+  productSelect.addEventListener(
+    "change",
+    updateFireloadAutomaticFields
+  );
+
   updateActivities();
 }
 
 function updateFireloadAutomaticFields() {
+  const selectedId =
+    flById("fl-product-select")?.value || "";
+
+  const product =
+    FIRELOAD_PRODUCTS.find(p => p.id === selectedId);
+
   const activity = getFireloadActivity();
-  const type = flById("fl-activity-type")?.value || "";
-  const rai = getFireloadActivityRai(activity, type);
-  const q = getFireloadActivityQ(activity, type);
-  const box = flById("fl-auto-rai");
-  if (box) {
-    box.innerHTML = activity && rai > 0
-      ? `<strong>${fireloadRiskLabel(rai)}</strong> — Rai = ${flFormatNumber(rai)}${q > 0 ? ` · valor estatístico = ${flFormatNumber(q)} ${type === "armazenamento" ? "MJ/m³" : "MJ/m²"}` : ""}`
-      : "Selecione o tipo e a atividade.";
+
+  const type =
+    flById("fl-activity-type")?.value || "";
+
+  const ci = getFireloadCi(product);
+
+  const rai =
+    getFireloadActivityRai(activity, type);
+
+  const q =
+    getFireloadActivityQ(activity, type);
+
+  const ciBox = flById("fl-auto-ci");
+
+  if (ciBox) {
+    ciBox.innerHTML =
+      product && ci > 0
+        ? `<strong>${fireloadCiLabel(ci)}</strong> — Ci = ${flFormatNumber(ci)}`
+        : "Selecione o produto/material.";
+  }
+
+  const raiBox = flById("fl-auto-rai");
+
+  if (raiBox) {
+    raiBox.innerHTML =
+      activity && rai > 0
+        ? `<strong>${fireloadRiskLabel(rai)}</strong> — Rai = ${flFormatNumber(rai)}${
+            q > 0
+              ? ` · valor estatístico = ${flFormatNumber(q)} ${
+                  type === "armazenamento"
+                    ? "MJ/m³"
+                    : "MJ/m²"
+                }`
+              : ""
+          }`
+        : "Selecione o tipo e a atividade.";
   }
 }
 
@@ -2268,13 +2361,16 @@ function buildFireloadItemFromPreset(quantity, unit) {
   const product = FIRELOAD_PRODUCTS.find(p => p.id === selectedId);
   const activity = getFireloadActivity();
   const type = flById("fl-activity-type")?.value || "";
-  const c = Number(flById("fl-product-c")?.value || 0);
+  const c = getFireloadCi(product);
   const r = getFireloadActivityRai(activity, type);
 
   if (!product) { alert("Selecione primeiro o produto/material."); return null; }
   if (!type) { alert("Selecione se a atividade é Fabricação e reparação ou Armazenamento."); return null; }
   if (!activity || r <= 0) { alert("Selecione a atividade correspondente do Quadro II."); return null; }
-  if (c <= 0) { alert("Selecione o coeficiente de combustibilidade Ci. O Artigo 6.º exige a classificação pelas características reais do combustível."); return null; }
+  if (c <= 0) {
+  alert("Não foi possível determinar automaticamente o coeficiente Ci para o produto selecionado.");
+  return null;
+}
 
   return {
     name: product.name,
@@ -2340,7 +2436,9 @@ function getDeterministicCalculation(area) {
 function getProbabilisticCalculation(area) {
   const activity=getFireloadActivity();
   const type=flById("fl-activity-type")?.value || "";
-  const c=Number(flById("fl-product-c")?.value || flById("fl-prob-c")?.value || 0);
+  const selectedId = flById("fl-product-select")?.value || "";
+  const product = FIRELOAD_PRODUCTS.find(p => p.id === selectedId);
+  const c = getFireloadCi(product);
   const zoneArea=Number(flById("fl-prob-zone-area")?.value || area || 0);
   const height=Number(flById("fl-prob-height")?.value || 0);
   const q=getFireloadActivityQ(activity,type);
@@ -2415,6 +2513,7 @@ function resetFireloadProfessional() {
   ["fl-method","fl-area","fl-entry-mode","fl-product-select","fl-product-c","fl-product-r","fl-manual-name","fl-manual-category","fl-manual-hi","fl-manual-c","fl-manual-r","fl-manual-unit","fl-quantity","fl-unit","fl-prob-mode","fl-prob-preset","fl-prob-zone-area","fl-prob-height","fl-prob-q","fl-prob-c","fl-prob-r","fl-activity-type","fl-activity-select"].forEach(id=>{const el=flById(id);if(!el)return;if(el.tagName==="SELECT")el.selectedIndex=0;else el.value="";});
   flById("fl-activity-select")?.setAttribute("disabled","disabled");
   flById("fl-auto-rai") && (flById("fl-auto-rai").textContent="Selecione o tipo e a atividade.");
+  flById("fl-auto-ci") && (flById("fl-auto-ci").textContent="Selecione o produto/material.");
   flById("fl-deterministico")?.classList.add("hidden");
   flById("fl-probabilistico")?.classList.add("hidden");
   flById("fl-manual-fields")?.classList.add("hidden");
