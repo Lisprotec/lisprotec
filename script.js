@@ -2433,40 +2433,426 @@ function getDeterministicCalculation(area) {
   };
 }
 
-function getProbabilisticCalculation(area) {
-  const activity=getFireloadActivity();
-  const type=flById("fl-activity-type")?.value || "";
-  const selectedId = flById("fl-product-select")?.value || "";
-  const product = FIRELOAD_PRODUCTS.find(p => p.id === selectedId);
-  const c = getFireloadCi(product);
-  const zoneArea=Number(flById("fl-prob-zone-area")?.value || area || 0);
-  const height=Number(flById("fl-prob-height")?.value || 0);
-  const q=getFireloadActivityQ(activity,type);
-  const r=getFireloadActivityRai(activity,type);
-  if (!type || !activity || q<=0 || r<=0 || c<=0 || zoneArea<=0) {
-    alert("Selecione o tipo de atividade, a atividade do Quadro II e o Ci. Introduza também a área do compartimento.");
-    return null;
-  }
-  let totalMJ=0, formulaText="";
-  if (type === "atividade" || type === "fabricacao") {
-    totalMJ=q*zoneArea*c*r;
-    formulaText=`${flFormatNumber(q)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
-  } else {
-    if (height<=0) { alert("Introduza a altura de armazenagem."); return null; }
-    totalMJ=q*height*zoneArea*c*r;
-    formulaText=`${flFormatNumber(q)} × ${flFormatNumber(height)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
-  }
-  return {
-    method:"Probabilístico", totalMJ, density:totalMJ/area,
-    memory:[
-      {title:"Atividade",detail:`${activity[0]} — ${type === "armazenamento" ? "Armazenamento" : "Fabricação e reparação"}`},
-      {title:"Rai automático",detail:`${fireloadRiskLabel(r)} — Rai = ${flFormatNumber(r)}`},
-      {title:"Valor do Quadro II",detail:`${flFormatNumber(q)} ${type === "armazenamento" ? "MJ/m³" : "MJ/m²"}`},
-      {title:"Memória de cálculo",detail:`${formulaText} = ${flFormatNumber(totalMJ)} MJ`}
-    ]
-  };
+function ensureProbabilisticUI() {
+  const panel = flById("fl-probabilistico");
+  if (!panel) return;
+
+  panel.innerHTML = `
+    <div class="panel" style="margin-top:16px;">
+      <h3>Dados do compartimento</h3>
+
+      <div class="form-grid">
+        <label>
+          Área total do compartimento (m²)
+          <input id="fl-prob-total-area" type="number" min="0" step="0.01"
+                 placeholder="Ex.: 500">
+        </label>
+
+        <label>
+          Número de atividades diferentes
+          <input id="fl-prob-num-activities" type="number" min="1" step="1"
+                 value="1">
+        </label>
+      </div>
+
+      <button type="button" id="fl-prob-next-btn" class="btn">
+        Avançar
+      </button>
+    </div>
+
+    <div id="fl-prob-step-2" style="display:none;margin-top:16px;">
+      <div id="fl-prob-activities"></div>
+
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button type="button" id="fl-prob-back-btn" class="btn">
+          Voltar
+        </button>
+
+        <button type="button" id="fl-prob-calculate-btn" class="btn">
+          Calcular
+        </button>
+      </div>
+    </div>
+  `;
+
+  const nextBtn = flById("fl-prob-next-btn");
+  const backBtn = flById("fl-prob-back-btn");
+  const calcBtn = flById("fl-prob-calculate-btn");
+
+  nextBtn?.addEventListener("click", () => {
+    const area = Number(flById("fl-prob-total-area")?.value || 0);
+    const number = Number(flById("fl-prob-num-activities")?.value || 0);
+
+    if (area <= 0) {
+      alert("Introduza a área total do compartimento.");
+      return;
+    }
+
+    if (!Number.isInteger(number) || number < 1) {
+      alert("Indique pelo menos uma atividade.");
+      return;
+    }
+
+    const mainArea = flById("fl-area");
+    if (mainArea) mainArea.value = area;
+
+    buildProbabilisticActivities(number);
+
+    flById("fl-prob-step-2").style.display = "block";
+    nextBtn.style.display = "none";
+  });
+
+  backBtn?.addEventListener("click", () => {
+    flById("fl-prob-step-2").style.display = "none";
+    nextBtn.style.display = "inline-block";
+  });
+
+  calcBtn?.addEventListener("click", () => {
+    const area = Number(flById("fl-prob-total-area")?.value || 0);
+
+    if (area <= 0) {
+      alert("Introduza a área total do compartimento.");
+      return;
+    }
+
+    const calculation = getProbabilisticCalculation(area);
+
+    if (calculation) {
+      renderFireloadResult(area, calculation);
+    }
+  });
 }
 
+
+function buildProbabilisticActivities(number) {
+  const container = flById("fl-prob-activities");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  for (let i = 1; i <= number; i++) {
+    const activityOptions = FIRELOAD_ACTIVITY_DATA
+      .map(a => {
+        const name = a[0];
+        const qFabricacao = Number(a[3] || 0);
+        const qArmazenamento = Number(a[4] || 0);
+        const raiFabricacao = Number(a[1] || 0);
+        const raiArmazenamento = Number(a[2] || 0);
+
+        if (
+          qFabricacao <= 0 &&
+          qArmazenamento <= 0 &&
+          raiFabricacao <= 0 &&
+          raiArmazenamento <= 0
+        ) {
+          return "";
+        }
+
+        return `<option value="${name.replace(/"/g, "&quot;")}">${name}</option>`;
+      })
+      .join("");
+
+    const productOptions = FIRELOAD_PRODUCTS
+      .map(product =>
+        `<option value="${product.id}">
+          ${product.name}
+        </option>`
+      )
+      .join("");
+
+    const card = document.createElement("div");
+
+    card.className = "panel";
+    card.style.marginBottom = "16px";
+
+    card.innerHTML = `
+      <h3>Atividade ${i}</h3>
+
+      <div class="form-grid">
+
+        <label>
+          Tipo de atividade
+          <select class="fl-prob-activity-type">
+            <option value="">Selecionar...</option>
+            <option value="fabricacao">Fabricação e reparação</option>
+            <option value="armazenamento">Armazenamento</option>
+          </select>
+        </label>
+
+        <label>
+          Atividade — Quadro II
+          <select class="fl-prob-activity-select">
+            <option value="">Selecionar atividade...</option>
+            ${activityOptions}
+          </select>
+        </label>
+
+        <label>
+          Área da atividade (m²)
+          <input class="fl-prob-activity-area"
+                 type="number"
+                 min="0"
+                 step="0.01"
+                 placeholder="Ex.: 250">
+        </label>
+
+        <label class="fl-prob-height-wrap" style="display:none;">
+          Altura média de armazenamento (m)
+          <input class="fl-prob-activity-height"
+                 type="number"
+                 min="0"
+                 step="0.01"
+                 placeholder="Ex.: 3">
+        </label>
+
+        <label>
+          Produto / material
+          <select class="fl-prob-product-select">
+            <option value="">Selecionar produto/material...</option>
+            ${productOptions}
+          </select>
+        </label>
+
+      </div>
+
+      <div class="fl-prob-auto-info"
+           style="margin-top:12px;padding:12px;border-radius:8px;background:rgba(255,255,255,.04);">
+
+        <div>
+          <strong>Ci:</strong>
+          <span class="fl-prob-ci">—</span>
+        </div>
+
+        <div>
+          <strong>Rai:</strong>
+          <span class="fl-prob-rai">—</span>
+        </div>
+
+        <div>
+          <strong>Valor do Quadro II:</strong>
+          <span class="fl-prob-q">—</span>
+        </div>
+
+      </div>
+    `;
+
+    container.appendChild(card);
+
+    const typeSelect = card.querySelector(".fl-prob-activity-type");
+    const activitySelect = card.querySelector(".fl-prob-activity-select");
+    const productSelect = card.querySelector(".fl-prob-product-select");
+    const heightWrap = card.querySelector(".fl-prob-height-wrap");
+
+    function updateAutomaticValues() {
+      const type = typeSelect.value;
+      const activityName = activitySelect.value;
+      const productId = productSelect.value;
+
+      const activity = FIRELOAD_ACTIVITY_DATA.find(
+        a => a[0] === activityName
+      );
+
+      const product = FIRELOAD_PRODUCTS.find(
+        p => p.id === productId
+      );
+
+      const ci = getFireloadCi(product);
+      const rai = getFireloadActivityRai(activity, type);
+      const q = getFireloadActivityQ(activity, type);
+
+      card.querySelector(".fl-prob-ci").textContent =
+        ci > 0 ? `${fireloadCiLabel(ci)} — Ci = ${flFormatNumber(ci)}` : "—";
+
+      card.querySelector(".fl-prob-rai").textContent =
+        rai > 0 ? `${fireloadRiskLabel(rai)} — Rai = ${flFormatNumber(rai)}` : "—";
+
+      if (q > 0) {
+        card.querySelector(".fl-prob-q").textContent =
+          type === "armazenamento"
+            ? `${flFormatNumber(q)} MJ/m³`
+            : `${flFormatNumber(q)} MJ/m²`;
+      } else {
+        card.querySelector(".fl-prob-q").textContent = "—";
+      }
+
+      heightWrap.style.display =
+        type === "armazenamento" ? "block" : "none";
+    }
+
+    typeSelect.addEventListener("change", updateAutomaticValues);
+    activitySelect.addEventListener("change", updateAutomaticValues);
+    productSelect.addEventListener("change", updateAutomaticValues);
+  }
+}
+
+
+function getProbabilisticCalculation(area) {
+  const cards = document.querySelectorAll(
+    "#fl-prob-activities > .panel"
+  );
+
+  if (!cards.length) {
+    alert("Adicione pelo menos uma atividade.");
+    return null;
+  }
+
+  let totalActivityArea = 0;
+  let totalMJ = 0;
+  const memory = [];
+
+  cards.forEach((card, index) => {
+
+    const type =
+      card.querySelector(".fl-prob-activity-type")?.value || "";
+
+    const activityName =
+      card.querySelector(".fl-prob-activity-select")?.value || "";
+
+    const activityArea =
+      Number(
+        card.querySelector(".fl-prob-activity-area")?.value || 0
+      );
+
+    const height =
+      Number(
+        card.querySelector(".fl-prob-activity-height")?.value || 0
+      );
+
+    const productId =
+      card.querySelector(".fl-prob-product-select")?.value || "";
+
+    const activity =
+      FIRELOAD_ACTIVITY_DATA.find(
+        a => a[0] === activityName
+      );
+
+    const product =
+      FIRELOAD_PRODUCTS.find(
+        p => p.id === productId
+      );
+
+    const ci = getFireloadCi(product);
+    const rai = getFireloadActivityRai(activity, type);
+    const q = getFireloadActivityQ(activity, type);
+
+    if (!type) {
+      throw new Error(`Selecione o tipo da Atividade ${index + 1}.`);
+    }
+
+    if (!activity) {
+      throw new Error(`Selecione a atividade da Atividade ${index + 1}.`);
+    }
+
+    if (activityArea <= 0) {
+      throw new Error(`Introduza a área da Atividade ${index + 1}.`);
+    }
+
+    if (!product) {
+      throw new Error(`Selecione o produto/material da Atividade ${index + 1}.`);
+    }
+
+    if (ci <= 0) {
+      throw new Error(`Não foi possível determinar o Ci da Atividade ${index + 1}.`);
+    }
+
+    if (rai <= 0) {
+      throw new Error(`Não foi possível determinar o Rai da Atividade ${index + 1}.`);
+    }
+
+    if (q <= 0) {
+      throw new Error(`Não foi possível determinar o valor do Quadro II da Atividade ${index + 1}.`);
+    }
+
+    if (
+      type === "armazenamento" &&
+      height <= 0
+    ) {
+      throw new Error(
+        `Introduza a altura de armazenamento da Atividade ${index + 1}.`
+      );
+    }
+
+    totalActivityArea += activityArea;
+
+    let partialMJ;
+    let formula;
+
+    if (type === "armazenamento") {
+
+      partialMJ =
+        q *
+        height *
+        activityArea *
+        ci *
+        rai;
+
+      formula =
+        `${flFormatNumber(q)} × ` +
+        `${flFormatNumber(height)} × ` +
+        `${flFormatNumber(activityArea)} × ` +
+        `${flFormatNumber(ci)} × ` +
+        `${flFormatNumber(rai)}`;
+
+    } else {
+
+      partialMJ =
+        q *
+        activityArea *
+        ci *
+        rai;
+
+      formula =
+        `${flFormatNumber(q)} × ` +
+        `${flFormatNumber(activityArea)} × ` +
+        `${flFormatNumber(ci)} × ` +
+        `${flFormatNumber(rai)}`;
+    }
+
+    totalMJ += partialMJ;
+
+    memory.push({
+      title: `Atividade ${index + 1} — ${activityName}`,
+      detail:
+        `${type === "armazenamento"
+          ? "Armazenamento"
+          : "Fabricação e reparação"} | ` +
+        `Área: ${flFormatNumber(activityArea)} m² | ` +
+        `Ci = ${flFormatNumber(ci)} | ` +
+        `Rai = ${flFormatNumber(rai)} | ` +
+        `${type === "armazenamento" ? "qvi" : "qsi"} = ${flFormatNumber(q)} | ` +
+        `Cálculo: ${formula} = ${flFormatNumber(partialMJ)} MJ`
+    });
+  });
+
+  if (totalActivityArea > area + 0.0001) {
+    alert(
+      `A soma das áreas das atividades (${flFormatNumber(totalActivityArea)} m²) ` +
+      `não pode ser superior à área total do compartimento (${flFormatNumber(area)} m²).`
+    );
+
+    return null;
+  }
+
+  if (totalActivityArea < area - 0.0001) {
+    const remaining =
+      area - totalActivityArea;
+
+    const confirmResult = confirm(
+      `As áreas das atividades totalizam ${flFormatNumber(totalActivityArea)} m², ` +
+      `ficando ${flFormatNumber(remaining)} m² sem atividade definida.\n\n` +
+      `Pretende continuar?`
+    );
+
+    if (!confirmResult) return null;
+  }
+
+  return {
+    method: "Probabilístico",
+    totalMJ,
+    density: totalMJ / area,
+    memory
+  };
+}
 function addFireloadItem() {
   const quantity=Number(flById("fl-quantity")?.value || 0);
   const unit=flById("fl-unit")?.value || "kg";
@@ -2495,44 +2881,159 @@ function renderFireloadResult(area,calculation) {
     <p class="risk-legal-note">Ferramenta indicativa. O cálculo deve ser validado tecnicamente à luz do Despacho n.º 8954/2020 e do enquadramento SCIE aplicável.</p>
   `;
 }
-
 function calculateFireloadProfessional() {
-  const method=flById("fl-method")?.value || "";
-  const area=Number(flById("fl-area")?.value || 0);
-  if(!method) { alert("Selecione o método de cálculo."); return; }
-  if(area<=0) { alert("Introduza a área útil do compartimento."); return; }
-  if(method === "deterministico") {
-    if(!fireloadItems.length) { alert("Adicione pelo menos um produto/material."); return; }
-    renderFireloadResult(area,getDeterministicCalculation(area)); return;
+  const method = flById("fl-method")?.value || "";
+  const area = Number(flById("fl-area")?.value || 0);
+
+  if (!method) {
+    alert("Selecione o método de cálculo.");
+    return;
   }
-  const calculation=getProbabilisticCalculation(area); if(calculation) renderFireloadResult(area,calculation);
+
+  if (area <= 0) {
+    alert("Introduza a área útil do compartimento.");
+    return;
+  }
+
+  if (method === "deterministico") {
+
+    if (!fireloadItems.length) {
+      alert("Adicione pelo menos um produto/material.");
+      return;
+    }
+
+    renderFireloadResult(
+      area,
+      getDeterministicCalculation(area)
+    );
+
+    return;
+  }
+
+  try {
+
+    const calculation =
+      getProbabilisticCalculation(area);
+
+    if (calculation) {
+      renderFireloadResult(
+        area,
+        calculation
+      );
+    }
+
+  } catch (error) {
+
+    alert(error.message);
+  }
 }
 
 function resetFireloadProfessional() {
-  fireloadItems=[]; renderFireloadItems();
-  ["fl-method","fl-area","fl-entry-mode","fl-product-select","fl-product-c","fl-product-r","fl-manual-name","fl-manual-category","fl-manual-hi","fl-manual-c","fl-manual-r","fl-manual-unit","fl-quantity","fl-unit","fl-prob-mode","fl-prob-preset","fl-prob-zone-area","fl-prob-height","fl-prob-q","fl-prob-c","fl-prob-r","fl-activity-type","fl-activity-select"].forEach(id=>{const el=flById(id);if(!el)return;if(el.tagName==="SELECT")el.selectedIndex=0;else el.value="";});
-  flById("fl-activity-select")?.setAttribute("disabled","disabled");
-  flById("fl-auto-rai") && (flById("fl-auto-rai").textContent="Selecione o tipo e a atividade.");
-  flById("fl-auto-ci") && (flById("fl-auto-ci").textContent="Selecione o produto/material.");
-  flById("fl-deterministico")?.classList.add("hidden");
-  flById("fl-probabilistico")?.classList.add("hidden");
-  flById("fl-manual-fields")?.classList.add("hidden");
-  const result=flById("fl-result"); if(result){result.className="panel risk-result";result.innerHTML="";}
-}
 
+  fireloadItems = [];
+  renderFireloadItems();
+
+  [
+    "fl-method",
+    "fl-area",
+    "fl-entry-mode",
+    "fl-product-select",
+    "fl-product-c",
+    "fl-product-r",
+    "fl-manual-name",
+    "fl-manual-category",
+    "fl-manual-hi",
+    "fl-manual-c",
+    "fl-manual-r",
+    "fl-manual-unit",
+    "fl-quantity",
+    "fl-unit"
+  ].forEach(id => {
+
+    const el = flById(id);
+
+    if (!el) return;
+
+    if (el.tagName === "SELECT") {
+      el.selectedIndex = 0;
+    } else {
+      el.value = "";
+    }
+  });
+
+  flById("fl-deterministico")
+    ?.classList.add("hidden");
+
+  flById("fl-probabilistico")
+    ?.classList.add("hidden");
+
+  const result = flById("fl-result");
+
+  if (result) {
+    result.className = "panel risk-result";
+    result.innerHTML = "";
+  }
+
+  if (flById("fl-probabilistico")) {
+    ensureProbabilisticUI();
+  }
+}
 function initFireloadCalculator() {
-  if(!flById("fl-method")) return;
-  populateFireloadProductSelect();
-  populateFireloadCoefficientSelects();
-  ensureFireloadPresetCoefficients();
-  renderFireloadEntryMode(); renderFireloadMode(); renderFireloadItems();
-  flById("fl-method")?.addEventListener("change",renderFireloadMode);
-  flById("fl-entry-mode")?.addEventListener("change",renderFireloadEntryMode);
-  flById("fl-add-item-btn")?.addEventListener("click",addFireloadItem);
-  flById("fl-calc-btn")?.addEventListener("click",calculateFireloadProfessional);
-  flById("fl-reset-btn")?.addEventListener("click",resetFireloadProfessional);
-}
 
+  if (!flById("fl-method")) return;
+
+  populateFireloadProductSelect();
+
+  populateFireloadCoefficientSelects();
+
+  ensureFireloadPresetCoefficients();
+
+  ensureProbabilisticUI();
+
+  renderFireloadEntryMode();
+
+  renderFireloadMode();
+
+  renderFireloadItems();
+
+  flById("fl-method")
+    ?.addEventListener(
+      "change",
+      () => {
+        renderFireloadMode();
+
+        if (
+          flById("fl-method")?.value === "probabilistico"
+        ) {
+          ensureProbabilisticUI();
+        }
+      }
+    );
+
+  flById("fl-entry-mode")
+    ?.addEventListener(
+      "change",
+      renderFireloadEntryMode
+    );
+
+  flById("fl-add-item-btn")
+    ?.addEventListener(
+      "click",
+      addFireloadItem
+    );
+
+  flById("fl-calc-btn")
+    ?.addEventListener(
+      "click",
+      calculateFireloadProfessional
+    );
+
+  flById("fl-reset-btn")
+    ?.addEventListener(
+      "click",
+      resetFireloadProfessional
+    );
+}
 const CHECK_UT_LABELS = {
   I: "UT I – Habitacional",
   II: "UT II – Estacionamentos",
