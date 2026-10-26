@@ -2123,7 +2123,7 @@ const FIRELOAD_ACTIVITY_DATA = [
 
 /* =========================================================
    CALCULADORA DE DENSIDADE DA CARGA DE INCÊNDIO
-   FLUXO APSEI + DESIGN LISPROTEC
+   FLUXO Lisprotec + DESIGN LISPROTEC
    ========================================================= */
 
 let fireloadStepData = {
@@ -3023,7 +3023,7 @@ function renderFireloadResult(
    MÉTODO DETERMINÍSTICO
    ========================================================= */
 
-function calculateDeterministicAPSEI(
+function calculateDeterministicLisprotec(
   area
 ) {
 
@@ -3171,7 +3171,7 @@ function calculateDeterministicAPSEI(
    MÉTODO PROBABILÍSTICO
    ========================================================= */
 
-function calculateProbabilisticAPSEI(
+function calculateProbabilisticLisprotec(
   area
 ) {
 
@@ -3415,9 +3415,9 @@ function calculateFireloadProfessional() {
 
       method === "deterministico"
 
-        ? calculateDeterministicAPSEI(area)
+        ? calculateDeterministicLisprotec(area)
 
-        : calculateProbabilisticAPSEI(area);
+        : calculateProbabilisticLisprotec(area);
 
 
     renderFireloadResult(
