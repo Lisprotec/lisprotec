@@ -2434,10 +2434,6 @@ function initFireloadCalculator() {
   flById("fl-reset-btn")?.addEventListener("click",resetFireloadProfessional);
 }
 
-document.addEventListener("DOMContentLoaded", initFireloadCalculator);
-
-
-
 const CHECK_UT_LABELS = {
   I: "UT I – Habitacional",
   II: "UT II – Estacionamentos",
