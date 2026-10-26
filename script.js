@@ -44,6 +44,7 @@ const euro = new Intl.NumberFormat("pt-PT", {
 });
 
 const byId = (id) => document.getElementById(id);
+const flById = (id) => document.getElementById(id);
 function getProgressiveDiscountRate(area) {
   if (area <= 750) return 0;
   if (area >= 2500) return 0.6;
