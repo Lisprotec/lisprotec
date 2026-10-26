@@ -3631,7 +3631,11 @@ function initFireloadCalculator() {
 
   renderFireloadModeNote();
 
+renderFireloadModeNote();
+
 }
+
+const CHECK_UT_LABELS = {
   I: "UT I – Habitacional",
   II: "UT II – Estacionamentos",
   III: "UT III – Administrativos",
