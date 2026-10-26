@@ -580,7 +580,7 @@ function init() {
   byId("contact-form")?.addEventListener("submit", openContactEmail);
   renderEstimate();
   initSCIECalculator();
-  initFireloadCalculator();
+  initloadCalculator();
   initSCIECheck();
   initPdfExports();
   initAutoHideHeader();
@@ -1428,53 +1428,235 @@ function initSCIECalculator() {
   calcBtn.addEventListener("click", calcularRiscoSCIE);
   resetBtn.addEventListener("click", resetSCIECalculator);
 }
+/* =========================================================
+   CALCULADORA DE DENSIDADE DE CARGA DE INCÊNDIO
+   Base legal: Despacho n.º 8954/2020
+   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", initSCIECalculator);
+/*
+ * QUADRO I — Poder calorífico inferior (Hi)
+ *
+ * IMPORTANTE:
+ * Hi vem diretamente do Quadro I.
+ * Ci e Rai NÃO são características fixas do produto:
+ *
+ * Ci = coeficiente de combustibilidade, Art. 6.º
+ * Rai = coeficiente de ativação, Art. 7.º
+ */
+
 const FIRELOAD_PRODUCTS = [
-  { id: "papel-cartao", name: "Papel / Cartão", category: "Celulósicos", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
-  { id: "madeira-macia", name: "Madeira macia", category: "Madeiras", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
-  { id: "madeira-dura", name: "Madeira dura", category: "Madeiras", hi: 18, c: 1.00, r: 1.00, unit: "kg" },
-  { id: "aglomerado", name: "Aglomerado / MDF", category: "Madeiras", hi: 18, c: 1.05, r: 1.00, unit: "kg" },
-  { id: "texteis-algodao", name: "Têxteis de algodão", category: "Têxteis", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
-  { id: "texteis-sinteticos", name: "Têxteis sintéticos", category: "Têxteis", hi: 25, c: 1.10, r: 1.10, unit: "kg" },
-  { id: "borracha", name: "Borracha", category: "Elastómeros", hi: 33, c: 1.10, r: 1.20, unit: "kg" },
-  { id: "pe", name: "Polietileno (PE)", category: "Plásticos", hi: 43, c: 1.20, r: 1.50, unit: "kg" },
-  { id: "pp", name: "Polipropileno (PP)", category: "Plásticos", hi: 43, c: 1.20, r: 1.50, unit: "kg" },
-  { id: "ps", name: "Poliestireno (PS)", category: "Plásticos", hi: 39, c: 1.20, r: 1.50, unit: "kg" },
-  { id: "pet", name: "PET", category: "Plásticos", hi: 23, c: 1.10, r: 1.30, unit: "kg" },
-  { id: "pvc", name: "PVC", category: "Plásticos", hi: 18, c: 1.00, r: 1.20, unit: "kg" },
-  { id: "espuma-pu", name: "Espuma de poliuretano", category: "Espumas", hi: 26, c: 1.20, r: 1.60, unit: "kg" },
-  { id: "couro", name: "Couro", category: "Orgânicos", hi: 18, c: 1.00, r: 1.00, unit: "kg" },
-  { id: "oleos", name: "Óleos / gorduras", category: "Líquidos combustíveis", hi: 37, c: 1.20, r: 1.40, unit: "kg" },
-  { id: "alcool", name: "Álcool", category: "Líquidos inflamáveis", hi: 27, c: 1.20, r: 1.60, unit: "kg" },
-  { id: "tintas-solvente", name: "Tintas com solvente", category: "Químicos", hi: 30, c: 1.20, r: 1.60, unit: "kg" },
-  { id: "embalagens-mistas", name: "Embalagens mistas", category: "Embalagens", hi: 22, c: 1.10, r: 1.20, unit: "kg" },
-  { id: "livros", name: "Livros / arquivo em papel", category: "Arquivo", hi: 17, c: 1.00, r: 1.00, unit: "kg" },
-  { id: "paletes-madeira", name: "Paletes de madeira", category: "Logística", hi: 17, c: 1.00, r: 1.20, unit: "kg" }
+
+  { id: "acetaldeido", name: "Acetaldeído", category: "Químicos", hi: 25.1 },
+  { id: "acetato-amilo", name: "Acetato de amilo", category: "Químicos", hi: 21.0 },
+  { id: "acetato-polivinilo", name: "Acetato de polivinilo", category: "Plásticos", hi: 21.0 },
+  { id: "acetileno", name: "Acetileno", category: "Gases", hi: 50.2 },
+  { id: "acetileno-dissolvido", name: "Acetileno dissolvido", category: "Gases", hi: 16.7 },
+  { id: "acetona", name: "Acetona", category: "Líquidos inflamáveis", hi: 29.3 },
+  { id: "acido-acetico", name: "Ácido acético", category: "Químicos", hi: 16.7 },
+  { id: "acido-benzoico", name: "Ácido benzóico", category: "Químicos", hi: 25.1 },
+  { id: "acroleina", name: "Acroleína", category: "Químicos", hi: 29.3 },
+  { id: "aguarras", name: "Aguarrás", category: "Líquidos inflamáveis", hi: 42.0 },
+  { id: "albumina-vegetal", name: "Albumina vegetal", category: "Orgânicos", hi: 25.1 },
+
+  { id: "alcool-alilico", name: "Álcool alílico", category: "Líquidos inflamáveis", hi: 33.5 },
+  { id: "alcool-amilico", name: "Álcool amílico", category: "Líquidos inflamáveis", hi: 42.0 },
+  { id: "alcool-butilico", name: "Álcool butílico", category: "Líquidos inflamáveis", hi: 33.5 },
+  { id: "alcool-cetilico", name: "Álcool cetílico", category: "Líquidos combustíveis", hi: 42.0 },
+  { id: "alcool-etilico", name: "Álcool etílico", category: "Líquidos inflamáveis", hi: 25.1 },
+  { id: "alcool-metilico", name: "Álcool metílico", category: "Líquidos inflamáveis", hi: 21.0 },
+
+  { id: "anilina", name: "Anilina", category: "Químicos", hi: 37.2 },
+  { id: "antracite", name: "Antracite", category: "Combustíveis", hi: 33.5 },
+  { id: "antracina", name: "Antracina", category: "Químicos", hi: 42.0 },
+
+  { id: "amido", name: "Amido", category: "Orgânicos", hi: 16.7 },
+  { id: "azeite", name: "Azeite", category: "Líquidos combustíveis", hi: 42.0 },
+
+  { id: "benzaldeido", name: "Benzaldeído", category: "Químicos", hi: 33.5 },
+  { id: "benzina", name: "Benzina", category: "Líquidos inflamáveis", hi: 42.0 },
+  { id: "benzol", name: "Benzol", category: "Líquidos inflamáveis", hi: 42.0 },
+  { id: "benzidina", name: "Benzidina", category: "Químicos", hi: 33.8 },
+
+  { id: "butano", name: "Butano", category: "Gases", hi: 46.0 },
+
+  { id: "cacau-po", name: "Cacau em pó", category: "Alimentares", hi: 16.7 },
+  { id: "cafe", name: "Café", category: "Alimentares", hi: 16.7 },
+  { id: "cafeina", name: "Cafeína", category: "Químicos", hi: 21.0 },
+  { id: "calcio", name: "Cálcio", category: "Metais", hi: 4.2 },
+  { id: "canfora", name: "Cânfora", category: "Químicos", hi: 37.2 },
+  { id: "carbono", name: "Carbono", category: "Combustíveis", hi: 33.5 },
+  { id: "cartao", name: "Cartão", category: "Celulósicos", hi: 16.7 },
+  { id: "cartao-asfaltico", name: "Cartão asfáltico", category: "Celulósicos", hi: 21.0 },
+  { id: "carvao", name: "Carvão", category: "Combustíveis", hi: 31.4 },
+  { id: "celuloide", name: "Celuloide", category: "Plásticos", hi: 16.7 },
+  { id: "celulose", name: "Celulose", category: "Celulósicos", hi: 16.7 },
+  { id: "cereais", name: "Cereais", category: "Alimentares", hi: 16.7 },
+  { id: "chocolate", name: "Chocolate", category: "Alimentares", hi: 25.1 },
+
+  { id: "cicloheptano", name: "Cicloheptano", category: "Líquidos inflamáveis", hi: 46.0 },
+  { id: "ciclohexano", name: "Ciclohexano", category: "Líquidos inflamáveis", hi: 46.0 },
+  { id: "ciclopentano", name: "Ciclopentano", category: "Líquidos inflamáveis", hi: 46.0 },
+  { id: "ciclopropano", name: "Ciclopropano", category: "Gases", hi: 50.2 },
+
+  { id: "cloreto-polivinil", name: "Cloreto de polivinil (PVC)", category: "Plásticos", hi: 21.0 },
+  { id: "cola-celulosica", name: "Cola celulósica", category: "Químicos", hi: 37.2 },
+  { id: "coque-hulha", name: "Coque de hulha", category: "Combustíveis", hi: 29.3 },
+  { id: "couro", name: "Couro", category: "Orgânicos", hi: 21.0 },
+  { id: "creosoto-fenol", name: "Creosoto/fenol", category: "Químicos", hi: 37.2 },
+
+  { id: "dietilamina", name: "Dietilamina", category: "Químicos", hi: 42.0 },
+  { id: "dietilcetona", name: "Dietilcetona", category: "Químicos", hi: 33.5 },
+  { id: "dietileter", name: "Dietileter", category: "Líquidos inflamáveis", hi: 37.2 },
+  { id: "difenilos", name: "Difenilos", category: "Químicos", hi: 42.0 },
+  { id: "dinamite", name: "Dinamite (75%)", category: "Explosivos", hi: 4.2 },
+  { id: "dipenteno", name: "Dipenteno", category: "Líquidos inflamáveis", hi: 46.0 },
+
+  { id: "ebonite", name: "Ebonite", category: "Elastómeros", hi: 33.5 },
+  { id: "enxofre", name: "Enxofre", category: "Químicos", hi: 8.4 },
+  { id: "eptano", name: "Eptano", category: "Líquidos inflamáveis", hi: 50.2 },
+  { id: "eter-amilico", name: "Éter amílico", category: "Líquidos inflamáveis", hi: 42.0 },
+  { id: "eter-etilico", name: "Éter etílico", category: "Líquidos inflamáveis", hi: 33.5 },
+  { id: "etileno", name: "Etileno", category: "Gases", hi: 50.0 },
+
+  { id: "fibra-coco", name: "Fibra de coco", category: "Fibras", hi: 25.1 },
+  { id: "fenol", name: "Fenol", category: "Químicos", hi: 33.5 },
+  { id: "fosforo", name: "Fósforo", category: "Químicos", hi: 25.1 },
+  { id: "furano", name: "Furano", category: "Químicos", hi: 25.1 },
+  { id: "fueloleo", name: "Fuelóleo", category: "Líquidos combustíveis", hi: 40.0 },
+
+  { id: "gasoleo", name: "Gasóleo", category: "Líquidos combustíveis", hi: 42.0 },
+  { id: "gas-natural", name: "Gás Natural", category: "Gases", hi: 25.84 },
+  { id: "glicerina", name: "Glicerina", category: "Líquidos combustíveis", hi: 16.7 },
+  { id: "gorduras", name: "Gorduras", category: "Líquidos combustíveis", hi: 42.0 },
+  { id: "guta-percha", name: "Guta-percha / goma-guta", category: "Elastómeros", hi: 46.0 },
+
+  { id: "farinha-trigo", name: "Farinha de trigo", category: "Alimentares", hi: 16.7 },
+  { id: "heptano", name: "Heptano", category: "Líquidos inflamáveis", hi: 46.0 },
+  { id: "hexametileno", name: "Hexametileno", category: "Químicos", hi: 46.0 },
+  { id: "hexano", name: "Hexano", category: "Líquidos inflamáveis", hi: 46.0 },
+
+  { id: "hidrogenio", name: "Hidrogénio", category: "Gases", hi: 142.0 },
+  { id: "hidreto-magnesio", name: "Hidreto de magnésio", category: "Químicos", hi: 16.7 },
+  { id: "hidreto-sodio", name: "Hidreto de sódio", category: "Químicos", hi: 8.4 },
+
+  { id: "linho", name: "Linho", category: "Fibras", hi: 16.7 },
+  { id: "linoleo", name: "Linóleo", category: "Plásticos", hi: 2.1 },
+  { id: "lenha-cavacos", name: "Lenha em cavacos", category: "Madeiras", hi: 10.5 },
+
+  { id: "madeira", name: "Madeira", category: "Madeiras", hi: 16.7 },
+  { id: "magnesio", name: "Magnésio", category: "Metais", hi: 25.1 },
+  { id: "malte", name: "Malte", category: "Alimentares", hi: 16.7 },
+  { id: "manteiga", name: "Manteiga", category: "Alimentares", hi: 37.2 },
+  { id: "metano", name: "Metano", category: "Gases", hi: 50.2 },
+  { id: "monoxido-carbono", name: "Monóxido de carbono", category: "Gases", hi: 8.4 },
+
+  { id: "nitrito-acetona", name: "Nitrito de acetona", category: "Químicos", hi: 29.3 },
+  { id: "nitrocelulose", name: "Nitrocelulose", category: "Químicos", hi: 8.4 },
+
+  { id: "octanos", name: "Octanos", category: "Líquidos inflamáveis", hi: 46.0 },
+  { id: "oleo-linhaca", name: "Óleo de linhaça", category: "Líquidos combustíveis", hi: 37.2 },
+  { id: "papel", name: "Papel", category: "Celulósicos", hi: 16.7 },
+  { id: "parafina", name: "Parafina", category: "Combustíveis", hi: 46.0 },
+  { id: "parafina-oleo", name: "Parafina / óleo de parafina", category: "Líquidos combustíveis", hi: 42.0 },
+  { id: "pentanos", name: "Pentanos", category: "Líquidos inflamáveis", hi: 50.2 },
+  { id: "petroleo", name: "Petróleo", category: "Líquidos combustíveis", hi: 42.0 },
+
+  { id: "poliamida", name: "Poliamida", category: "Plásticos", hi: 29.3 },
+  { id: "policarbonato", name: "Policarbonato", category: "Plásticos", hi: 29.3 },
+  { id: "poliester", name: "Poliéster", category: "Plásticos", hi: 25.1 },
+  { id: "polietileno", name: "Polietileno", category: "Plásticos", hi: 42.0 },
+  { id: "polipropileno", name: "Polipropileno", category: "Plásticos", hi: 42.0 },
+  { id: "poliestireno", name: "Poliestireno", category: "Plásticos", hi: 42.0 },
+  { id: "polisobutileno", name: "Polisobutileno", category: "Plásticos", hi: 46.0 },
+  { id: "politetrafluoretileno", name: "Politetrafluoretileno (PTFE / Teflon)", category: "Plásticos", hi: 4.2 },
+  { id: "poliuretano", name: "Poliuretano (PUR)", category: "Plásticos", hi: 25.1 },
+
+  { id: "propano", name: "Propano", category: "Gases", hi: 46.0 },
+
+  { id: "rayon", name: "Rayon (fibra sintética)", category: "Fibras", hi: 16.7 },
+  { id: "resina-pinho", name: "Resina de pinho", category: "Resinas", hi: 42.0 },
+  { id: "resina-fenol", name: "Resina de fenol", category: "Resinas", hi: 25.1 },
+  { id: "resina-ureia", name: "Resina de ureia", category: "Resinas", hi: 21.0 },
+  { id: "residuos-florestais", name: "Resíduos florestais", category: "Resíduos", hi: 11.3 },
+  { id: "residuos-solidos-humidade-baixa", name: "Resíduos sólidos mistos ao ar livre (<30% humidade)", category: "Resíduos", hi: 12.5 },
+  { id: "residuos-solidos-humidade-media", name: "Resíduos sólidos mistos ao ar livre (30–60% humidade)", category: "Resíduos", hi: 10.5 },
+  { id: "residuos-solidos-humidade-alta", name: "Resíduos sólidos mistos ao ar livre (>60% humidade)", category: "Resíduos", hi: 8.5 },
+
+  { id: "seda", name: "Seda", category: "Têxteis", hi: 21.0 },
+  { id: "sisal", name: "Sisal", category: "Fibras", hi: 16.7 },
+  { id: "sodio", name: "Sódio", category: "Metais", hi: 4.2 },
+  { id: "sulfureto-carbono", name: "Sulfureto de carbono", category: "Líquidos inflamáveis", hi: 12.5 },
+
+  { id: "tabaco", name: "Tabaco", category: "Orgânicos", hi: 16.7 },
+  { id: "cha", name: "Chá", category: "Alimentares", hi: 16.7 },
+  { id: "tetralina", name: "Tetralina", category: "Líquidos inflamáveis", hi: 46.0 },
+  { id: "tolueno", name: "Tolueno", category: "Líquidos inflamáveis", hi: 42.0 },
+  { id: "triacetato", name: "Triacetato (celulose)", category: "Celulósicos", hi: 16.7 },
+  { id: "turfa", name: "Turfa", category: "Combustíveis", hi: 33.5 },
+
+  { id: "ureia", name: "Ureia", category: "Químicos", hi: 8.4 },
+  { id: "viscose", name: "Viscose", category: "Fibras", hi: 16.7 },
+
+  { id: "biodiesel", name: "Biodiesel", category: "Líquidos combustíveis", hi: 39.0 },
+  { id: "leite-po", name: "Leite em pó", category: "Alimentares", hi: 16.7 },
+  { id: "casca-eucalipto", name: "Casca de eucalipto", category: "Madeiras", hi: 17.5 },
+  { id: "casca-outra-madeira", name: "Casca de outra madeira", category: "Madeiras", hi: 4.18 }
 ];
 
-const FIRELOAD_PROB_PRESETS = {
-  atividade: [
-    { id: "arquivo", name: "Arquivo / biblioteca", q: 1200, c: 1.00, r: 1.00, unitLabel: "MJ/m²" },
-    { id: "escritorio", name: "Escritório / administrativo", q: 600, c: 1.00, r: 1.00, unitLabel: "MJ/m²" },
-    { id: "comercial-leve", name: "Comércio ligeiro", q: 900, c: 1.00, r: 1.50, unitLabel: "MJ/m²" },
-    { id: "oficina", name: "Oficina", q: 1300, c: 1.10, r: 1.50, unitLabel: "MJ/m²" },
-    { id: "industrial-geral", name: "Indústria geral", q: 1500, c: 1.10, r: 1.50, unitLabel: "MJ/m²" }
-  ],
-  armazenamento: [
-    { id: "armazem-papel", name: "Armazenamento de papel/cartão", q: 900, c: 1.00, r: 1.50, unitLabel: "MJ/m³" },
-    { id: "armazem-madeira", name: "Armazenamento de madeira", q: 850, c: 1.00, r: 1.50, unitLabel: "MJ/m³" },
-    { id: "armazem-plasticos", name: "Armazenamento de plásticos", q: 1800, c: 1.20, r: 2.00, unitLabel: "MJ/m³" },
-    { id: "armazem-textil", name: "Armazenamento têxtil", q: 1100, c: 1.10, r: 1.50, unitLabel: "MJ/m³" },
-    { id: "armazem-misto", name: "Armazenamento misto", q: 1200, c: 1.10, r: 1.50, unitLabel: "MJ/m³" }
-  ]
-};
+
+/* =========================================================
+   COEFICIENTE DE COMBUSTIBILIDADE — ARTIGO 6.º
+   ========================================================= */
+
+const FIRELOAD_CI_OPTIONS = [
+  {
+    value: "1",
+    label: "Baixo — Ci = 1,00",
+    ci: 1.00
+  },
+  {
+    value: "1.3",
+    label: "Médio — Ci = 1,30",
+    ci: 1.30
+  },
+  {
+    value: "1.6",
+    label: "Alto — Ci = 1,60",
+    ci: 1.60
+  }
+];
+
+
+/* =========================================================
+   COEFICIENTE DE ATIVAÇÃO — ARTIGO 7.º
+   ========================================================= */
+
+const FIRELOAD_RAI_OPTIONS = [
+  {
+    value: "1",
+    label: "Baixo — Rai = 1,00",
+    rai: 1.00
+  },
+  {
+    value: "1.5",
+    label: "Médio — Rai = 1,50",
+    rai: 1.50
+  },
+  {
+    value: "2",
+    label: "Alto — Rai = 2,00",
+    rai: 2.00
+  }
+];
+
 
 let fireloadItems = [];
+
 
 function flById(id) {
   return document.getElementById(id);
 }
+
 
 function flFormatNumber(value, decimals = 2) {
   return Number(value || 0).toLocaleString("pt-PT", {
@@ -1483,341 +1665,1026 @@ function flFormatNumber(value, decimals = 2) {
   });
 }
 
-function flFormatUnit(value, unit) {
-  return `${flFormatNumber(value)} ${unit}`;
-}
 
 function normalizeQuantityToKg(quantity, unit) {
   if (unit === "t") return quantity * 1000;
   return quantity;
 }
 
-function getSelectedPreset(list, id) {
-  return (list || []).find((item) => item.id === id) || null;
-}
+
+/* =========================================================
+   PRODUTOS
+   ========================================================= */
 
 function populateFireloadProductSelect() {
+
   const select = flById("fl-product-select");
+
   if (!select) return;
+
   select.innerHTML = '<option value="">Selecionar produto</option>';
 
   FIRELOAD_PRODUCTS.forEach((product) => {
+
     const option = document.createElement("option");
+
     option.value = product.id;
-    option.textContent = `${product.name} — Hi ${product.hi} MJ/kg`;
+
+    option.textContent =
+      `${product.name} — Hi ${flFormatNumber(product.hi)} MJ/kg`;
+
     select.appendChild(option);
+
   });
 }
 
-function populateProbabilisticPresets() {
-  const mode = flById("fl-prob-mode")?.value || "";
-  const select = flById("fl-prob-preset");
-  if (!select) return;
 
-  select.innerHTML = '<option value="">Selecionar opção</option>';
-  if (!mode || !FIRELOAD_PROB_PRESETS[mode]) return;
+/* =========================================================
+   COEFICIENTES
+   ========================================================= */
 
-  FIRELOAD_PROB_PRESETS[mode].forEach((preset) => {
-    const option = document.createElement("option");
-    option.value = preset.id;
-    option.textContent = `${preset.name} — ${preset.q} ${preset.unitLabel}`;
-    select.appendChild(option);
-  });
+function populateFireloadCoefficientSelects() {
+
+  const cSelect = flById("fl-manual-c");
+  const rSelect = flById("fl-manual-r");
+
+  if (cSelect) {
+
+    cSelect.innerHTML =
+      '<option value="">Selecionar Ci</option>';
+
+    FIRELOAD_CI_OPTIONS.forEach(optionData => {
+
+      const option = document.createElement("option");
+
+      option.value = optionData.ci;
+
+      option.textContent = optionData.label;
+
+      cSelect.appendChild(option);
+
+    });
+
+  }
+
+  if (rSelect) {
+
+    rSelect.innerHTML =
+      '<option value="">Selecionar Rai</option>';
+
+    FIRELOAD_RAI_OPTIONS.forEach(optionData => {
+
+      const option = document.createElement("option");
+
+      option.value = optionData.rai;
+
+      option.textContent = optionData.label;
+
+      rSelect.appendChild(option);
+
+    });
+
+  }
 }
 
-function applyProbabilisticPreset() {
-  const mode = flById("fl-prob-mode")?.value || "";
-  const presetId = flById("fl-prob-preset")?.value || "";
-  const preset = getSelectedPreset(FIRELOAD_PROB_PRESETS[mode], presetId);
 
-  if (!preset) return;
+/* =========================================================
+   MODO DE ENTRADA
+   ========================================================= */
 
-  if (flById("fl-prob-q")) flById("fl-prob-q").value = preset.q;
-  if (flById("fl-prob-c")) flById("fl-prob-c").value = preset.c;
-  if (flById("fl-prob-r")) flById("fl-prob-r").value = preset.r;
+function renderFireloadEntryMode() {
+
+  const mode =
+    flById("fl-entry-mode")?.value || "predefinido";
+
+  const manual =
+    flById("fl-manual-fields");
+
+  if (!manual) return;
+
+  if (mode === "manual") {
+
+    manual.classList.remove("hidden");
+
+  } else {
+
+    manual.classList.add("hidden");
+
+  }
 }
+
+
+/* =========================================================
+   MODO DE CÁLCULO
+   ========================================================= */
 
 function renderFireloadMode() {
-  const method = flById("fl-method")?.value || "";
-  const note = flById("fl-mode-note");
-  const det = flById("fl-deterministico");
-  const prob = flById("fl-probabilistico");
+
+  const method =
+    flById("fl-method")?.value || "";
+
+  const note =
+    flById("fl-mode-note");
+
+  const det =
+    flById("fl-deterministico");
+
+  const prob =
+    flById("fl-probabilistico");
 
   det?.classList.add("hidden");
   prob?.classList.add("hidden");
 
   if (method === "deterministico") {
+
     det?.classList.remove("hidden");
-    if (note) note.textContent = "Método determinístico: baseado na quantidade, Hi, C e R dos materiais existentes.";
+
+    if (note) {
+
+      note.textContent =
+        "Método determinístico: Qs = Σ(Mi × Hi × Ci × Rai).";
+
+    }
+
   } else if (method === "probabilistico") {
+
     prob?.classList.remove("hidden");
-    if (note) note.textContent = "Método probabilístico: baseado em valores estatísticos q e nos coeficientes C e R.";
+
+    if (note) {
+
+      note.textContent =
+        "Método probabilístico: utiliza os valores estatísticos qsi/qvi do Quadro II.";
+
+    }
+
   } else {
+
     if (note) note.textContent = "";
+
   }
 }
 
-function renderFireloadEntryMode() {
-  const mode = flById("fl-entry-mode")?.value || "predefinido";
-  const manual = flById("fl-manual-fields");
 
-  if (!manual) return;
-  if (mode === "manual") manual.classList.remove("hidden");
-  else manual.classList.add("hidden");
-}
-
-function buildFireloadItemFromManual(quantity, unit) {
-  const name = flById("fl-manual-name")?.value?.trim() || "";
-  const category = flById("fl-manual-category")?.value?.trim() || "Manual";
-  const hi = Number(flById("fl-manual-hi")?.value || 0);
-  const c = Number(flById("fl-manual-c")?.value || 0);
-  const r = Number(flById("fl-manual-r")?.value || 0);
-  const manualUnit = flById("fl-manual-unit")?.value || unit || "kg";
-
-  if (!name || hi <= 0 || c <= 0 || r <= 0) {
-    alert("Preencha todos os campos do material manual.");
-    return null;
-  }
-
-  return { name, category, hi, c, r, quantity, unit: manualUnit };
-}
+/* =========================================================
+   CONSTRUÇÃO DE ITEM — PRODUTO PRÉ-DEFINIDO
+   ========================================================= */
 
 function buildFireloadItemFromPreset(quantity, unit) {
-  const selectedId = flById("fl-product-select")?.value || "";
-  const product = FIRELOAD_PRODUCTS.find((p) => p.id === selectedId);
+
+  const selectedId =
+    flById("fl-product-select")?.value || "";
+
+  const product =
+    FIRELOAD_PRODUCTS.find(
+      p => p.id === selectedId
+    );
 
   if (!product) {
-    alert("Selecione um produto da lista.");
+
+    alert(
+      "Selecione um produto da lista antes de adicionar."
+    );
+
     return null;
   }
 
+
+  const c =
+    Number(flById("fl-product-c")?.value || 0);
+
+  const r =
+    Number(flById("fl-product-r")?.value || 0);
+
+
+  if (c <= 0) {
+
+    alert(
+      "Selecione o coeficiente de combustibilidade Ci."
+    );
+
+    return null;
+  }
+
+
+  if (r <= 0) {
+
+    alert(
+      "Selecione o coeficiente de ativação Rai."
+    );
+
+    return null;
+  }
+
+
   return {
+
     name: product.name,
+
     category: product.category,
+
     hi: product.hi,
-    c: product.c,
-    r: product.r,
-    quantity,
-    unit: unit || product.unit || "kg"
+
+    c: c,
+
+    r: r,
+
+    quantity: quantity,
+
+    unit: unit || "kg"
+
   };
 }
 
+
+/* =========================================================
+   CONSTRUÇÃO DE ITEM — MANUAL
+   ========================================================= */
+
+function buildFireloadItemFromManual(quantity, unit) {
+
+  const name =
+    flById("fl-manual-name")?.value?.trim() || "";
+
+  const category =
+    flById("fl-manual-category")?.value?.trim() ||
+    "Manual";
+
+  const hi =
+    Number(
+      flById("fl-manual-hi")?.value || 0
+    );
+
+  const c =
+    Number(
+      flById("fl-manual-c")?.value || 0
+    );
+
+  const r =
+    Number(
+      flById("fl-manual-r")?.value || 0
+    );
+
+  const manualUnit =
+    flById("fl-manual-unit")?.value ||
+    unit ||
+    "kg";
+
+
+  if (!name) {
+
+    alert(
+      "Introduza o nome do produto/material."
+    );
+
+    return null;
+  }
+
+
+  if (hi <= 0) {
+
+    alert(
+      "Introduza um valor Hi válido."
+    );
+
+    return null;
+  }
+
+
+  if (c <= 0) {
+
+    alert(
+      "Selecione o coeficiente Ci."
+    );
+
+    return null;
+  }
+
+
+  if (r <= 0) {
+
+    alert(
+      "Selecione o coeficiente Rai."
+    );
+
+    return null;
+  }
+
+
+  return {
+
+    name,
+
+    category,
+
+    hi,
+
+    c,
+
+    r,
+
+    quantity,
+
+    unit: manualUnit
+
+  };
+}
+
+
+/* =========================================================
+   ADICIONAR ITEM
+   ========================================================= */
+
 function addFireloadItem() {
-  const mode = flById("fl-entry-mode")?.value || "predefinido";
-  const quantity = Number(flById("fl-quantity")?.value || 0);
-  const unit = flById("fl-unit")?.value || "kg";
+
+  const mode =
+    flById("fl-entry-mode")?.value ||
+    "predefinido";
+
+  const quantity =
+    Number(
+      flById("fl-quantity")?.value || 0
+    );
+
+  const unit =
+    flById("fl-unit")?.value ||
+    "kg";
+
 
   if (quantity <= 0) {
-    alert("Introduza uma quantidade válida.");
+
+    alert(
+      "Introduza uma quantidade válida."
+    );
+
     return;
   }
 
-  const item = mode === "manual"
-    ? buildFireloadItemFromManual(quantity, unit)
-    : buildFireloadItemFromPreset(quantity, unit);
+
+  const item =
+    mode === "manual"
+
+      ? buildFireloadItemFromManual(
+          quantity,
+          unit
+        )
+
+      : buildFireloadItemFromPreset(
+          quantity,
+          unit
+        );
+
 
   if (!item) return;
 
+
   fireloadItems.push(item);
+
   renderFireloadItems();
 
-  if (flById("fl-quantity")) flById("fl-quantity").value = "";
+
+  if (flById("fl-quantity")) {
+
+    flById("fl-quantity").value = "";
+
+  }
 }
+
+
+/* =========================================================
+   CÁLCULO PARCIAL
+   ========================================================= */
 
 function getDeterministicPartial(item) {
-  const qKg = normalizeQuantityToKg(item.quantity, item.unit);
-  return qKg * item.hi * item.c * item.r;
+
+  const qKg =
+    normalizeQuantityToKg(
+      item.quantity,
+      item.unit
+    );
+
+  return (
+    qKg *
+    item.hi *
+    item.c *
+    item.r
+  );
 }
+
+
+/* =========================================================
+   TABELA DE MATERIAIS
+   ========================================================= */
 
 function renderFireloadItems() {
-  const body = flById("fl-items-body");
+
+  const body =
+    flById("fl-items-body");
+
   if (!body) return;
 
-  body.innerHTML = fireloadItems.map((item, index) => {
-    const partial = getDeterministicPartial(item);
 
-    return `
+  if (!fireloadItems.length) {
+
+    body.innerHTML = `
       <tr>
-        <td>${item.name}</td>
-        <td><span class="fl-chip">${item.category}</span></td>
-        <td>${flFormatNumber(item.quantity)} ${item.unit}</td>
-        <td>${flFormatNumber(item.hi)} MJ/kg</td>
-        <td>${flFormatNumber(item.c)}</td>
-        <td>${flFormatNumber(item.r)}</td>
-        <td>${flFormatNumber(partial)} MJ</td>
-        <td><button type="button" class="btn btn-outline btn-small" onclick="removeFireloadItem(${index})">Remover</button></td>
+        <td colspan="8"
+            style="text-align:center;opacity:.7;">
+          Ainda não foram adicionados produtos.
+        </td>
       </tr>
     `;
-  }).join("");
+
+    return;
+  }
+
+
+  body.innerHTML =
+    fireloadItems.map(
+      (item, index) => {
+
+        const partial =
+          getDeterministicPartial(item);
+
+
+        return `
+          <tr>
+
+            <td>
+              ${item.name}
+            </td>
+
+            <td>
+              <span class="fl-chip">
+                ${item.category}
+              </span>
+            </td>
+
+            <td>
+              ${flFormatNumber(item.quantity)}
+              ${item.unit}
+            </td>
+
+            <td>
+              ${flFormatNumber(item.hi)}
+              MJ/kg
+            </td>
+
+            <td>
+              ${flFormatNumber(item.c)}
+            </td>
+
+            <td>
+              ${flFormatNumber(item.r)}
+            </td>
+
+            <td>
+              ${flFormatNumber(partial)}
+              MJ
+            </td>
+
+            <td>
+
+              <button
+                type="button"
+                class="btn btn-outline btn-small"
+                onclick="removeFireloadItem(${index})">
+
+                Remover
+
+              </button>
+
+            </td>
+
+          </tr>
+        `;
+
+      }
+    ).join("");
 }
 
+
+/* =========================================================
+   REMOVER ITEM
+   ========================================================= */
+
 function removeFireloadItem(index) {
-  fireloadItems.splice(index, 1);
+
+  fireloadItems.splice(
+    index,
+    1
+  );
+
   renderFireloadItems();
 }
 
+
+/* =========================================================
+   CÁLCULO DETERMINÍSTICO
+   Qs = Σ(Mi × Hi × Ci × Rai)
+   qs = Qs / S
+   ========================================================= */
+
 function getDeterministicCalculation(area) {
-  const totalMJ = fireloadItems.reduce((sum, item) => sum + getDeterministicPartial(item), 0);
-  const density = totalMJ / area;
+
+  const totalMJ =
+    fireloadItems.reduce(
+      (sum, item) =>
+        sum +
+        getDeterministicPartial(item),
+      0
+    );
+
+
+  const density =
+    totalMJ / area;
+
 
   return {
+
     method: "Determinístico",
+
     totalMJ,
+
     density,
-    memory: fireloadItems.map((item) => {
-      const qKg = normalizeQuantityToKg(item.quantity, item.unit);
-      const partial = getDeterministicPartial(item);
-      return {
-        title: item.name,
-        detail: `${flFormatNumber(qKg)} kg × ${flFormatNumber(item.hi)} × ${flFormatNumber(item.c)} × ${flFormatNumber(item.r)} = ${flFormatNumber(partial)} MJ`
-      };
-    })
+
+    memory:
+
+      fireloadItems.map(
+        item => {
+
+          const qKg =
+            normalizeQuantityToKg(
+              item.quantity,
+              item.unit
+            );
+
+          const partial =
+            getDeterministicPartial(
+              item
+            );
+
+
+          return {
+
+            title:
+              item.name,
+
+            detail:
+              `${flFormatNumber(qKg)} kg × ` +
+              `${flFormatNumber(item.hi)} × ` +
+              `${flFormatNumber(item.c)} × ` +
+              `${flFormatNumber(item.r)} = ` +
+              `${flFormatNumber(partial)} MJ`
+
+          };
+
+        }
+      )
+
   };
 }
 
-function getProbabilisticCalculation(area) {
-  const mode = flById("fl-prob-mode")?.value || "";
-  const zoneArea = Number(flById("fl-prob-zone-area")?.value || 0);
-  const height = Number(flById("fl-prob-height")?.value || 0);
-  const q = Number(flById("fl-prob-q")?.value || 0);
-  const c = Number(flById("fl-prob-c")?.value || 0);
-  const r = Number(flById("fl-prob-r")?.value || 0);
-  const presetText = flById("fl-prob-preset")?.selectedOptions?.[0]?.textContent || "Manual";
 
-  if (!mode || zoneArea <= 0 || q <= 0 || c <= 0 || r <= 0) {
-    alert("Preencha os campos obrigatórios do cálculo probabilístico.");
+/* =========================================================
+   CÁLCULO PROBABILÍSTICO
+   ========================================================= */
+
+function getProbabilisticCalculation(area) {
+
+  const mode =
+    flById("fl-prob-mode")?.value || "";
+
+  const zoneArea =
+    Number(
+      flById("fl-prob-zone-area")?.value || 0
+    );
+
+  const height =
+    Number(
+      flById("fl-prob-height")?.value || 0
+    );
+
+  const q =
+    Number(
+      flById("fl-prob-q")?.value || 0
+    );
+
+  const c =
+    Number(
+      flById("fl-prob-c")?.value || 0
+    );
+
+  const r =
+    Number(
+      flById("fl-prob-r")?.value || 0
+    );
+
+
+  if (
+    !mode ||
+    zoneArea <= 0 ||
+    q <= 0 ||
+    c <= 0 ||
+    r <= 0
+  ) {
+
+    alert(
+      "Preencha os campos obrigatórios do cálculo probabilístico."
+    );
+
     return null;
   }
 
+
   let totalMJ = 0;
+
   let formulaText = "";
 
+
+  /*
+   * Atividade:
+   * Qs = Σ(qsi × Si × Ci × Rai)
+   */
+
   if (mode === "atividade") {
-    totalMJ = q * zoneArea * c * r;
-    formulaText = `${flFormatNumber(q)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
-  } else {
-    if (height <= 0) {
-      alert("Introduza a altura de armazenagem.");
-      return null;
-    }
-    totalMJ = q * height * zoneArea * c * r;
-    formulaText = `${flFormatNumber(q)} × ${flFormatNumber(height)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
+
+    totalMJ =
+      q *
+      zoneArea *
+      c *
+      r;
+
+
+    formulaText =
+      `${flFormatNumber(q)} × ` +
+      `${flFormatNumber(zoneArea)} × ` +
+      `${flFormatNumber(c)} × ` +
+      `${flFormatNumber(r)}`;
+
   }
 
-  const density = totalMJ / area;
+
+  /*
+   * Armazenamento:
+   * Qs = Σ(qvi × hi × Si × Ci × Rai)
+   */
+
+  else {
+
+    if (height <= 0) {
+
+      alert(
+        "Introduza a altura de armazenagem."
+      );
+
+      return null;
+    }
+
+
+    totalMJ =
+      q *
+      height *
+      zoneArea *
+      c *
+      r;
+
+
+    formulaText =
+      `${flFormatNumber(q)} × ` +
+      `${flFormatNumber(height)} × ` +
+      `${flFormatNumber(zoneArea)} × ` +
+      `${flFormatNumber(c)} × ` +
+      `${flFormatNumber(r)}`;
+
+  }
+
+
+  const density =
+    totalMJ / area;
+
 
   return {
+
     method: "Probabilístico",
+
     totalMJ,
+
     density,
+
     memory: [
+
       {
-        title: `Preset / referência: ${presetText}`,
-        detail: mode === "atividade"
-          ? "Fórmula aplicada: qs = (qsi × Si × Ci × Rai) / S"
-          : "Fórmula aplicada: qs = (qvi × hi × Si × Ci × Rai) / S"
+        title:
+          "Método aplicado",
+
+        detail:
+          mode === "atividade"
+
+            ? "Qs = Σ(qsi × Si × Ci × Rai)"
+
+            : "Qs = Σ(qvi × hi × Si × Ci × Rai)"
       },
+
       {
-        title: "Memória de cálculo",
-        detail: `${formulaText} = ${flFormatNumber(totalMJ)} MJ`
+        title:
+          "Memória de cálculo",
+
+        detail:
+          `${formulaText} = ${flFormatNumber(totalMJ)} MJ`
       }
+
     ]
+
   };
 }
 
+
+/* =========================================================
+   MEDIDAS / NOTAS
+   ========================================================= */
+
 function getGeneralMeasures() {
+
   return [
-    { title: "Validação técnica", detail: "Confirmar enquadramento da atividade, compartimentação e coeficientes adotados." },
-    { title: "Coerência documental", detail: "As premissas do cálculo devem ser coerentes com o processo SCIE, exploração e layout real." },
-    { title: "Atualização dos dados", detail: "Alterações de materiais, armazenagem ou atividade exigem revisão do cálculo." }
+
+    {
+      title: "Validação do Ci",
+      detail:
+        "O Ci deve ser definido de acordo com as características de combustibilidade do constituinte combustível, nos termos do artigo 6.º."
+    },
+
+    {
+      title: "Validação do Rai",
+      detail:
+        "O Rai depende do risco de ativação associado à atividade ou armazenamento, nos termos do artigo 7.º."
+    },
+
+    {
+      title: "Validação técnica",
+      detail:
+        "Confirmar atividade, compartimentação, materiais existentes e condições reais de exploração."
+    }
+
   ];
 }
 
-function renderFireloadResult(area, calculation) {
-  const box = flById("fl-result");
+
+/* =========================================================
+   RESULTADO
+   ========================================================= */
+
+function renderFireloadResult(
+  area,
+  calculation
+) {
+
+  const box =
+    flById("fl-result");
+
   if (!box) return;
 
-  const measures = getGeneralMeasures();
 
-  box.className = "panel risk-result show";
+  const measures =
+    getGeneralMeasures();
+
+
+  box.className =
+    "panel risk-result show";
+
+
   box.innerHTML = `
-    <div class="risk-badge info">Resultado</div>
-    <h3 style="margin-top:0;">Cálculo ${calculation.method}</h3>
 
-    <h4 class="risk-section-title">Resultado principal</h4>
-    <ul class="criteria-list">
-      <li><strong>Carga de incêndio modificada (Qs)</strong><span>${flFormatNumber(calculation.totalMJ)} MJ</span></li>
-      <li><strong>Densidade da carga de incêndio modificada (qs)</strong><span>${flFormatNumber(calculation.density)} MJ/m²</span></li>
-      <li><strong>Área útil do compartimento (S)</strong><span>${flFormatNumber(area)} m²</span></li>
-    </ul>
-
-    <h4 class="risk-section-title">Memória de cálculo</h4>
-    <ul class="memory-list">
-      ${calculation.memory.map((item) => `
-        <li>
-          <strong>${item.title}</strong>
-          <span>${item.detail}</span>
-        </li>
-      `).join("")}
-    </ul>
-
-    <h4 class="risk-section-title">Notas de validação</h4>
-    <ul class="measures-list">
-      ${measures.map((item) => `
-        <li>
-          <strong>${item.title}</strong>
-          <span>${item.detail}</span>
-        </li>
-      `).join("")}
-    </ul>
-
-    <div class="risk-actions">
-      <a class="btn btn-primary" href="#contacto">Pedir análise técnica</a>
+    <div class="risk-badge info">
+      Resultado
     </div>
 
+    <h3 style="margin-top:0;">
+      Cálculo ${calculation.method}
+    </h3>
+
+
+    <h4 class="risk-section-title">
+      Resultado principal
+    </h4>
+
+
+    <ul class="criteria-list">
+
+      <li>
+        <strong>
+          Carga de incêndio modificada (Qs)
+        </strong>
+
+        <span>
+          ${flFormatNumber(calculation.totalMJ)}
+          MJ
+        </span>
+      </li>
+
+
+      <li>
+        <strong>
+          Densidade da carga de incêndio modificada (qs)
+        </strong>
+
+        <span>
+          ${flFormatNumber(calculation.density)}
+          MJ/m²
+        </span>
+      </li>
+
+
+      <li>
+        <strong>
+          Área útil do compartimento (S)
+        </strong>
+
+        <span>
+          ${flFormatNumber(area)}
+          m²
+        </span>
+      </li>
+
+    </ul>
+
+
+    <h4 class="risk-section-title">
+      Memória de cálculo
+    </h4>
+
+
+    <ul class="memory-list">
+
+      ${calculation.memory.map(
+        item => `
+
+          <li>
+
+            <strong>
+              ${item.title}
+            </strong>
+
+            <span>
+              ${item.detail}
+            </span>
+
+          </li>
+
+        `
+      ).join("")}
+
+    </ul>
+
+
+    <h4 class="risk-section-title">
+      Notas de validação
+    </h4>
+
+
+    <ul class="measures-list">
+
+      ${measures.map(
+        item => `
+
+          <li>
+
+            <strong>
+              ${item.title}
+            </strong>
+
+            <span>
+              ${item.detail}
+            </span>
+
+          </li>
+
+        `
+      ).join("")}
+
+    </ul>
+
+
+    <div class="risk-actions">
+
+      <a
+        class="btn btn-primary"
+        href="#contacto">
+
+        Pedir análise técnica
+
+      </a>
+
+    </div>
+
+
     <p class="risk-legal-note">
-      Ferramenta indicativa. O cálculo deve ser validado tecnicamente à luz do Despacho n.º 8954/2020 e do enquadramento SCIE aplicável.
+
+      Ferramenta indicativa. O cálculo deve ser validado
+      tecnicamente à luz do Despacho n.º 8954/2020
+      e do enquadramento SCIE aplicável.
+
     </p>
+
   `;
 }
 
+
+/* =========================================================
+   CÁLCULO PRINCIPAL
+   ========================================================= */
+
 function calculateFireloadProfessional() {
-  const method = flById("fl-method")?.value || "";
-  const area = Number(flById("fl-area")?.value || 0);
+
+  const method =
+    flById("fl-method")?.value || "";
+
+  const area =
+    Number(
+      flById("fl-area")?.value || 0
+    );
+
 
   if (!method) {
-    alert("Selecione o método de cálculo.");
+
+    alert(
+      "Selecione o método de cálculo."
+    );
+
     return;
   }
+
 
   if (area <= 0) {
-    alert("Introduza a área útil do compartimento.");
+
+    alert(
+      "Introduza a área útil do compartimento."
+    );
+
     return;
   }
+
 
   if (method === "deterministico") {
+
     if (!fireloadItems.length) {
-      alert("Adicione pelo menos um produto / material.");
+
+      alert(
+        "Adicione pelo menos um produto/material."
+      );
+
       return;
     }
-    renderFireloadResult(area, getDeterministicCalculation(area));
+
+
+    const calculation =
+      getDeterministicCalculation(
+        area
+      );
+
+
+    renderFireloadResult(
+      area,
+      calculation
+    );
+
     return;
   }
 
-  const calc = getProbabilisticCalculation(area);
-  if (!calc) return;
-  renderFireloadResult(area, calc);
+
+  const calculation =
+    getProbabilisticCalculation(
+      area
+    );
+
+
+  if (!calculation) return;
+
+
+  renderFireloadResult(
+    area,
+    calculation
+  );
 }
 
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
 function resetFireloadProfessional() {
+
   fireloadItems = [];
+
   renderFireloadItems();
+
 
   [
     "fl-method",
     "fl-area",
     "fl-entry-mode",
     "fl-product-select",
+    "fl-product-c",
+    "fl-product-r",
     "fl-manual-name",
     "fl-manual-category",
     "fl-manual-hi",
@@ -1833,28 +2700,139 @@ function resetFireloadProfessional() {
     "fl-prob-q",
     "fl-prob-c",
     "fl-prob-r"
-  ].forEach((id) => {
-    const el = flById(id);
+  ].forEach(id => {
+
+    const el =
+      flById(id);
+
     if (!el) return;
-    if (el.tagName === "SELECT") el.selectedIndex = 0;
-    else el.value = "";
+
+
+    if (el.tagName === "SELECT") {
+
+      el.selectedIndex = 0;
+
+    } else {
+
+      el.value = "";
+
+    }
+
   });
 
-  flById("fl-deterministico")?.classList.add("hidden");
-  flById("fl-probabilistico")?.classList.add("hidden");
-  flById("fl-manual-fields")?.classList.add("hidden");
 
-  const note = flById("fl-mode-note");
-  if (note) note.textContent = "";
+  flById(
+    "fl-deterministico"
+  )?.classList.add("hidden");
 
-  const result = flById("fl-result");
+
+  flById(
+    "fl-probabilistico"
+  )?.classList.add("hidden");
+
+
+  flById(
+    "fl-manual-fields"
+  )?.classList.add("hidden");
+
+
+  const note =
+    flById("fl-mode-note");
+
+  if (note) {
+
+    note.textContent = "";
+
+  }
+
+
+  const result =
+    flById("fl-result");
+
+
   if (result) {
-    result.className = "panel risk-result";
+
+    result.className =
+      "panel risk-result";
+
     result.innerHTML = "";
+
   }
 }
 
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+
 function initFireloadCalculator() {
+
+  if (!flById("fl-method")) return;
+
+
+  populateFireloadProductSelect();
+
+  populateFireloadCoefficientSelects();
+
+  renderFireloadEntryMode();
+
+  renderFireloadItems();
+
+
+  flById(
+    "fl-method"
+  )?.addEventListener(
+    "change",
+    renderFireloadMode
+  );
+
+
+  flById(
+    "fl-entry-mode"
+  )?.addEventListener(
+    "change",
+    renderFireloadEntryMode
+  );
+
+
+  /*
+   * Botão adicionar
+   */
+
+  flById(
+    "fl-add-item-btn"
+  )?.addEventListener(
+    "click",
+    addFireloadItem
+  );
+
+
+  /*
+   * Botão calcular
+   */
+
+  flById(
+    "fl-calc-btn"
+  )?.addEventListener(
+    "click",
+    calculateFireloadProfessional
+  );
+
+
+  /*
+   * Botão limpar
+   */
+
+  flById(
+    "fl-reset-btn"
+  )?.addEventListener(
+    "click",
+    resetFireloadProfessional
+  );
+
+}
+document.addEventListener("DOMContentLoaded", initSCIECalculator);
+
   if (!flById("fl-method")) return;
 
   populateFireloadProductSelect();
