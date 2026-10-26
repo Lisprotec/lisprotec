@@ -2132,7 +2132,64 @@ let fireloadStepData = {
   area: 0,
   number: 0
 };
+/* =========================================================
+   FUNÇÕES AUXILIARES — CARGA DE INCÊNDIO
+   ========================================================= */
 
+function flFormatNumber(value) {
+  return Number(value || 0).toLocaleString("pt-PT", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
+}
+
+function getFireloadActivityRai(activity, type) {
+  if (!activity || !type) return 0;
+
+  if (type === "fabricacao") {
+    return Number(activity[1] || 0);
+  }
+
+  if (type === "armazenamento") {
+    return Number(activity[2] || 0);
+  }
+
+  return 0;
+}
+
+function getFireloadActivityQ(activity, type) {
+  if (!activity || !type) return 0;
+
+  if (type === "fabricacao") {
+    return Number(activity[3] || 0);
+  }
+
+  if (type === "armazenamento") {
+    return Number(activity[4] || 0);
+  }
+
+  return 0;
+}
+
+function fireloadRiskLabel(value) {
+  const rai = Number(value);
+
+  if (rai >= 2) return "Risco de ativação alto";
+  if (rai >= 1.5) return "Risco de ativação médio";
+  if (rai >= 1) return "Risco de ativação baixo";
+
+  return "—";
+}
+
+function normalizeQuantityToKg(quantity, unit) {
+  const value = Number(quantity || 0);
+
+  if (unit === "t") {
+    return value * 1000;
+  }
+
+  return value;
+}
 
 /* =========================================================
    OPÇÕES
