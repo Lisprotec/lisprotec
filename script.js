@@ -2371,43 +2371,6 @@ function updateFireloadRow(row) {
   }
 }
 
-
-
-  /* CI */
-  if (ciBox) {
-
-    ciBox.textContent =
-      data.ci > 0
-        ? `${fireloadCiLabel(data.ci)} — Ci = ${flFormatNumber(data.ci)}`
-        : "Selecione o produto/material.";
-  }
-
-
-  /* RAI */
-  if (raiBox) {
-
-    raiBox.textContent =
-      data.rai > 0
-        ? `${fireloadRiskLabel(data.rai)} — Rai = ${flFormatNumber(data.rai)}`
-        : "Selecione o tipo e a atividade.";
-  }
-
-
-  /* qsi / qvi */
-  if (qBox) {
-
-    qBox.textContent =
-      data.q > 0
-        ? `${flFormatNumber(data.q)} ${
-            data.type === "armazenamento"
-              ? "MJ/m³"
-              : "MJ/m²"
-          }`
-        : "—";
-  }
-}
-
-
 /* =========================================================
    CRIAR LINHA / ATIVIDADE
    ========================================================= */
