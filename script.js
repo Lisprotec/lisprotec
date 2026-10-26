@@ -1603,1437 +1603,840 @@ const FIRELOAD_PRODUCTS = [
   { id: "casca-outra-madeira", name: "Casca de outra madeira", category: "Madeiras", hi: 4.18 }
 ];
 
-
-/* =========================================================
-   COEFICIENTE DE COMBUSTIBILIDADE — ARTIGO 6.º
-   ========================================================= */
-
 const FIRELOAD_CI_OPTIONS = [
-  {
-    value: "1",
-    label: "Baixo — Ci = 1,00",
-    ci: 1.00
-  },
-  {
-    value: "1.3",
-    label: "Médio — Ci = 1,30",
-    ci: 1.30
-  },
-  {
-    value: "1.6",
-    label: "Alto — Ci = 1,60",
-    ci: 1.60
-  }
+  { value: "1", label: "Baixo — Ci = 1,00", ci: 1.00 },
+  { value: "1.3", label: "Médio — Ci = 1,30", ci: 1.30 },
+  { value: "1.6", label: "Alto — Ci = 1,60", ci: 1.60 }
 ];
-
-
-/* =========================================================
-   COEFICIENTE DE ATIVAÇÃO — ARTIGO 7.º
-   ========================================================= */
 
 const FIRELOAD_RAI_OPTIONS = [
-  {
-    value: "1",
-    label: "Baixo — Rai = 1,00",
-    rai: 1.00
-  },
-  {
-    value: "1.5",
-    label: "Médio — Rai = 1,50",
-    rai: 1.50
-  },
-  {
-    value: "2",
-    label: "Alto — Rai = 2,00",
-    rai: 2.00
-  }
+  { value: "1", label: "Baixo — Rai = 1,00", rai: 1.00 },
+  { value: "1.5", label: "Médio — Rai = 1,50", rai: 1.50 },
+  { value: "2", label: "Alto — Rai = 2,00", rai: 2.00 }
 ];
 
+/*
+ * QUADRO II — Despacho n.º 8954/2020
+ * [atividade, Rai fabricação/reparação, Rai armazenamento, qsi, qvi]
+ * Rai: Baixo=1,00 | Médio=1,50 | Alto=2,00.
+ */
+const FIRELOAD_ACTIVITY_DATA = [
+  ["Acetileno, enchimento de garrafas",1.5,null,700.0,null],
+  ["Ácido carbónico",1,null,40.0,null],
+  ["Ácidos inorgânicos",1,null,80.0,null],
+  ["Aço",1,null,40.0,null],
+  ["Açúcar",null,2,null,8400.0],
+  ["Açúcar, produtos de",1.5,1.5,800.0,800.0],
+  ["Acumuladores/Baterias",1.5,1.5,400.0,800.0],
+  ["Acumuladores/Baterias, expedição",1.5,null,800.0,null],
+  ["Adubos químicos",1.5,1,200.0,200.0],
+  ["Agulhas de aço",1.5,null,200.0,null],
+  ["Alcatrão",null,2,null,3400.0],
+  ["Alcatrão, produtos de",1.5,null,800.0,null],
+  ["Algodão em rama, guata",1,2,300.0,1100.0],
+  ["Algodão, armazém de",null,2,null,1300.0],
+  ["Alimentação, embalagem",1.5,1.5,800.0,800.0],
+  ["Alimentação, expedição",2,null,1000.0,null],
+  ["Alimentação, matérias primas",null,2,null,3400.0],
+  ["Alimentação, pratos pré-cozinhados",1,null,200.0,null],
+  ["Alumínio, produção de",1,null,40.0,null],
+  ["Alumínio, trabalho de",1,null,200.0,null],
+  ["Amido",2,null,2000.0,null],
+  ["Aparelhos de rádio",1,1,300.0,200.0],
+  ["Aparelhos de televisão",1,1,300.0,200.0],
+  ["Aparelhos elétricos",1,1,400.0,400.0],
+  ["Aparelhos elétricos, reparação",1.5,null,500.0,null],
+  ["Aparelhos eletrónicos",1,1,400.0,400.0],
+  ["Aparelhos eletrónicos, reparação",1,null,500.0,null],
+  ["Aparelhos fotográficos",1,1.5,300.0,600.0],
+  ["Aparelhos hospitalares/médicos, oficina",1,null,100.0,null],
+  ["Aparelhos mecânicos",1,null,400.0,null],
+  ["Aparelhos pequenos, construção de",1,null,300.0,null],
+  ["Aparelhos, ensaios/experimentação de",1,null,200.0,null],
+  ["Aparelhos, expedição de",1.5,null,700.0,null],
+  ["Aparelhos, oficinas de reparação",1.5,null,600.0,null],
+  ["Arame não revestido",1,null,80.0,null],
+  ["Arame revestido",1,2,300.0,1000.0],
+  ["Armários frigoríficos",2,1,1000.0,300.0],
+  ["Armas",1,null,300.0,null],
+  ["Armazém de retrosaria",null,2,null,1400.0],
+  ["Armazéns de papelaria",null,2,null,1100.0],
+  ["Armazéns de produtos farmacêuticos",null,1.5,null,800.0],
+  ["Arquivos",null,2,null,1700.0],
+  ["Arquivos — restauro",2,null,4200.0,null],
+  ["Artigos de gesso",1,null,80.0,null],
+  ["Artigos de metal",1,null,200.0,null],
+  ["Artigos de metal fundidos por injeção",1,null,80.0,null],
+  ["Artigos metálicos, amolar/afiar",1,null,80.0,null],
+  ["Artigos metálicos, envernizamento",1,null,300.0,null],
+  ["Artigos metálicos, forjado",1,null,80.0,null],
+  ["Artigos metálicos, fresado",1,null,200.0,null],
+  ["Artigos metálicos, fundição",1,null,40.0,null],
+  ["Artigos metálicos, gravação",1,null,200.0,null],
+  ["Artigos metálicos, moldagem",1,null,100.0,null],
+  ["Artigos metálicos, revestimento a ouro, banho de ouro",1,null,80.0,null],
+  ["Artigos metálicos, serralharia",1,null,200.0,null],
+  ["Artigos metálicos, soldadura",1,null,80.0,null],
+  ["Artigos metálicos, soldadura ligeira",1,null,300.0,null],
+  ["Artigos metálicos, sucatas",1,null,80.0,null],
+  ["Asfalto (bidons, blocos)",null,2,null,3400.0],
+  ["Asfalto, manipulação de",1.5,2,800.0,3400.0],
+  ["Automóveis, armazém de acessórios",null,1.5,null,800.0],
+  ["Automóveis, montagem",1.5,null,300.0,null],
+  ["Automóveis, peças",1.5,null,700.0,null],
+  ["Automóveis, pintura",1.5,null,500.0,null],
+  ["Automóveis, reparação",1,null,300.0,null],
+  ["Aviões",1,null,200.0,null],
+  ["Balanças",1,null,300.0,null],
+  ["Barcos de madeira",1.5,null,600.0,null],
+  ["Barcos de plástico",1.5,null,600.0,null],
+  ["Barcos metálicos",1,null,200.0,null],
+  ["Bebidas alcoólicas",1.5,1.5,500.0,800.0],
+  ["Bebidas sem álcool",1,null,80.0,null],
+  ["Bebidas sem álcool, expedição",1,null,300.0,null],
+  ["Betão, artigos de",1,null,100.0,null],
+  ["Betume de vidraceiros",2,2,1000.0,1300.0],
+  ["Bibliotecas",null,2,null,2000.0],
+  ["Bibliotecas — restauro",2,null,2000.0,null],
+  ["Bicicletas",1,1,200.0,400.0],
+  ["Borracha",null,2,null,28600.0],
+  ["Borracha, artigos de",1.5,2,600.0,5000.0],
+  ["Borracha, goma elástica",1.5,2,700.0,1300.0],
+  ["Borracha, goma elástica, artigos de",1.5,2,700.0,2100.0],
+  ["Brinquedos",1.5,1.5,500.0,800.0],
+  ["Cabos",1,1.5,300.0,600.0],
+  ["Cabos, Cordame",1.5,2,400.0,1100.0],
+  ["Cabos, Cordame, armazém de",null,2,null,1000.0],
+  ["Cacau, produtos de",1.5,2,800.0,5800.0],
+  ["Café cru, sem refinar",null,2,null,2900.0],
+  ["Café, extrato",1,2,300.0,4500.0],
+  ["Café, torrefação",1.5,null,400.0,null],
+  ["Caixas de madeira",2,1.5,1000.0,600.0],
+  ["Caixas fortes",1,null,80.0,null],
+  ["Caixões/Urnas de madeira",1.5,null,500.0,null],
+  ["Calçado",1.5,1,500.0,400.0],
+  ["Calçado, acessórios para",null,1.5,null,800.0],
+  ["Calçado, expedição",1.5,null,600.0,null],
+  ["Cantaria",1,null,40.0,null],
+  ["Caramelos",1,2,400.0,1500.0],
+  ["Caramelos, embalagem",1.5,null,800.0,null],
+  ["Carrinhos de bebé, cadeirinhas",1,1.5,300.0,800.0],
+  ["Carroçarias de automóveis",1,null,200.0,null],
+  ["Carroças, artigos para",1.5,null,500.0,null],
+  ["Cartão",1.5,1.5,300.0,4200.0],
+  ["Cartão betuminoso/asfáltico",2,2,2000.0,2500.0],
+  ["Cartão ondulado",2,2,800.0,1300.0],
+  ["Cartão pedra",1.5,null,300.0,null],
+  ["Cartonagem",1.5,2,800.0,2500.0],
+  ["Cartonagem, expedição",1.5,null,600.0,null],
+  ["Carvão de coke",null,2,null,10500.0],
+  ["Celuloide",1.5,2,800.0,3400.0],
+  ["Cera",null,2,null,3400.0],
+  ["Cera, artigos de",2,2,1300.0,2100.0],
+  ["Cerâmica, artigos de",1,null,200.0,null],
+  ["Cervejarias",1,null,80.0,null],
+  ["Cestaria",1.5,1,400.0,200.0],
+  ["Chapa, artigos de",1,null,100.0,null],
+  ["Chapa, embalagem de artigos",1,null,200.0,null],
+  ["Chapelarias",1.5,null,500.0,null],
+  ["Chocolate",1.5,1.5,400.0,3400.0],
+  ["Chocolate, embalagem",1.5,null,500.0,null],
+  ["Chocolate, fabricação, sala de moldes",2,null,1000.0,null],
+  ["Cimento",1,null,40.0,null],
+  ["Colas combustíveis",2,2,1000.0,3400.0],
+  ["Colas incombustíveis",1.5,null,800.0,null],
+  ["Colchões não sintéticos",1.5,2,500.0,5000.0],
+  ["Compressas/ligaduras, etc , fabricação de artigos",1.5,1.5,400.0,800.0],
+  ["Congelados",1.5,null,800.0,null],
+  ["Conservas",1,null,40.0,null],
+  ["Cordoarias",1.5,1.5,300.0,600.0],
+  ["Cores com diluentes combustíveis",2,2,4000.0,2500.0],
+  ["Cores e vernizes, misturas",2,null,2000.0,null],
+  ["Correias",1.5,null,500.0,null],
+  ["Cortiça",null,1.5,null,800.0],
+  ["Cortiça, artigos de",1.5,1.5,500.0,800.0],
+  ["Cortinas em rolo, que se enrolam, tipo estore/persiana",2,null,1000.0,null],
+  ["Cosméticos",1.5,1.5,300.0,500.0],
+  ["Couro",null,1.5,null,1700.0],
+  ["Couro sintético",1.5,1.5,1000.0,1700.0],
+  ["Couro sintético, artigos de",1,1.5,400.0,800.0],
+  ["Couro sintético, corte de artigos de",1,null,300.0,null],
+  ["Couro, artigos de",1.5,1.5,500.0,600.0],
+  ["Couro, corte de artigos de",1,null,300.0,null],
+  ["Couro, venda de artigos de",1.5,null,700.0,null],
+  ["Crina, pelo/cerda de",null,1.5,null,600.0],
+  ["Depósitos de mercadorias incombustíveis:",null,1,null,200.0],
+  ["Em caixas de plástico",null,1,null,200.0],
+  ["Em estantes de madeira",null,1,null,100.0],
+  ["Em estantes metálicas",null,1,null,20.0],
+  ["Em móveis classificadores ou de ficheiros",null,1,null,100.0],
+  ["Em paletes de madeira",null,1,null,200.0],
+  ["Diluentes",null,2,null,3400.0],
+  ["Discos",1.5,null,600.0,null],
+  ["Drogarias",2,1.5,1000.0,800.0],
+  ["Edifícios frigoríficos",2,null,2000.0,null],
+  ["Eletricidade, armazém de materiais de",null,1,null,400.0],
+  ["Eletricidade, oficina de",1.5,null,600.0,null],
+  ["Eletrodomésticos",1.5,1,300.0,200.0],
+  ["Embalagem de material impresso",2,null,1700.0,null],
+  ["Embalagem de mercadorias combustíveis",1.5,null,600.0,null],
+  ["Embalagem de mercadorias incombustíveis",1,null,400.0,null],
+  ["Embalagem de produtos alimentares",1.5,null,800.0,null],
+  ["Embalagem de têxteis",1.5,null,600.0,null],
+  ["Encadernação",2,null,1000.0,null],
+  ["Envernizamento",1.5,null,80.0,null],
+  ["Envernizamento de móveis",1.5,null,200.0,null],
+  ["Envernizamento de papel",1.5,null,80.0,null],
+  ["Equipamento de frio",2,1,1000.0,300.0],
+  ["Escovas e pincéis",1.5,1.5,700.0,800.0],
+  ["Esculturas de pedra",1,null,40.0,null],
+  ["Esferográficas",1,null,200.0,null],
+  ["Especiarias",1,null,40.0,null],
+  ["Espumas sintéticas",2,2,3000.0,2500.0],
+  ["Espumas sintéticas, artigos de",1.5,1.5,600.0,800.0],
+  ["Estampagem/gravação de produtos sintéticos, de couro, etc",1,2,300.0,1700.0],
+  ["Estofos",1.5,null,800.0,null],
+  ["Estofos, artigos de",1.5,2,300.0,1000.0],
+  ["Estufas, fogões, aquecedores a gás",1,null,200.0,null],
+  ["Expedição de artigos de cristal",1.5,null,700.0,null],
+  ["Expedição de artigos de folha-de-flandres, lata",1,null,200.0,null],
+  ["Expedição de artigos impressos",2,null,1700.0,null],
+  ["Expedição de artigos sintéticos",2,null,1000.0,null],
+  ["Expedição de bebidas",1,null,300.0,null],
+  ["Expedição de cartonagem",1.5,null,600.0,null],
+  ["Expedição de ceras e vernizes",2,null,1300.0,null],
+  ["Expedição de móveis",1.5,null,600.0,null],
+  ["Expedição de pequenos artigos de madeira",1.5,null,600.0,null],
+  ["Expedição de produtos alimentares",2,null,1000.0,null],
+  ["Expedição de têxteis",1.5,null,600.0,null],
+  ["Fábrica de Cristal ou conjunto de objetos de cristal",1,null,100.0,null],
+  ["Farinha em sacos",2,2,2000.0,8400.0],
+  ["Farinha, fábrica ou comércio sem armazém",2,2,1700.0,13000.0],
+  ["Feltro",1.5,1.5,600.0,800.0],
+  ["Feltro, artigos de",1.5,null,500.0,null],
+  ["Feno, fardos de",null,2,null,1000.0],
+  ["Ferramentas",1,null,200.0,null],
+  ["Fiação, cardados/cardagem",2,null,300.0,null],
+  ["Fiação, encanelado/bobinado, em carrinho",1.5,null,600.0,null],
+  ["Fiação, fiar/fiadura",1.5,null,300.0,null],
+  ["Fiação, produtos de fio",null,2,null,1700.0],
+  ["Fiação, produtos de lã",null,2,null,1900.0],
+  ["Fiação, torcidos",1.5,null,300.0,null],
+  ["Fibras de coco",null,2,null,8400.0],
+  ["Flores artificiais",1.5,1.5,300.0,200.0],
+  ["Folhas de lata, de folha-de-flandres",1,null,40.0,null],
+  ["Forjas",1,null,80.0,null],
+  ["Fornos",1,null,200.0,null],
+  ["Forragem",2,2,2000.0,3300.0],
+  ["Fósforos",1.5,2,300.0,800.0],
+  ["Fotografia, laboratórios",1,null,100.0,null],
+  ["Fotografia, oficinas, estúdios",1,null,300.0,null],
+  ["Fotografias, películas/filmes",2,null,1000.0,null],
+  ["Fundição de metais",1,null,40.0,null],
+  ["Funiculares",1,null,300.0,null],
+  ["Galvanoplastia",1,null,200.0,null],
+  ["Gesso",1,null,80.0,null],
+  ["Giradiscos",1,1,300.0,200.0],
+  ["Gorduras",2,2,1000.0,18000.0],
+  ["Gorduras comestíveis",2,2,1000.0,18900.0],
+  ["Gorduras comestíveis, expedição",1.5,null,900.0,null],
+  ["Gorduras líquidas comestíveis",1.5,null,900.0,null],
+  ["Gorduras líquidas comestíveis, expedição",2,2,1000.0,18900.0],
+  ["Gorduras líquidas: minerais, vegetais e animais",null,2,null,18900.0],
+  ["Grãos, sementes",1.5,1.5,600.0,800.0],
+  ["Guarda-chuvas",1,1,300.0,400.0],
+  ["Hidrogénio",null,2,null,130000.0],
+  ["Imprensa, armazém",null,2,null,8000.0],
+  ["Imprensa, embalagem",2,null,2000.0,null],
+  ["Imprensa, expedição",1.5,null,200.0,null],
+  ["Imprensa, oficina tipográfica",1.5,null,300.0,null],
+  ["Imprensa, sala de máquinas",1.5,null,400.0,null],
+  ["Incineração de lixo",1,null,200.0,null],
+  ["Instaladores eletricistas/Eletricistas",1,null,200.0,null],
+  ["Instaladores, oficinas",1,null,100.0,null],
+  ["Instrumentos de música",1.5,null,600.0,null],
+  ["Instrumentos de ótica",1,1,200.0,200.0],
+  ["Janelas de madeira",1.5,null,800.0,null],
+  ["Janelas de plástico",1.5,null,600.0,null],
+  ["Joias, fabricação",1,null,200.0,null],
+  ["Lã de madeira",1.5,null,500.0,null],
+  ["Lâmpadas fluorescentes",1,null,300.0,null],
+  ["Lâmpadas incandescentes",1,null,40.0,null],
+  ["Lapiseiras",1.5,null,500.0,null],
+  ["Latoaria",1,null,100.0,null],
+  ["Lavandaria",1,null,200.0,null],
+  ["Legumes frescos, venda",1,null,200.0,null],
+  ["Legumes secos, venda",2,1.5,1000.0,400.0],
+  ["Leite condensado",1,null,200.0,null],
+  ["Leite em pó",1,2,200.0,9000.0],
+  ["Lenha",null,2,null,2500.0],
+  ["Levedura/fermento",1.5,null,800.0,null],
+  ["Licores",1.5,1.5,400.0,800.0],
+  ["Limpeza química, limpeza a seco",1.5,null,300.0,null],
+  ["Linóleo",1.5,null,500.0,null],
+  ["Locais de resíduos, refugos, desperdícios (diversas mercadorias)",1.5,null,500.0,null],
+  ["Lúpulo",null,2,null,1700.0],
+  ["Luvas",1.5,null,500.0,null],
+  ["Madeira em troncos",null,2,null,6300.0],
+  ["Madeira, aparas",null,2,null,2100.0],
+  ["Madeira, artigos de, carpintaria",1.5,null,700.0,null],
+  ["Madeira, artigos de, cunhagem/cunhar",1.5,null,700.0,null],
+  ["Madeira, artigos de, embutidos",1.5,null,500.0,null],
+  ["Madeira, artigos de, entalhe",1.5,null,600.0,null],
+  ["Madeira, artigos de, envernizamento",1.5,null,500.0,null],
+  ["Madeira, artigos de, expedição",1.5,null,600.0,null],
+  ["Madeira, artigos de, impregnação",2,null,3000.0,null],
+  ["Madeira, artigos de, marcenaria, talha, etc",1.5,null,700.0,null],
+  ["Madeira, artigos de, polimento",1,null,200.0,null],
+  ["Madeira, artigos de, secagem",1.5,null,800.0,null],
+  ["Madeira, artigos de, serragem/serração",1.5,null,400.0,null],
+  ["Madeira, artigos de, torneado",1.5,null,500.0,null],
+  ["Madeira, misturada ou variada",1.5,2,800.0,4200.0],
+  ["Madeira, restos de",null,2,null,2500.0],
+  ["Madeira, vigas e tábuas",null,2,null,4200.0],
+  ["Malte",null,2,null,13400.0],
+  ["Manteiga",1.5,null,700.0,null],
+  ["Máquinas",1,null,200.0,null],
+  ["Máquinas de coser",1,null,300.0,null],
+  ["Máquinas de escritório",1,null,300.0,null],
+  ["Máquinas de lavar roupa",1,1,300.0,400.0],
+  ["Marmelada",1.5,null,800.0,null],
+  ["Mármore, artigos de",1,null,40.0,null],
+  ["Massas alimentícias",2,2,1300.0,1700.0],
+  ["Massas alimentícias, expedição",2,null,1000.0,null],
+  ["Matadouros",1,null,40.0,null],
+  ["Materiais de construção, armazém",null,1.5,null,800.0],
+  ["Materiais e aparelhos para canalizações",1,null,200.0,null],
+  ["Materiais sintéticos",2,2,2000.0,5900.0],
+  ["Materiais usados, tratamento",1.5,2,800.0,3400.0],
+  ["Material de escritório",1.5,2,700.0,1300.0],
+  ["Matérias sintéticas injetadas",1.5,null,500.0,null],
+  ["Matérias sintéticas, artigos de",1.5,1.5,600.0,800.0],
+  ["Matérias sintéticas, estampado",1,null,400.0,null],
+  ["Matérias sintéticas, expedição",2,null,1000.0,null],
+  ["Matérias sintéticas, soldadura de peças",1.5,null,700.0,null],
+  ["Mecânica de precisão, oficina",1,null,200.0,null],
+  ["Medicamentos, embalagem",1,1.5,300.0,800.0],
+  ["Melaço",null,2,null,5000.0],
+  ["Metais preciosos",1,null,200.0,null],
+  ["Metais, manufaturas em geral",1,null,200.0,null],
+  ["Metálicas, grandes construções",1,null,80.0,null],
+  ["Minerais",1,null,40.0,null],
+  ["Moldagem de matérias sintéticas",1,null,400.0,null],
+  ["Moldagem de metais",1,null,100.0,null],
+  ["Molduras",1,null,300.0,null],
+  ["Mostarda",1,null,400.0,null],
+  ["Motocicletas",1,null,300.0,null],
+  ["Motores elétricos",1,null,300.0,null],
+  ["Móveis de aço",1,null,300.0,null],
+  ["Moveis de madeira",1.5,1.5,500.0,800.0],
+  ["Móveis de madeira, envernizamento",1.5,null,500.0,null],
+  ["Móveis, carpintaria",1.5,null,600.0,null],
+  ["Móveis, estofados sem espuma sintética",1.5,1,500.0,400.0],
+  ["Negro de fumo, em sacos",null,2,null,12600.0],
+  ["Oficinas de chapa, trabalho feito com chapa, oficinas onde se trabalha a chapa",1.5,1.5,800.0,2900.0],
+  ["Oficinas de correaria, selaria",1,null,300.0,null],
+  ["Oficinas de eletricidade",1.5,null,600.0,null],
+  ["Oficinas de mecânica",1,null,200.0,null],
+  ["Oficinas de pintura",1.5,null,500.0,null],
+  ["Oficinas de reparação",1,null,400.0,null],
+  ["Olaria",1,null,200.0,null],
+  ["Padarias industriais",1.5,null,1000.0,null],
+  ["Padarias, armazéns",1,null,300.0,null],
+  ["Padarias, laboratórios e fornos",1,null,200.0,null],
+  ["Painéis de cortiça",1.5,null,500.0,null],
+  ["Painéis de madeira",1.5,null,800.0,null],
+  ["Painéis de madeira aglomerada",1.5,2,300.0,6700.0],
+  ["Paletes de madeira",2,2,1000.0,1300.0],
+  ["Palha prensada",null,1.5,null,800.0],
+  ["Palha, artigos de",1.5,null,400.0,null],
+  ["Palha, embalagens de",1.5,null,400.0,null],
+  ["Palhinha, para assentos e costas (de cadeiras, etc )",1,null,400.0,null],
+  ["Palitos",1.5,null,500.0,null],
+  ["Papel",1,2,200.0,10000.0],
+  ["Papel, apresto/preparação",1.5,null,500.0,null],
+  ["Papel, resíduos/restos/desperdícios prensados",null,2,null,2100.0],
+  ["Papel, tratamento da madeira e matérias celulósicas",1.5,null,80.0,null],
+  ["Papel, tratamento, fabricação",1.5,null,700.0,null],
+  ["Papel, velho ou a granel",null,2,null,8400.0],
+  ["Parquets",2,2,2000.0,1200.0],
+  ["Pastelarias com confeção",1,2,400.0,1700.0],
+  ["Pedras artificiais",1,null,40.0,null],
+  ["Pedras de afiar, amolar",1,null,80.0,null],
+  ["Pedras preciosas, lapidação",1,null,80.0,null],
+  ["Pedras refratárias",1,null,200.0,null],
+  ["Pelaria, produtos de",1.5,1.5,500.0,1200.0],
+  ["Peles, armazém",null,1.5,null,1200.0],
+  ["Películas/filmes, cópias",1.5,null,600.0,null],
+  ["Películas/filmes, oficinas de",1.5,null,300.0,null],
+  ["Perfumaria, artigos de",1,1.5,300.0,500.0],
+  ["Persianas, fabricação de",1.5,1,800.0,300.0],
+  ["Pilhas secas",1,1.5,400.0,600.0],
+  ["Pincéis",1.5,null,700.0,null],
+  ["Placas de fibras moles/suaves",1,null,300.0,null],
+  ["Placas de resina sintética",1,null,300.0,null],
+  ["Planadores",1.5,null,200.0,null],
+  ["Pneumáticos, pneus",1.5,2,700.0,1800.0],
+  ["Pneumáticos, pneus de automóveis",1.5,2,700.0,1500.0],
+  ["Porcelanas",1,null,200.0,null],
+  ["Portas de madeira",1.5,2,800.0,1800.0],
+  ["Portas plásticas",1.5,2,700.0,4200.0],
+  ["Produtos de amianto",1,null,80.0,null],
+  ["Produtos de lavagem (lixívia)",1,1,300.0,200.0],
+  ["Produtos de lavagem (lixívia matéria prima)",null,1.5,null,500.0],
+  ["Produtos de reparação de calçado",1.5,2,800.0,2100.0],
+  ["Produtos de talho, carnes, produtos de carne",1,null,40.0,null],
+  ["Produtos farmacêuticos",1.5,null,200.0,null],
+  ["Produtos lácteos",1,null,200.0,null],
+  ["Produtos laminados exceto chapa e arame",1,null,100.0,null],
+  ["Produtos químicos combustíveis",2,2,300.0,1000.0],
+  ["Queijos",1.5,2,100.0,2500.0],
+  ["Relógios",1,1,300.0,400.0],
+  ["Relógios, reparação de",1,null,300.0,null],
+  ["Resinas naturais",2,null,3300.0,null],
+  ["Resinas sintéticas",2,2,3400.0,4200.0],
+  ["Resinas sintéticas, placas de",1.5,2,800.0,3400.0],
+  ["Revestimentos de chão combustíveis",1.5,2,500.0,6000.0],
+  ["Rolamentos ou rolamentos de esferas",1,null,200.0,null],
+  ["Roupa, armários de madeira",1,null,400.0,null],
+  ["Roupa, armários metálicos",1,null,80.0,null],
+  ["Sabão",1,2,200.0,4200.0],
+  ["Sacos de juta",1.5,1.5,500.0,800.0],
+  ["Sacos de papel",1.5,2,800.0,12600.0],
+  ["Sacos de plástico",2,2,600.0,25200.0],
+  ["Salinas, produtos de",1,null,80.0,null],
+  ["Serração",1.5,null,400.0,null],
+  ["Serralharia",1,null,200.0,null],
+  ["Serviços de mesa, louças",1,null,200.0,null],
+  ["Skis",1.5,2,400.0,1700.0],
+  ["Soda, óxido de sódio",1,null,40.0,null],
+  ["Subestação de transformação",1.5,null,300.0,null],
+  ["Sucata/ferro-velho",1,null,300.0,null],
+  ["Sumos de fruta",1,1,200.0,300.0],
+  ["Tabaco em bruto",null,2,null,1700.0],
+  ["Tabaco, artigos de",1.5,2,200.0,2100.0],
+  ["Talco",1,null,40.0,null],
+  ["Tapeçarias",1.5,2,600.0,1700.0],
+  ["Tapeçarias, tinturaria, tingido, tinto",1.5,null,500.0,null],
+  ["Tecidos cânhamo, juta, linho",null,2,null,1300.0],
+  ["Tecidos de ráfia",1.5,null,400.0,null],
+  ["Tecidos em geral, armazém",null,2,null,2000.0],
+  ["Tecidos sintéticos",1.5,2,300.0,1300.0],
+  ["Tecidos, depósito de fardos de algodão",null,2,null,1300.0],
+  ["Tecidos, seda artificial",1.5,2,300.0,1000.0],
+  ["Telefones",1.5,1,400.0,200.0],
+  ["Telhas, tijolos ou adobe, cozedura",1,null,40.0,null],
+  ["Telhas, tijolos ou adobe, fornos de secagem e estantes de madeira",1.5,null,1000.0,null],
+  ["Telhas, tijolos ou adobe, fornos de secagem e estantes metálicas",1,null,40.0,null],
+  ["Telhas, tijolos ou adobe, prensagem, prensas",1,null,200.0,null],
+  ["Telhas, tijolos ou adobe, preparação da argila, greda, barro",1,null,40.0,null],
+  ["Telhas, tijolos ou adobe, secagem, estantes de madeira",1,null,400.0,null],
+  ["Telhas, tijolos ou adobe, secagem, estantes metálicas",1,null,40.0,null],
+  ["Têxteis",null,2,null,1000.0],
+  ["Têxteis, apresto/preparação",1,2,300.0,1100.0],
+  ["Têxteis, artigos de",null,1.5,null,600.0],
+  ["Têxteis, bordado",1,2,300.0,1300.0],
+  ["Têxteis, branqueamento",1.5,null,500.0,null],
+  ["Têxteis, calandragem",1.5,null,500.0,null],
+  ["Têxteis, confeção",1,null,300.0,null],
+  ["Têxteis, corte",1.5,null,500.0,null],
+  ["Têxteis, de juta",1,2,400.0,1300.0],
+  ["Têxteis, de linho",null,2,null,1300.0],
+  ["Têxteis, embalagem",1.5,null,600.0,null],
+  ["Têxteis, entretelas",1,2,300.0,1000.0],
+  ["Têxteis, estampagem",1.5,null,700.0,null],
+  ["Têxteis, expedição",1.5,null,600.0,null],
+  ["Têxteis, forros",1.5,null,700.0,null],
+  ["Têxteis, mantas",1.5,2,500.0,1900.0],
+  ["Têxteis, preparação",1.5,null,300.0,null],
+  ["Têxteis, rendas, bordados, aplicações, decorações",null,1.5,null,600.0],
+  ["Têxteis, roupa de cama",1.5,null,500.0,null],
+  ["Têxteis, roupa de vestir",1.5,1,500.0,400.0],
+  ["Têxteis, roupa interior",1.5,1.5,500.0,600.0],
+  ["Têxteis, tecidos (fabricação)",1.5,null,300.0,null],
+  ["Têxteis, tinturaria, tingimento, coloração",1.5,null,500.0,null],
+  ["Têxteis, tricotado",1,2,300.0,1300.0],
+  ["Tintas",1,null,200.0,null],
+  ["Tintas e Vernizes",1.5,null,800.0,null],
+  ["Tintas para impressão",1.5,2,700.0,3000.0],
+  ["Tinturaria",1.5,null,500.0,null],
+  ["Toldos ou lonas",1,1,300.0,1000.0],
+  ["Tonéis de madeira",2,1.5,1000.0,800.0],
+  ["Tonéis de plástico",1.5,1.5,600.0,800.0],
+  ["Torneado de peças de cobre/bronze",1,null,300.0,null],
+  ["Tratores",1,null,300.0,null],
+  ["Transformadores",1.5,null,300.0,null],
+  ["Transformadores, bobinagem",1.5,null,600.0,null],
+  ["Vagões, fabricação de",1,null,200.0,null],
+  ["Vassouras",1.5,1,700.0,400.0],
+  ["Veículos",1.5,null,300.0,null],
+  ["Velas de cera",2,2,1300.0,22400.0],
+  ["Venda por correspondência, empresas de",1.5,null,400.0,null],
+  ["Vernizes",2,2,5000.0,2500.0],
+  ["Vernizes de cera",2,2,2000.0,5000.0],
+  ["Vernizes, expedição",2,null,1000.0,null],
+  ["Vestuário — fatos, trajes, vestes",1.5,1,500.0,400.0],
+  ["Vidro",1,null,80.0,null],
+  ["Vidro soprado, oficina/fábrica de vidro soprado",1.5,null,200.0,null],
+  ["Vidro, artigos de",1.5,null,200.0,null],
+  ["Vidro, coloração do",1.5,null,300.0,null],
+  ["Vidro, expedição",1,null,700.0,null],
+  ["Vidro, plano, fábrica de",1,null,700.0,null],
+  ["Vidro, tratamento de",1.5,null,200.0,null],
+  ["Vinagre, produção de",1,1,80.0,100.0],
+  ["Vulcanização",2,null,1000.0,null],
+];
 
 let fireloadItems = [];
 
-
-function flById(id) {
-  return document.getElementById(id);
-}
-
+function flById(id) { return document.getElementById(id); }
 
 function flFormatNumber(value, decimals = 2) {
-  return Number(value || 0).toLocaleString("pt-PT", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals
-  });
+  return Number(value || 0).toLocaleString("pt-PT", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
 }
-
 
 function normalizeQuantityToKg(quantity, unit) {
   if (unit === "t") return quantity * 1000;
   return quantity;
 }
 
+function getFireloadActivity() {
+  const name = flById("fl-activity-select")?.value || "";
+  return FIRELOAD_ACTIVITY_DATA.find(a => a[0] === name) || null;
+}
 
-/* =========================================================
-   PRODUTOS
-   ========================================================= */
+function getFireloadActivityRai(activity, type) {
+  if (!activity) return 0;
+  return type === "armazenamento" ? Number(activity[2] || 0) : Number(activity[1] || 0);
+}
+
+function getFireloadActivityQ(activity, type) {
+  if (!activity) return 0;
+  return type === "armazenamento" ? Number(activity[4] || 0) : Number(activity[3] || 0);
+}
+
+function fireloadRiskLabel(value) {
+  if (Number(value) === 2) return "Alto";
+  if (Number(value) === 1.5) return "Médio";
+  if (Number(value) === 1) return "Baixo";
+  return "—";
+}
 
 function populateFireloadProductSelect() {
-
   const select = flById("fl-product-select");
-
   if (!select) return;
-
-  select.innerHTML = '<option value="">Selecionar produto</option>';
-
-  FIRELOAD_PRODUCTS.forEach((product) => {
-
+  select.innerHTML = '<option value="">Selecionar produto/material</option>';
+  FIRELOAD_PRODUCTS.forEach(product => {
     const option = document.createElement("option");
-
     option.value = product.id;
-
-    option.textContent =
-      `${product.name} — Hi ${flFormatNumber(product.hi)} MJ/kg`;
-
+    option.textContent = `${product.name} — Hi ${flFormatNumber(product.hi)} MJ/kg`;
     select.appendChild(option);
-
   });
 }
 
-
-/* =========================================================
-   COEFICIENTES
-   ========================================================= */
-
 function populateFireloadCoefficientSelects() {
-
   const cSelect = flById("fl-manual-c");
   const rSelect = flById("fl-manual-r");
-
   if (cSelect) {
-
-    cSelect.innerHTML =
-      '<option value="">Selecionar Ci</option>';
-
-    FIRELOAD_CI_OPTIONS.forEach(optionData => {
-
+    cSelect.innerHTML = '<option value="">Selecionar Ci</option>';
+    FIRELOAD_CI_OPTIONS.forEach(o => {
       const option = document.createElement("option");
-
-      option.value = optionData.ci;
-
-      option.textContent = optionData.label;
-
-      cSelect.appendChild(option);
-
+      option.value = o.ci; option.textContent = o.label; cSelect.appendChild(option);
     });
-
   }
-
   if (rSelect) {
-
-    rSelect.innerHTML =
-      '<option value="">Selecionar Rai</option>';
-
-    FIRELOAD_RAI_OPTIONS.forEach(optionData => {
-
+    rSelect.innerHTML = '<option value="">Selecionar Rai</option>';
+    FIRELOAD_RAI_OPTIONS.forEach(o => {
       const option = document.createElement("option");
-
-      option.value = optionData.rai;
-
-      option.textContent = optionData.label;
-
-      rSelect.appendChild(option);
-
+      option.value = o.rai; option.textContent = o.label; rSelect.appendChild(option);
     });
-
   }
 }
 
+function ensureFireloadPresetCoefficients() {
+  const productSelect = flById("fl-product-select");
+  if (!productSelect) return;
 
-/* =========================================================
-   MODO DE ENTRADA
-   ========================================================= */
+  let container = document.getElementById("fl-product-coefficients");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "fl-product-coefficients";
+    container.style.display = "grid";
+    container.style.gridTemplateColumns = "1fr 1fr";
+    container.style.gap = "12px";
+    container.style.marginTop = "12px";
+    productSelect.parentNode.insertBefore(container, productSelect.nextSibling);
+  }
+
+  container.innerHTML = `
+    <div>
+      <label for="fl-activity-type">Tipo de atividade</label>
+      <select id="fl-activity-type">
+        <option value="">Selecionar tipo de atividade</option>
+        <option value="fabricacao">Fabricação e reparação</option>
+        <option value="armazenamento">Armazenamento</option>
+      </select>
+    </div>
+    <div>
+      <label for="fl-activity-select">Atividade — Quadro II</label>
+      <select id="fl-activity-select" disabled>
+        <option value="">Selecionar atividade</option>
+      </select>
+    </div>
+    <div>
+      <label for="fl-product-c">Coeficiente de combustibilidade — Ci</label>
+      <select id="fl-product-c">
+        <option value="">Selecionar Ci</option>
+      </select>
+    </div>
+    <div>
+      <label>Coeficiente de ativação — Rai</label>
+      <div id="fl-auto-rai" style="padding:10px 12px;border:1px solid rgba(127,127,127,.25);border-radius:8px;min-height:20px;">
+        Selecione o tipo e a atividade.
+      </div>
+    </div>
+  `;
+
+  const cSelect = flById("fl-product-c");
+  FIRELOAD_CI_OPTIONS.forEach(o => {
+    const option = document.createElement("option");
+    option.value = o.ci; option.textContent = o.label; cSelect.appendChild(option);
+  });
+
+  const typeSelect = flById("fl-activity-type");
+  const activitySelect = flById("fl-activity-select");
+
+  function updateActivities() {
+    const type = typeSelect.value;
+    activitySelect.innerHTML = '<option value="">Selecionar atividade</option>';
+    activitySelect.disabled = !type;
+    if (!type) { updateFireloadAutomaticFields(); return; }
+    FIRELOAD_ACTIVITY_DATA.forEach(a => {
+      const rai = getFireloadActivityRai(a, type);
+      const q = getFireloadActivityQ(a, type);
+      if (rai > 0 && q > 0) {
+        const option = document.createElement("option");
+        option.value = a[0];
+        option.textContent = `${a[0]} — Rai ${fireloadRiskLabel(rai)}`;
+        activitySelect.appendChild(option);
+      }
+    });
+    updateFireloadAutomaticFields();
+  }
+
+  typeSelect.addEventListener("change", updateActivities);
+  activitySelect.addEventListener("change", updateFireloadAutomaticFields);
+  productSelect.addEventListener("change", updateFireloadAutomaticFields);
+  updateActivities();
+}
+
+function updateFireloadAutomaticFields() {
+  const activity = getFireloadActivity();
+  const type = flById("fl-activity-type")?.value || "";
+  const rai = getFireloadActivityRai(activity, type);
+  const q = getFireloadActivityQ(activity, type);
+  const box = flById("fl-auto-rai");
+  if (box) {
+    box.innerHTML = activity && rai > 0
+      ? `<strong>${fireloadRiskLabel(rai)}</strong> — Rai = ${flFormatNumber(rai)}${q > 0 ? ` · valor estatístico = ${flFormatNumber(q)} ${type === "armazenamento" ? "MJ/m³" : "MJ/m²"}` : ""}`
+      : "Selecione o tipo e a atividade.";
+  }
+}
 
 function renderFireloadEntryMode() {
-
-  const mode =
-    flById("fl-entry-mode")?.value || "predefinido";
-
-  const manual =
-    flById("fl-manual-fields");
-
-  if (!manual) return;
-
-  if (mode === "manual") {
-
-    manual.classList.remove("hidden");
-
-  } else {
-
-    manual.classList.add("hidden");
-
-  }
+  const mode = flById("fl-entry-mode")?.value || "predefinido";
+  const manual = flById("fl-manual-fields");
+  if (manual) manual.classList.toggle("hidden", mode !== "manual");
+  const preset = document.getElementById("fl-product-coefficients");
+  if (preset) preset.style.display = mode === "manual" ? "none" : "grid";
 }
 
-
-/* =========================================================
-   MODO DE CÁLCULO
-   ========================================================= */
-
 function renderFireloadMode() {
-
-  const method =
-    flById("fl-method")?.value || "";
-
-  const note =
-    flById("fl-mode-note");
-
-  const det =
-    flById("fl-deterministico");
-
-  const prob =
-    flById("fl-probabilistico");
-
-  det?.classList.add("hidden");
-  prob?.classList.add("hidden");
-
-  if (method === "deterministico") {
-
-    det?.classList.remove("hidden");
-
-    if (note) {
-
-      note.textContent =
-        "Método determinístico: Qs = Σ(Mi × Hi × Ci × Rai).";
-
-    }
-
-  } else if (method === "probabilistico") {
-
-    prob?.classList.remove("hidden");
-
-    if (note) {
-
-      note.textContent =
-        "Método probabilístico: utiliza os valores estatísticos qsi/qvi do Quadro II.";
-
-    }
-
-  } else {
-
-    if (note) note.textContent = "";
-
-  }
+  const method = flById("fl-method")?.value || "";
+  flById("fl-deterministico")?.classList.toggle("hidden", method !== "deterministico");
+  flById("fl-probabilistico")?.classList.toggle("hidden", method !== "probabilistico");
+  const note = flById("fl-mode-note");
+  if (note) note.textContent = method === "deterministico"
+    ? "Método determinístico: Qs = Σ(Mi × Hi × Ci × Rai) e qs = Qs / S."
+    : method === "probabilistico"
+      ? "Método probabilístico: qsi/qvi e Rai são obtidos automaticamente do Quadro II."
+      : "";
 }
 
 function buildFireloadItemFromPreset(quantity, unit) {
+  const selectedId = flById("fl-product-select")?.value || "";
+  const product = FIRELOAD_PRODUCTS.find(p => p.id === selectedId);
+  const activity = getFireloadActivity();
+  const type = flById("fl-activity-type")?.value || "";
+  const c = Number(flById("fl-product-c")?.value || 0);
+  const r = getFireloadActivityRai(activity, type);
 
-  const selectedId =
-    flById("fl-product-select")?.value || "";
+  if (!product) { alert("Selecione primeiro o produto/material."); return null; }
+  if (!type) { alert("Selecione se a atividade é Fabricação e reparação ou Armazenamento."); return null; }
+  if (!activity || r <= 0) { alert("Selecione a atividade correspondente do Quadro II."); return null; }
+  if (c <= 0) { alert("Selecione o coeficiente de combustibilidade Ci. O Artigo 6.º exige a classificação pelas características reais do combustível."); return null; }
 
-  /*
-   * O produto é obrigatório no modo pré-definido.
-   * O valor "Selecionar produto" corresponde a value="".
-   */
-  if (!selectedId) {
-    alert(
-      "Selecione primeiro o produto/material que pretende adicionar."
-    );
-
-    flById("fl-product-select")?.focus();
-
-    return null;
-  }
-
-  const product =
-    FIRELOAD_PRODUCTS.find(
-      p => p.id === selectedId
-    );
-
-  if (!product) {
-    alert(
-      "O produto selecionado não foi encontrado na lista."
-    );
-
-    return null;
-  }
-
-  /*
-   * Hi vem diretamente do Quadro I associado
-   * ao produto selecionado.
-   */
-  const hi =
-    Number(product.hi || 0);
-
-  if (hi <= 0) {
-    alert(
-      "O produto selecionado não possui um valor Hi válido."
-    );
-
-    return null;
-  }
-
-  /*
-   * Ci — Artigo 6.º
-   */
-  const c =
-    Number(
-      flById("fl-product-c")?.value || 0
-    );
-
-  if (c <= 0) {
-    alert(
-      "Selecione o coeficiente de combustibilidade Ci."
-    );
-
-    flById("fl-product-c")?.focus();
-
-    return null;
-  }
-
-  /*
-   * Rai — Artigo 7.º
-   */
-  const r =
-    Number(
-      flById("fl-product-r")?.value || 0
-    );
-
-  if (r <= 0) {
-    alert(
-      "Selecione o coeficiente de ativação Rai."
-    );
-
-    flById("fl-product-r")?.focus();
-
-    return null;
-  }
-
-  /*
-   * Construção do item que será colocado
-   * na tabela de materiais.
-   */
   return {
     name: product.name,
     category: product.category,
-    hi: hi,
-    c: c,
-    r: r,
+    activity: activity[0],
+    activityType: type,
+    hi: Number(product.hi),
+    c,
+    r,
     quantity: Number(quantity),
     unit: unit || "kg"
   };
 }
 
-
-/* =========================================================
-   CONSTRUÇÃO DE ITEM — MANUAL
-   ========================================================= */
-
 function buildFireloadItemFromManual(quantity, unit) {
-
-  const name =
-    flById("fl-manual-name")?.value?.trim() || "";
-
-  const category =
-    flById("fl-manual-category")?.value?.trim() ||
-    "Manual";
-
-  const hi =
-    Number(
-      flById("fl-manual-hi")?.value || 0
-    );
-
-  const c =
-    Number(
-      flById("fl-manual-c")?.value || 0
-    );
-
-  const r =
-    Number(
-      flById("fl-manual-r")?.value || 0
-    );
-
-  const manualUnit =
-    flById("fl-manual-unit")?.value ||
-    unit ||
-    "kg";
-
-
-  if (!name) {
-
-    alert(
-      "Introduza o nome do produto/material."
-    );
-
-    return null;
-  }
-
-
-  if (hi <= 0) {
-
-    alert(
-      "Introduza um valor Hi válido."
-    );
-
-    return null;
-  }
-
-
-  if (c <= 0) {
-
-    alert(
-      "Selecione o coeficiente Ci."
-    );
-
-    return null;
-  }
-
-
-  if (r <= 0) {
-
-    alert(
-      "Selecione o coeficiente Rai."
-    );
-
-    return null;
-  }
-
-
-  return {
-
-    name,
-
-    category,
-
-    hi,
-
-    c,
-
-    r,
-
-    quantity,
-
-    unit: manualUnit
-
-  };
+  const name = flById("fl-manual-name")?.value?.trim();
+  const category = flById("fl-manual-category")?.value?.trim() || "Manual";
+  const hi = Number(flById("fl-manual-hi")?.value || 0);
+  const c = Number(flById("fl-manual-c")?.value || 0);
+  const r = Number(flById("fl-manual-r")?.value || 0);
+  if (!name || hi <= 0 || c <= 0 || r <= 0) { alert("Preencha nome, Hi, Ci e Rai no modo manual."); return null; }
+  return { name, category, hi, c, r, quantity:Number(quantity), unit:unit || "kg" };
 }
-
-
-/* =========================================================
-   ADICIONAR ITEM
-   ========================================================= */
-
-function addFireloadItem() {
-
-  const mode =
-    flById("fl-entry-mode")?.value ||
-    "predefinido";
-
-  const quantity =
-    Number(
-      flById("fl-quantity")?.value || 0
-    );
-
-  const unit =
-    flById("fl-unit")?.value ||
-    "kg";
-
-
-  if (quantity <= 0) {
-
-    alert(
-      "Introduza uma quantidade válida."
-    );
-
-    return;
-  }
-
-
-  const item =
-    mode === "manual"
-
-      ? buildFireloadItemFromManual(
-          quantity,
-          unit
-        )
-
-      : buildFireloadItemFromPreset(
-          quantity,
-          unit
-        );
-
-
-  if (!item) return;
-
-
-  fireloadItems.push(item);
-
-  renderFireloadItems();
-
-
-  if (flById("fl-quantity")) {
-
-    flById("fl-quantity").value = "";
-
-  }
-}
-
-
-/* =========================================================
-   CÁLCULO PARCIAL
-   ========================================================= */
 
 function getDeterministicPartial(item) {
-
-  const qKg =
-    normalizeQuantityToKg(
-      item.quantity,
-      item.unit
-    );
-
-  return (
-    qKg *
-    item.hi *
-    item.c *
-    item.r
-  );
+  return normalizeQuantityToKg(item.quantity, item.unit) * item.hi * item.c * item.r;
 }
-
-
-/* =========================================================
-   TABELA DE MATERIAIS
-   ========================================================= */
 
 function renderFireloadItems() {
-
-  const body =
-    flById("fl-items-body");
-
+  const body = flById("fl-items-body");
   if (!body) return;
-
-
   if (!fireloadItems.length) {
-
-    body.innerHTML = `
-      <tr>
-        <td colspan="8"
-            style="text-align:center;opacity:.7;">
-          Ainda não foram adicionados produtos.
-        </td>
-      </tr>
-    `;
-
+    body.innerHTML = '<tr><td colspan="8" style="text-align:center;opacity:.7;">Ainda não foram adicionados produtos.</td></tr>';
     return;
   }
-
-
-  body.innerHTML =
-    fireloadItems.map(
-      (item, index) => {
-
-        const partial =
-          getDeterministicPartial(item);
-
-
-        return `
-          <tr>
-
-            <td>
-              ${item.name}
-            </td>
-
-            <td>
-              <span class="fl-chip">
-                ${item.category}
-              </span>
-            </td>
-
-            <td>
-              ${flFormatNumber(item.quantity)}
-              ${item.unit}
-            </td>
-
-            <td>
-              ${flFormatNumber(item.hi)}
-              MJ/kg
-            </td>
-
-            <td>
-              ${flFormatNumber(item.c)}
-            </td>
-
-            <td>
-              ${flFormatNumber(item.r)}
-            </td>
-
-            <td>
-              ${flFormatNumber(partial)}
-              MJ
-            </td>
-
-            <td>
-
-              <button
-                type="button"
-                class="btn btn-outline btn-small"
-                onclick="removeFireloadItem(${index})">
-
-                Remover
-
-              </button>
-
-            </td>
-
-          </tr>
-        `;
-
-      }
-    ).join("");
+  body.innerHTML = fireloadItems.map((item,index) => `
+    <tr>
+      <td>${item.name}</td>
+      <td><span class="fl-chip">${item.category}</span></td>
+      <td>${flFormatNumber(item.quantity)} ${item.unit}</td>
+      <td>${flFormatNumber(item.hi)} MJ/kg</td>
+      <td>${flFormatNumber(item.c)}</td>
+      <td>${flFormatNumber(item.r)}</td>
+      <td>${flFormatNumber(getDeterministicPartial(item))} MJ</td>
+      <td><button type="button" class="btn btn-outline btn-small" onclick="removeFireloadItem(${index})">Remover</button></td>
+    </tr>
+  `).join("");
 }
 
-
-/* =========================================================
-   REMOVER ITEM
-   ========================================================= */
-
-function removeFireloadItem(index) {
-
-  fireloadItems.splice(
-    index,
-    1
-  );
-
-  renderFireloadItems();
-}
-
-
-/* =========================================================
-   CÁLCULO DETERMINÍSTICO
-   Qs = Σ(Mi × Hi × Ci × Rai)
-   qs = Qs / S
-   ========================================================= */
+function removeFireloadItem(index) { fireloadItems.splice(index,1); renderFireloadItems(); }
 
 function getDeterministicCalculation(area) {
-
-  const totalMJ =
-    fireloadItems.reduce(
-      (sum, item) =>
-        sum +
-        getDeterministicPartial(item),
-      0
-    );
-
-
-  const density =
-    totalMJ / area;
-
-
+  const totalMJ = fireloadItems.reduce((sum,item) => sum + getDeterministicPartial(item), 0);
   return {
-
-    method: "Determinístico",
-
-    totalMJ,
-
-    density,
-
-    memory:
-
-      fireloadItems.map(
-        item => {
-
-          const qKg =
-            normalizeQuantityToKg(
-              item.quantity,
-              item.unit
-            );
-
-          const partial =
-            getDeterministicPartial(
-              item
-            );
-
-
-          return {
-
-            title:
-              item.name,
-
-            detail:
-              `${flFormatNumber(qKg)} kg × ` +
-              `${flFormatNumber(item.hi)} × ` +
-              `${flFormatNumber(item.c)} × ` +
-              `${flFormatNumber(item.r)} = ` +
-              `${flFormatNumber(partial)} MJ`
-
-          };
-
-        }
-      )
-
+    method:"Determinístico", totalMJ, density:totalMJ/area,
+    memory:fireloadItems.map(item => {
+      const kg=normalizeQuantityToKg(item.quantity,item.unit), partial=getDeterministicPartial(item);
+      return { title:item.name, detail:`${kg.toLocaleString("pt-PT")} kg × ${flFormatNumber(item.hi)} × ${flFormatNumber(item.c)} × ${flFormatNumber(item.r)} = ${flFormatNumber(partial)} MJ` };
+    })
   };
 }
-
-
-/* =========================================================
-   CÁLCULO PROBABILÍSTICO
-   ========================================================= */
 
 function getProbabilisticCalculation(area) {
-
-  const mode =
-    flById("fl-prob-mode")?.value || "";
-
-  const zoneArea =
-    Number(
-      flById("fl-prob-zone-area")?.value || 0
-    );
-
-  const height =
-    Number(
-      flById("fl-prob-height")?.value || 0
-    );
-
-  const q =
-    Number(
-      flById("fl-prob-q")?.value || 0
-    );
-
-  const c =
-    Number(
-      flById("fl-prob-c")?.value || 0
-    );
-
-  const r =
-    Number(
-      flById("fl-prob-r")?.value || 0
-    );
-
-
-  if (
-    !mode ||
-    zoneArea <= 0 ||
-    q <= 0 ||
-    c <= 0 ||
-    r <= 0
-  ) {
-
-    alert(
-      "Preencha os campos obrigatórios do cálculo probabilístico."
-    );
-
+  const activity=getFireloadActivity();
+  const type=flById("fl-activity-type")?.value || "";
+  const c=Number(flById("fl-product-c")?.value || flById("fl-prob-c")?.value || 0);
+  const zoneArea=Number(flById("fl-prob-zone-area")?.value || area || 0);
+  const height=Number(flById("fl-prob-height")?.value || 0);
+  const q=getFireloadActivityQ(activity,type);
+  const r=getFireloadActivityRai(activity,type);
+  if (!type || !activity || q<=0 || r<=0 || c<=0 || zoneArea<=0) {
+    alert("Selecione o tipo de atividade, a atividade do Quadro II e o Ci. Introduza também a área do compartimento.");
     return null;
   }
-
-
-  let totalMJ = 0;
-
-  let formulaText = "";
-
-
-  /*
-   * Atividade:
-   * Qs = Σ(qsi × Si × Ci × Rai)
-   */
-
-  if (mode === "atividade") {
-
-    totalMJ =
-      q *
-      zoneArea *
-      c *
-      r;
-
-
-    formulaText =
-      `${flFormatNumber(q)} × ` +
-      `${flFormatNumber(zoneArea)} × ` +
-      `${flFormatNumber(c)} × ` +
-      `${flFormatNumber(r)}`;
-
+  let totalMJ=0, formulaText="";
+  if (type === "atividade" || type === "fabricacao") {
+    totalMJ=q*zoneArea*c*r;
+    formulaText=`${flFormatNumber(q)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
+  } else {
+    if (height<=0) { alert("Introduza a altura de armazenagem."); return null; }
+    totalMJ=q*height*zoneArea*c*r;
+    formulaText=`${flFormatNumber(q)} × ${flFormatNumber(height)} × ${flFormatNumber(zoneArea)} × ${flFormatNumber(c)} × ${flFormatNumber(r)}`;
   }
-
-
-  /*
-   * Armazenamento:
-   * Qs = Σ(qvi × hi × Si × Ci × Rai)
-   */
-
-  else {
-
-    if (height <= 0) {
-
-      alert(
-        "Introduza a altura de armazenagem."
-      );
-
-      return null;
-    }
-
-
-    totalMJ =
-      q *
-      height *
-      zoneArea *
-      c *
-      r;
-
-
-    formulaText =
-      `${flFormatNumber(q)} × ` +
-      `${flFormatNumber(height)} × ` +
-      `${flFormatNumber(zoneArea)} × ` +
-      `${flFormatNumber(c)} × ` +
-      `${flFormatNumber(r)}`;
-
-  }
-
-
-  const density =
-    totalMJ / area;
-
-
   return {
-
-    method: "Probabilístico",
-
-    totalMJ,
-
-    density,
-
-    memory: [
-
-      {
-        title:
-          "Método aplicado",
-
-        detail:
-          mode === "atividade"
-
-            ? "Qs = Σ(qsi × Si × Ci × Rai)"
-
-            : "Qs = Σ(qvi × hi × Si × Ci × Rai)"
-      },
-
-      {
-        title:
-          "Memória de cálculo",
-
-        detail:
-          `${formulaText} = ${flFormatNumber(totalMJ)} MJ`
-      }
-
+    method:"Probabilístico", totalMJ, density:totalMJ/area,
+    memory:[
+      {title:"Atividade",detail:`${activity[0]} — ${type === "armazenamento" ? "Armazenamento" : "Fabricação e reparação"}`},
+      {title:"Rai automático",detail:`${fireloadRiskLabel(r)} — Rai = ${flFormatNumber(r)}`},
+      {title:"Valor do Quadro II",detail:`${flFormatNumber(q)} ${type === "armazenamento" ? "MJ/m³" : "MJ/m²"}`},
+      {title:"Memória de cálculo",detail:`${formulaText} = ${flFormatNumber(totalMJ)} MJ`}
     ]
-
   };
 }
 
-
-/* =========================================================
-   MEDIDAS / NOTAS
-   ========================================================= */
-
-function getGeneralMeasures() {
-
-  return [
-
-    {
-      title: "Validação do Ci",
-      detail:
-        "O Ci deve ser definido de acordo com as características de combustibilidade do constituinte combustível, nos termos do artigo 6.º."
-    },
-
-    {
-      title: "Validação do Rai",
-      detail:
-        "O Rai depende do risco de ativação associado à atividade ou armazenamento, nos termos do artigo 7.º."
-    },
-
-    {
-      title: "Validação técnica",
-      detail:
-        "Confirmar atividade, compartimentação, materiais existentes e condições reais de exploração."
-    }
-
-  ];
+function addFireloadItem() {
+  const quantity=Number(flById("fl-quantity")?.value || 0);
+  const unit=flById("fl-unit")?.value || "kg";
+  if (quantity<=0) { alert("Introduza uma quantidade válida."); return; }
+  const mode=flById("fl-entry-mode")?.value || "predefinido";
+  const item=mode === "manual" ? buildFireloadItemFromManual(quantity,unit) : buildFireloadItemFromPreset(quantity,unit);
+  if (!item) return;
+  fireloadItems.push(item); renderFireloadItems();
+  if (flById("fl-quantity")) flById("fl-quantity").value="";
 }
 
-
-/* =========================================================
-   RESULTADO
-   ========================================================= */
-
-function renderFireloadResult(
-  area,
-  calculation
-) {
-
-  const box =
-    flById("fl-result");
-
-  if (!box) return;
-
-
-  const measures =
-    getGeneralMeasures();
-
-
-  box.className =
-    "panel risk-result show";
-
-
-  box.innerHTML = `
-
-    <div class="risk-badge info">
-      Resultado
-    </div>
-
-    <h3 style="margin-top:0;">
-      Cálculo ${calculation.method}
-    </h3>
-
-
-    <h4 class="risk-section-title">
-      Resultado principal
-    </h4>
-
-
+function renderFireloadResult(area,calculation) {
+  const box=flById("fl-result"); if(!box) return;
+  box.className="panel risk-result show";
+  box.innerHTML=`
+    <div class="risk-badge info">Resultado</div>
+    <h3 style="margin-top:0;">Carga de incêndio modificada</h3>
+    <div style="font-size:2rem;font-weight:700;margin:12px 0 20px;">${flFormatNumber(calculation.density)} MJ/m²</div>
     <ul class="criteria-list">
-
-      <li>
-        <strong>
-          Carga de incêndio modificada (Qs)
-        </strong>
-
-        <span>
-          ${flFormatNumber(calculation.totalMJ)}
-          MJ
-        </span>
-      </li>
-
-
-      <li>
-        <strong>
-          Densidade da carga de incêndio modificada (qs)
-        </strong>
-
-        <span>
-          ${flFormatNumber(calculation.density)}
-          MJ/m²
-        </span>
-      </li>
-
-
-      <li>
-        <strong>
-          Área útil do compartimento (S)
-        </strong>
-
-        <span>
-          ${flFormatNumber(area)}
-          m²
-        </span>
-      </li>
-
+      <li><strong>Carga de incêndio modificada (Qs)</strong><span>${flFormatNumber(calculation.totalMJ)} MJ</span></li>
+      <li><strong>Densidade da carga de incêndio modificada (qs)</strong><span>${flFormatNumber(calculation.density)} MJ/m²</span></li>
+      <li><strong>Área útil do compartimento (S)</strong><span>${flFormatNumber(area)} m²</span></li>
     </ul>
-
-
-    <h4 class="risk-section-title">
-      Memória de cálculo
-    </h4>
-
-
-    <ul class="memory-list">
-
-      ${calculation.memory.map(
-        item => `
-
-          <li>
-
-            <strong>
-              ${item.title}
-            </strong>
-
-            <span>
-              ${item.detail}
-            </span>
-
-          </li>
-
-        `
-      ).join("")}
-
-    </ul>
-
-
-    <h4 class="risk-section-title">
-      Notas de validação
-    </h4>
-
-
-    <ul class="measures-list">
-
-      ${measures.map(
-        item => `
-
-          <li>
-
-            <strong>
-              ${item.title}
-            </strong>
-
-            <span>
-              ${item.detail}
-            </span>
-
-          </li>
-
-        `
-      ).join("")}
-
-    </ul>
-
-
-    <div class="risk-actions">
-
-      <a
-        class="btn btn-primary"
-        href="#contacto">
-
-        Pedir análise técnica
-
-      </a>
-
-    </div>
-
-
-    <p class="risk-legal-note">
-
-      Ferramenta indicativa. O cálculo deve ser validado
-      tecnicamente à luz do Despacho n.º 8954/2020
-      e do enquadramento SCIE aplicável.
-
-    </p>
-
+    <h4 class="risk-section-title">Memória de cálculo</h4>
+    <ul class="memory-list">${calculation.memory.map(item=>`<li><strong>${item.title}</strong><span>${item.detail}</span></li>`).join("")}</ul>
+    <p class="risk-legal-note">Ferramenta indicativa. O cálculo deve ser validado tecnicamente à luz do Despacho n.º 8954/2020 e do enquadramento SCIE aplicável.</p>
   `;
 }
 
-
-/* =========================================================
-   CÁLCULO PRINCIPAL
-   ========================================================= */
-
 function calculateFireloadProfessional() {
-
-  const method =
-    flById("fl-method")?.value || "";
-
-  const area =
-    Number(
-      flById("fl-area")?.value || 0
-    );
-
-
-  if (!method) {
-
-    alert(
-      "Selecione o método de cálculo."
-    );
-
-    return;
+  const method=flById("fl-method")?.value || "";
+  const area=Number(flById("fl-area")?.value || 0);
+  if(!method) { alert("Selecione o método de cálculo."); return; }
+  if(area<=0) { alert("Introduza a área útil do compartimento."); return; }
+  if(method === "deterministico") {
+    if(!fireloadItems.length) { alert("Adicione pelo menos um produto/material."); return; }
+    renderFireloadResult(area,getDeterministicCalculation(area)); return;
   }
-
-
-  if (area <= 0) {
-
-    alert(
-      "Introduza a área útil do compartimento."
-    );
-
-    return;
-  }
-
-
-  if (method === "deterministico") {
-
-    if (!fireloadItems.length) {
-
-      alert(
-        "Adicione pelo menos um produto/material."
-      );
-
-      return;
-    }
-
-
-    const calculation =
-      getDeterministicCalculation(
-        area
-      );
-
-
-    renderFireloadResult(
-      area,
-      calculation
-    );
-
-    return;
-  }
-
-
-  const calculation =
-    getProbabilisticCalculation(
-      area
-    );
-
-
-  if (!calculation) return;
-
-
-  renderFireloadResult(
-    area,
-    calculation
-  );
+  const calculation=getProbabilisticCalculation(area); if(calculation) renderFireloadResult(area,calculation);
 }
-
-
-/* =========================================================
-   RESET
-   ========================================================= */
 
 function resetFireloadProfessional() {
-
-  fireloadItems = [];
-
-  renderFireloadItems();
-
-
-  [
-    "fl-method",
-    "fl-area",
-    "fl-entry-mode",
-    "fl-product-select",
-    "fl-product-c",
-    "fl-product-r",
-    "fl-manual-name",
-    "fl-manual-category",
-    "fl-manual-hi",
-    "fl-manual-c",
-    "fl-manual-r",
-    "fl-manual-unit",
-    "fl-quantity",
-    "fl-unit",
-    "fl-prob-mode",
-    "fl-prob-preset",
-    "fl-prob-zone-area",
-    "fl-prob-height",
-    "fl-prob-q",
-    "fl-prob-c",
-    "fl-prob-r"
-  ].forEach(id => {
-
-    const el =
-      flById(id);
-
-    if (!el) return;
-
-
-    if (el.tagName === "SELECT") {
-
-      el.selectedIndex = 0;
-
-    } else {
-
-      el.value = "";
-
-    }
-
-  });
-
-
-  flById(
-    "fl-deterministico"
-  )?.classList.add("hidden");
-
-
-  flById(
-    "fl-probabilistico"
-  )?.classList.add("hidden");
-
-
-  flById(
-    "fl-manual-fields"
-  )?.classList.add("hidden");
-
-
-  const note =
-    flById("fl-mode-note");
-
-  if (note) {
-
-    note.textContent = "";
-
-  }
-
-
-  const result =
-    flById("fl-result");
-
-
-  if (result) {
-
-    result.className =
-      "panel risk-result";
-
-    result.innerHTML = "";
-
-  }
+  fireloadItems=[]; renderFireloadItems();
+  ["fl-method","fl-area","fl-entry-mode","fl-product-select","fl-product-c","fl-product-r","fl-manual-name","fl-manual-category","fl-manual-hi","fl-manual-c","fl-manual-r","fl-manual-unit","fl-quantity","fl-unit","fl-prob-mode","fl-prob-preset","fl-prob-zone-area","fl-prob-height","fl-prob-q","fl-prob-c","fl-prob-r","fl-activity-type","fl-activity-select"].forEach(id=>{const el=flById(id);if(!el)return;if(el.tagName==="SELECT")el.selectedIndex=0;else el.value="";});
+  flById("fl-activity-select")?.setAttribute("disabled","disabled");
+  flById("fl-auto-rai") && (flById("fl-auto-rai").textContent="Selecione o tipo e a atividade.");
+  flById("fl-deterministico")?.classList.add("hidden");
+  flById("fl-probabilistico")?.classList.add("hidden");
+  flById("fl-manual-fields")?.classList.add("hidden");
+  const result=flById("fl-result"); if(result){result.className="panel risk-result";result.innerHTML="";}
 }
-
-
-/* =========================================================
-   INICIALIZAÇÃO — CALCULADORA DENSIDADE CARGA DE INCÊNDIO
-   ========================================================= */
-
-function ensureFireloadPresetCoefficients() {
-
-  const productSelect = flById("fl-product-select");
-
-  if (!productSelect) return;
-
-  /*
-   * Cria automaticamente os campos Ci e Rai caso
-   * não existam no HTML original.
-   */
-
-  let container = document.getElementById("fl-product-coefficients");
-
-  if (!container) {
-
-    container = document.createElement("div");
-
-    container.id = "fl-product-coefficients";
-
-    container.style.display = "grid";
-    container.style.gridTemplateColumns = "1fr 1fr";
-    container.style.gap = "12px";
-    container.style.marginTop = "12px";
-
-    const ciWrapper = document.createElement("div");
-
-    ciWrapper.innerHTML = `
-      <label for="fl-product-c">
-        Coeficiente de combustibilidade — Ci
-      </label>
-
-      <select id="fl-product-c">
-        <option value="">Selecionar Ci</option>
-      </select>
-    `;
-
-    const raiWrapper = document.createElement("div");
-
-    raiWrapper.innerHTML = `
-      <label for="fl-product-r">
-        Coeficiente de ativação — Rai
-      </label>
-
-      <select id="fl-product-r">
-        <option value="">Selecionar Rai</option>
-      </select>
-    `;
-
-    container.appendChild(ciWrapper);
-    container.appendChild(raiWrapper);
-
-    /*
-     * Coloca os campos imediatamente depois
-     * do campo de seleção do produto.
-     */
-    productSelect.parentNode.insertBefore(
-      container,
-      productSelect.nextSibling
-    );
-  }
-
-  const cSelect = flById("fl-product-c");
-  const rSelect = flById("fl-product-r");
-
-  if (cSelect) {
-
-    cSelect.innerHTML =
-      '<option value="">Selecionar Ci</option>';
-
-    FIRELOAD_CI_OPTIONS.forEach(optionData => {
-
-      const option = document.createElement("option");
-
-      option.value = optionData.ci;
-
-      option.textContent =
-        optionData.label;
-
-      cSelect.appendChild(option);
-
-    });
-  }
-
-  if (rSelect) {
-
-    rSelect.innerHTML =
-      '<option value="">Selecionar Rai</option>';
-
-    FIRELOAD_RAI_OPTIONS.forEach(optionData => {
-
-      const option = document.createElement("option");
-
-      option.value = optionData.rai;
-
-      option.textContent =
-        optionData.label;
-
-      rSelect.appendChild(option);
-
-    });
-  }
-}
-
-
-/* =========================================================
-   MODO DE ENTRADA
-   ========================================================= */
-
-function renderFireloadEntryMode() {
-
-  const mode =
-    flById("fl-entry-mode")?.value ||
-    "predefinido";
-
-  const manual =
-    flById("fl-manual-fields");
-
-  if (manual) {
-
-    if (mode === "manual") {
-
-      manual.classList.remove("hidden");
-
-    } else {
-
-      manual.classList.add("hidden");
-
-    }
-  }
-
-  /*
-   * No modo predefinido mostramos Ci e Rai.
-   * No modo manual usamos os campos manuais.
-   */
-
-  const presetCoefficients =
-    document.getElementById(
-      "fl-product-coefficients"
-    );
-
-  if (presetCoefficients) {
-
-    if (mode === "manual") {
-
-      presetCoefficients.style.display =
-        "none";
-
-    } else {
-
-      presetCoefficients.style.display =
-        "grid";
-
-    }
-  }
-}
-
-
-/* =========================================================
-   INICIALIZAÇÃO
-   ========================================================= */
 
 function initFireloadCalculator() {
-
-  if (!flById("fl-method")) {
-    return;
-  }
-
-  /*
-   * Produtos
-   */
+  if(!flById("fl-method")) return;
   populateFireloadProductSelect();
-
-  /*
-   * Campos Ci / Rai do modo manual
-   */
   populateFireloadCoefficientSelects();
-
-  /*
-   * Campos Ci / Rai do modo predefinido
-   */
   ensureFireloadPresetCoefficients();
-
-  /*
-   * Estado inicial
-   */
-  renderFireloadEntryMode();
-
-  renderFireloadMode();
-
-  renderFireloadItems();
-
-
-  /* =======================================================
-     EVENTOS
-     ======================================================= */
-
-  flById("fl-method")
-    ?.addEventListener(
-      "change",
-      renderFireloadMode
-    );
-
-
-  flById("fl-entry-mode")
-    ?.addEventListener(
-      "change",
-      renderFireloadEntryMode
-    );
-
-
-  flById("fl-add-item-btn")
-    ?.addEventListener(
-      "click",
-      addFireloadItem
-    );
-
-
-  flById("fl-calc-btn")
-    ?.addEventListener(
-      "click",
-      calculateFireloadProfessional
-    );
-
-
-  flById("fl-reset-btn")
-    ?.addEventListener(
-      "click",
-      resetFireloadProfessional
-    );
-
+  renderFireloadEntryMode(); renderFireloadMode(); renderFireloadItems();
+  flById("fl-method")?.addEventListener("change",renderFireloadMode);
+  flById("fl-entry-mode")?.addEventListener("change",renderFireloadEntryMode);
+  flById("fl-add-item-btn")?.addEventListener("click",addFireloadItem);
+  flById("fl-calc-btn")?.addEventListener("click",calculateFireloadProfessional);
+  flById("fl-reset-btn")?.addEventListener("click",resetFireloadProfessional);
 }
 
+document.addEventListener("DOMContentLoaded", initFireloadCalculator);
 
-/*
- * Inicialização correta da calculadora.
- *
- * NÃO usar aqui initSCIECalculator().
- */
-document.addEventListener(
-  "DOMContentLoaded",
-  initFireloadCalculator
-);
+
 
 const CHECK_UT_LABELS = {
   I: "UT I – Habitacional",
