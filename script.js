@@ -580,7 +580,7 @@ function init() {
   byId("contact-form")?.addEventListener("submit", openContactEmail);
   renderEstimate();
   initSCIECalculator();
-  initloadCalculator();
+  initFireloadCalculator();
   initSCIECheck();
   initPdfExports();
   initAutoHideHeader();
@@ -1824,15 +1824,24 @@ function renderFireloadMode() {
   }
 }
 
-
-/* =========================================================
-   CONSTRUÇÃO DE ITEM — PRODUTO PRÉ-DEFINIDO
-   ========================================================= */
-
 function buildFireloadItemFromPreset(quantity, unit) {
 
   const selectedId =
     flById("fl-product-select")?.value || "";
+
+  /*
+   * O produto é obrigatório no modo pré-definido.
+   * O valor "Selecionar produto" corresponde a value="".
+   */
+  if (!selectedId) {
+    alert(
+      "Selecione primeiro o produto/material que pretende adicionar."
+    );
+
+    flById("fl-product-select")?.focus();
+
+    return null;
+  }
 
   const product =
     FIRELOAD_PRODUCTS.find(
@@ -1840,58 +1849,76 @@ function buildFireloadItemFromPreset(quantity, unit) {
     );
 
   if (!product) {
-
     alert(
-      "Selecione um produto da lista antes de adicionar."
+      "O produto selecionado não foi encontrado na lista."
     );
 
     return null;
   }
 
+  /*
+   * Hi vem diretamente do Quadro I associado
+   * ao produto selecionado.
+   */
+  const hi =
+    Number(product.hi || 0);
 
+  if (hi <= 0) {
+    alert(
+      "O produto selecionado não possui um valor Hi válido."
+    );
+
+    return null;
+  }
+
+  /*
+   * Ci — Artigo 6.º
+   */
   const c =
-    Number(flById("fl-product-c")?.value || 0);
-
-  const r =
-    Number(flById("fl-product-r")?.value || 0);
-
+    Number(
+      flById("fl-product-c")?.value || 0
+    );
 
   if (c <= 0) {
-
     alert(
       "Selecione o coeficiente de combustibilidade Ci."
     );
 
+    flById("fl-product-c")?.focus();
+
     return null;
   }
 
+  /*
+   * Rai — Artigo 7.º
+   */
+  const r =
+    Number(
+      flById("fl-product-r")?.value || 0
+    );
 
   if (r <= 0) {
-
     alert(
       "Selecione o coeficiente de ativação Rai."
     );
 
+    flById("fl-product-r")?.focus();
+
     return null;
   }
 
-
+  /*
+   * Construção do item que será colocado
+   * na tabela de materiais.
+   */
   return {
-
     name: product.name,
-
     category: product.category,
-
-    hi: product.hi,
-
+    hi: hi,
     c: c,
-
     r: r,
-
-    quantity: quantity,
-
+    quantity: Number(quantity),
     unit: unit || "kg"
-
   };
 }
 
