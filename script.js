@@ -2237,21 +2237,13 @@ function getFireloadRowData(row) {
   };
 }
 
-
-/* =========================================================
-   ATUALIZAÇÃO AUTOMÁTICA
-   ========================================================= */
-
 function updateFireloadRow(row) {
 
-  const type =
-    row.querySelector(".fl-row-type")?.value || "";
+  const typeSelect =
+    row.querySelector(".fl-row-type");
 
   const activitySelect =
     row.querySelector(".fl-row-activity");
-
-  const previousActivity =
-    activitySelect?.value || "";
 
   const heightWrap =
     row.querySelector(".fl-row-height-wrap");
@@ -2265,15 +2257,43 @@ function updateFireloadRow(row) {
   const qBox =
     row.querySelector(".fl-row-q");
 
+  const type =
+    typeSelect?.value || "";
 
-  /* Atualizar lista de atividades */
+  const previousActivity =
+    activitySelect?.value || "";
+
+
+  /* =====================================================
+     ATIVIDADE — FICA SEMPRE DISPONÍVEL
+     ===================================================== */
+
   if (activitySelect) {
+
+    activitySelect.disabled = false;
 
     activitySelect.innerHTML =
       '<option value="">Selecionar atividade...</option>' +
       (type
         ? fireloadActivityOptions(type)
-        : "");
+        : FIRELOAD_ACTIVITY_DATA
+            .filter(activity => {
+              return FIRELOAD_ACTIVITY_DATA.indexOf(activity) >= 0;
+            })
+            .map(activity => {
+
+              const name = String(activity[0])
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+
+              return `<option value="${name}">${name}</option>`;
+
+            })
+            .join("")
+      );
+
 
     if (
       [...activitySelect.options]
@@ -2287,11 +2307,18 @@ function updateFireloadRow(row) {
   }
 
 
+  /* =====================================================
+     DADOS
+     ===================================================== */
+
   const data =
     getFireloadRowData(row);
 
 
-  /* Mostrar / esconder altura */
+  /* =====================================================
+     ALTURA DE ARMAZENAMENTO
+     ===================================================== */
+
   if (heightWrap) {
 
     heightWrap.style.display =
@@ -2299,6 +2326,51 @@ function updateFireloadRow(row) {
         ? "block"
         : "none";
   }
+
+
+  /* =====================================================
+     CI AUTOMÁTICO
+     ===================================================== */
+
+  if (ciBox) {
+
+    ciBox.textContent =
+      data.ci > 0
+        ? `${fireloadCiLabel(data.ci)} — Ci = ${flFormatNumber(data.ci)}`
+        : "Selecione o produto/material.";
+  }
+
+
+  /* =====================================================
+     RAI AUTOMÁTICO
+     ===================================================== */
+
+  if (raiBox) {
+
+    raiBox.textContent =
+      data.rai > 0
+        ? `${fireloadRiskLabel(data.rai)} — Rai = ${flFormatNumber(data.rai)}`
+        : "Selecione o tipo e a atividade.";
+  }
+
+
+  /* =====================================================
+     QSI / QVI AUTOMÁTICO
+     ===================================================== */
+
+  if (qBox) {
+
+    qBox.textContent =
+      data.q > 0
+        ? `${flFormatNumber(data.q)} ${
+            data.type === "armazenamento"
+              ? "MJ/m³"
+              : "MJ/m²"
+          }`
+        : "—";
+  }
+}
+
 
 
   /* CI */
