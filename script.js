@@ -2426,10 +2426,7 @@ function createFireloadRow(index) {
           Atividade — Quadro II
         </label>
 
-        <select
-          class="fl-row-activity"
-          disabled
-        >
+        <select class="fl-row-activity">
 
           <option value="">
             Selecionar atividade...
