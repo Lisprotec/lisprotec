@@ -2684,166 +2684,631 @@ function buildProbabilisticActivities(number) {
     productSelect.addEventListener("change", updateAutomaticValues);
   }
 }
+/* =========================================================
+   MOTOR DA CALCULADORA — FLUXO APSEI + DESIGN LISPROTEC
+   ========================================================= */
 
+let fireloadStepData = {
+  method: "",
+  area: 0,
+  number: 0
+};
 
-function getProbabilisticCalculation(area) {
-  const cards = document.querySelectorAll(
-    "#fl-prob-activities > .panel"
-  );
+function fireloadActivityOptions(type) {
+  return FIRELOAD_ACTIVITY_DATA
+    .filter(a => getFireloadActivityQ(a, type) > 0 && getFireloadActivityRai(a, type) > 0)
+    .map(a => `<option value="${String(a[0]).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")}">${a[0]}</option>`)
+    .join("");
+}
 
-  if (!cards.length) {
-    alert("Adicione pelo menos uma atividade.");
-    return null;
+function fireloadProductOptions() {
+  return FIRELOAD_PRODUCTS
+    .map(p => `<option value="${p.id}">${p.name} — Hi ${flFormatNumber(p.hi)} MJ/kg</option>`)
+    .join("");
+}
+
+function getFireloadRowData(row) {
+  const type = row.querySelector(".fl-row-type")?.value || "";
+  const activityName = row.querySelector(".fl-row-activity")?.value || "";
+  const productId = row.querySelector(".fl-row-product")?.value || "";
+  const quantity = Number(row.querySelector(".fl-row-quantity")?.value || 0);
+  const height = Number(row.querySelector(".fl-row-height")?.value || 0);
+  const zoneArea = Number(row.querySelector(".fl-row-area")?.value || 0);
+
+  const activity = FIRELOAD_ACTIVITY_DATA.find(a => a[0] === activityName) || null;
+  const product = FIRELOAD_PRODUCTS.find(p => p.id === productId) || null;
+  const ci = getFireloadCi(product);
+  const rai = getFireloadActivityRai(activity, type);
+  const q = getFireloadActivityQ(activity, type);
+
+  return {
+    type,
+    activityName,
+    productId,
+    quantity,
+    height,
+    zoneArea,
+    activity,
+    product,
+    ci,
+    rai,
+    q
+  };
+}
+
+function updateFireloadRow(row) {
+  const type = row.querySelector(".fl-row-type")?.value || "";
+  const activitySelect = row.querySelector(".fl-row-activity");
+  const activityNameBefore = activitySelect?.value || "";
+  const heightWrap = row.querySelector(".fl-row-height-wrap");
+  const ciBox = row.querySelector(".fl-row-ci");
+  const raiBox = row.querySelector(".fl-row-rai");
+  const qBox = row.querySelector(".fl-row-q");
+
+  if (activitySelect) {
+    activitySelect.innerHTML =
+      '<option value="">Selecionar atividade...</option>' +
+      (type ? fireloadActivityOptions(type) : "");
+
+    if ([...activitySelect.options].some(o => o.value === activityNameBefore)) {
+      activitySelect.value = activityNameBefore;
+    }
   }
 
-  let totalActivityArea = 0;
+  const data = getFireloadRowData(row);
+
+  if (heightWrap) {
+    heightWrap.style.display =
+      data.type === "armazenamento" ? "block" : "none";
+  }
+
+  if (ciBox) {
+    ciBox.textContent = data.ci > 0
+      ? `${fireloadCiLabel(data.ci)} — Ci = ${flFormatNumber(data.ci)}`
+      : "Selecione o produto/material.";
+  }
+
+  if (raiBox) {
+    raiBox.textContent = data.rai > 0
+      ? `${fireloadRiskLabel(data.rai)} — Rai = ${flFormatNumber(data.rai)}`
+      : "Selecione o tipo e a atividade.";
+  }
+
+  if (qBox) {
+    qBox.textContent = data.q > 0
+      ? `${flFormatNumber(data.q)} ${data.type === "armazenamento" ? "MJ/m³" : "MJ/m²"}`
+      : "—";
+  }
+}
+
+function createFireloadRow(index) {
+  const row = document.createElement("div");
+
+  row.className = "panel fireload-row";
+  row.dataset.index = String(index);
+  row.style.marginBottom = "16px";
+
+  const isProb = fireloadStepData.method === "probabilistico";
+
+  row.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px;">
+      <h3 style="margin:0;">
+        ${isProb ? "Atividade" : "Produto"} ${index + 1}
+      </h3>
+
+      <button type="button"
+              class="btn btn-outline btn-small fl-remove-row">
+        Remover
+      </button>
+    </div>
+
+    <div class="risk-inline-grid">
+
+      <div class="field-group">
+        <label>Tipo de atividade</label>
+
+        <select class="fl-row-type">
+          <option value="">Selecionar</option>
+          <option value="fabricacao">
+            Fabricação e reparação
+          </option>
+          <option value="armazenamento">
+            Armazenamento
+          </option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Atividade — Quadro II</label>
+
+        <select class="fl-row-activity" disabled>
+          <option value="">
+            Selecionar atividade...
+          </option>
+        </select>
+      </div>
+
+      ${isProb ? `
+        <div class="field-group">
+          <label>Área da zona (m²)</label>
+
+          <input
+            class="fl-row-area"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="Ex.: 250">
+        </div>
+      ` : `
+        <div class="field-group">
+          <label>Quantidade</label>
+
+          <input
+            class="fl-row-quantity"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="Ex.: 1200">
+        </div>
+
+        <div class="field-group">
+          <label>Unidade</label>
+
+          <select class="fl-row-unit">
+            <option value="kg">kg</option>
+            <option value="t">t</option>
+          </select>
+        </div>
+      `}
+
+      <div class="field-group">
+        <label>Produto / material combustível</label>
+
+        <select class="fl-row-product">
+          <option value="">
+            Selecionar produto/material...
+          </option>
+
+          ${fireloadProductOptions()}
+        </select>
+      </div>
+
+      ${isProb ? `
+        <div class="field-group fl-row-height-wrap" style="display:none;">
+          <label>Altura de armazenamento (m)</label>
+
+          <input
+            class="fl-row-height"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="Ex.: 3">
+        </div>
+      ` : ""}
+    </div>
+
+    <div
+      class="fl-row-auto"
+      style="
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:10px;
+        margin-top:14px;
+      ">
+
+      <div class="small-note">
+        <strong>Ci</strong><br>
+        <span class="fl-row-ci">
+          Selecione o produto/material.
+        </span>
+      </div>
+
+      <div class="small-note">
+        <strong>Rai</strong><br>
+        <span class="fl-row-rai">
+          Selecione o tipo e a atividade.
+        </span>
+      </div>
+
+      <div class="small-note">
+        <strong>Valor estatístico</strong><br>
+        <span class="fl-row-q">—</span>
+      </div>
+
+    </div>
+  `;
+
+  const typeSelect =
+    row.querySelector(".fl-row-type");
+
+  const activitySelect =
+    row.querySelector(".fl-row-activity");
+
+  const productSelect =
+    row.querySelector(".fl-row-product");
+
+  const removeBtn =
+    row.querySelector(".fl-remove-row");
+
+  typeSelect?.addEventListener(
+    "change",
+    () => updateFireloadRow(row)
+  );
+
+  activitySelect?.addEventListener(
+    "change",
+    () => updateFireloadRow(row)
+  );
+
+  productSelect?.addEventListener(
+    "change",
+    () => updateFireloadRow(row)
+  );
+
+  removeBtn?.addEventListener("click", () => {
+    row.remove();
+    renumberFireloadRows();
+  });
+
+  return row;
+}
+
+function renumberFireloadRows() {
+  document
+    .querySelectorAll("#fl-products-container .fireload-row")
+    .forEach((row, index) => {
+
+      const title =
+        row.querySelector("h3");
+
+      if (title) {
+        title.textContent =
+          `${fireloadStepData.method === "probabilistico"
+            ? "Atividade"
+            : "Produto"} ${index + 1}`;
+      }
+
+      row.dataset.index = String(index);
+    });
+}
+
+function buildFireloadRows(count) {
+  const container =
+    flById("fl-products-container");
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  for (let i = 0; i < count; i++) {
+    container.appendChild(
+      createFireloadRow(i)
+    );
+  }
+}
+
+function renderFireloadModeNote() {
+  const method =
+    flById("fl-method")?.value || "";
+
+  const numberLabel =
+    document.querySelector(
+      'label[for="fl-number"]'
+    );
+
+  const note =
+    flById("fl-mode-note");
+
+  if (numberLabel) {
+    numberLabel.textContent =
+      method === "probabilistico"
+        ? "Número de atividades / zonas diferentes"
+        : "Número de produtos diferentes";
+  }
+
+  if (note) {
+    note.textContent =
+      method === "deterministico"
+        ? "Cálculo determinístico: Mi × Hi × Ci × Rai."
+        : method === "probabilistico"
+          ? "Cálculo probabilístico: qsi/qvi × Si × Ci × Rai; no armazenamento é considerada a altura de armazenagem."
+          : "Escolha o método de cálculo para avançar.";
+  }
+}
+
+function renderFireloadResult(area, calculation) {
+  const box =
+    flById("fl-result");
+
+  if (!box || !calculation) return;
+
+  box.className =
+    "panel risk-result show";
+
+  box.innerHTML = `
+    <div class="risk-badge info">
+      Resultado
+    </div>
+
+    <h3 style="margin-top:0;">
+      Densidade de Carga de Incêndio
+    </h3>
+
+    <div
+      style="
+        font-size:2rem;
+        font-weight:700;
+        margin:12px 0 20px;
+      ">
+      ${flFormatNumber(calculation.density)}
+      MJ/m²
+    </div>
+
+    <ul class="criteria-list">
+
+      <li>
+        <strong>Método</strong>
+        <span>${calculation.method}</span>
+      </li>
+
+      <li>
+        <strong>Carga de incêndio modificada (Qs)</strong>
+        <span>
+          ${flFormatNumber(calculation.totalMJ)} MJ
+        </span>
+      </li>
+
+      <li>
+        <strong>
+          Densidade da carga de incêndio modificada (qs)
+        </strong>
+
+        <span>
+          ${flFormatNumber(calculation.density)}
+          MJ/m²
+        </span>
+      </li>
+
+      <li>
+        <strong>
+          Área do compartimento (S)
+        </strong>
+
+        <span>
+          ${flFormatNumber(area)} m²
+        </span>
+      </li>
+
+    </ul>
+
+    <h4 class="risk-section-title">
+      Memória de cálculo
+    </h4>
+
+    <ul class="memory-list">
+      ${calculation.memory
+        .map(item => `
+          <li>
+            <strong>${item.title}</strong>
+            <span>${item.detail}</span>
+          </li>
+        `)
+        .join("")}
+    </ul>
+
+    <p class="risk-legal-note">
+      Ferramenta indicativa. O cálculo deve ser validado tecnicamente
+      à luz do Despacho n.º 8954/2020 e do enquadramento SCIE aplicável.
+    </p>
+  `;
+}
+
+function calculateDeterministicAPSEI(area) {
+  const rows = [
+    ...document.querySelectorAll(
+      "#fl-products-container .fireload-row"
+    )
+  ];
+
+  if (!rows.length) {
+    throw new Error(
+      "Adicione pelo menos um produto."
+    );
+  }
+
   let totalMJ = 0;
   const memory = [];
 
-  cards.forEach((card, index) => {
+  rows.forEach((row, index) => {
 
-    const type =
-      card.querySelector(".fl-prob-activity-type")?.value || "";
+    const data =
+      getFireloadRowData(row);
 
-    const activityName =
-      card.querySelector(".fl-prob-activity-select")?.value || "";
+    const unit =
+      row.querySelector(".fl-row-unit")?.value ||
+      "kg";
 
-    const activityArea =
-      Number(
-        card.querySelector(".fl-prob-activity-area")?.value || 0
+    if (!data.type)
+      throw new Error(
+        `Selecione o tipo de atividade do Produto ${index + 1}.`
       );
 
-    const height =
-      Number(
-        card.querySelector(".fl-prob-activity-height")?.value || 0
+    if (!data.activity)
+      throw new Error(
+        `Selecione a atividade do Quadro II do Produto ${index + 1}.`
       );
 
-    const productId =
-      card.querySelector(".fl-prob-product-select")?.value || "";
-
-    const activity =
-      FIRELOAD_ACTIVITY_DATA.find(
-        a => a[0] === activityName
+    if (!data.product)
+      throw new Error(
+        `Selecione o produto/material do Produto ${index + 1}.`
       );
 
-    const product =
-      FIRELOAD_PRODUCTS.find(
-        p => p.id === productId
+    if (data.quantity <= 0)
+      throw new Error(
+        `Introduza uma quantidade válida no Produto ${index + 1}.`
       );
 
-    const ci = getFireloadCi(product);
-    const rai = getFireloadActivityRai(activity, type);
-    const q = getFireloadActivityQ(activity, type);
+    if (data.ci <= 0)
+      throw new Error(
+        `Não foi possível determinar automaticamente o Ci do Produto ${index + 1}.`
+      );
 
-    if (!type) {
-      throw new Error(`Selecione o tipo da Atividade ${index + 1}.`);
-    }
+    if (data.rai <= 0)
+      throw new Error(
+        `Não foi possível determinar automaticamente o Rai do Produto ${index + 1}.`
+      );
 
-    if (!activity) {
-      throw new Error(`Selecione a atividade da Atividade ${index + 1}.`);
-    }
+    const kg =
+      normalizeQuantityToKg(
+        data.quantity,
+        unit
+      );
 
-    if (activityArea <= 0) {
-      throw new Error(`Introduza a área da Atividade ${index + 1}.`);
-    }
+    const partial =
+      kg *
+      Number(data.product.hi) *
+      data.ci *
+      data.rai;
 
-    if (!product) {
-      throw new Error(`Selecione o produto/material da Atividade ${index + 1}.`);
-    }
+    totalMJ += partial;
 
-    if (ci <= 0) {
-      throw new Error(`Não foi possível determinar o Ci da Atividade ${index + 1}.`);
-    }
+    memory.push({
+      title:
+        `Produto ${index + 1} — ${data.product.name}`,
 
-    if (rai <= 0) {
-      throw new Error(`Não foi possível determinar o Rai da Atividade ${index + 1}.`);
-    }
+      detail:
+        `${flFormatNumber(kg)} kg × ` +
+        `${flFormatNumber(data.product.hi)} × ` +
+        `${flFormatNumber(data.ci)} × ` +
+        `${flFormatNumber(data.rai)} = ` +
+        `${flFormatNumber(partial)} MJ`
+    });
+  });
 
-    if (q <= 0) {
-      throw new Error(`Não foi possível determinar o valor do Quadro II da Atividade ${index + 1}.`);
-    }
+  return {
+    method: "Determinístico",
+    totalMJ,
+    density: totalMJ / area,
+    memory
+  };
+}
+
+function calculateProbabilisticAPSEI(area) {
+  const rows = [
+    ...document.querySelectorAll(
+      "#fl-products-container .fireload-row"
+    )
+  ];
+
+  if (!rows.length) {
+    throw new Error(
+      "Adicione pelo menos uma atividade."
+    );
+  }
+
+  let totalZoneArea = 0;
+  let totalMJ = 0;
+
+  const memory = [];
+
+  rows.forEach((row, index) => {
+
+    const data =
+      getFireloadRowData(row);
+
+    if (!data.type)
+      throw new Error(
+        `Selecione o tipo de atividade da Atividade ${index + 1}.`
+      );
+
+    if (!data.activity)
+      throw new Error(
+        `Selecione a atividade do Quadro II da Atividade ${index + 1}.`
+      );
+
+    if (!data.product)
+      throw new Error(
+        `Selecione o produto/material da Atividade ${index + 1}.`
+      );
+
+    if (data.zoneArea <= 0)
+      throw new Error(
+        `Introduza a área da Atividade ${index + 1}.`
+      );
+
+    if (data.ci <= 0)
+      throw new Error(
+        `Não foi possível determinar automaticamente o Ci da Atividade ${index + 1}.`
+      );
+
+    if (data.rai <= 0)
+      throw new Error(
+        `Não foi possível determinar automaticamente o Rai da Atividade ${index + 1}.`
+      );
+
+    if (data.q <= 0)
+      throw new Error(
+        `Não foi possível obter o valor do Quadro II da Atividade ${index + 1}.`
+      );
 
     if (
-      type === "armazenamento" &&
-      height <= 0
+      data.type === "armazenamento" &&
+      data.height <= 0
     ) {
       throw new Error(
         `Introduza a altura de armazenamento da Atividade ${index + 1}.`
       );
     }
 
-    totalActivityArea += activityArea;
+    totalZoneArea += data.zoneArea;
 
-    let partialMJ;
-    let formula;
+    const partial =
+      data.type === "armazenamento"
+        ? data.q *
+          data.height *
+          data.zoneArea *
+          data.ci *
+          data.rai
+        : data.q *
+          data.zoneArea *
+          data.ci *
+          data.rai;
 
-    if (type === "armazenamento") {
-
-      partialMJ =
-        q *
-        height *
-        activityArea *
-        ci *
-        rai;
-
-      formula =
-        `${flFormatNumber(q)} × ` +
-        `${flFormatNumber(height)} × ` +
-        `${flFormatNumber(activityArea)} × ` +
-        `${flFormatNumber(ci)} × ` +
-        `${flFormatNumber(rai)}`;
-
-    } else {
-
-      partialMJ =
-        q *
-        activityArea *
-        ci *
-        rai;
-
-      formula =
-        `${flFormatNumber(q)} × ` +
-        `${flFormatNumber(activityArea)} × ` +
-        `${flFormatNumber(ci)} × ` +
-        `${flFormatNumber(rai)}`;
-    }
-
-    totalMJ += partialMJ;
+    totalMJ += partial;
 
     memory.push({
-      title: `Atividade ${index + 1} — ${activityName}`,
+      title:
+        `Atividade ${index + 1} — ${data.activityName}`,
+
       detail:
-        `${type === "armazenamento"
-          ? "Armazenamento"
-          : "Fabricação e reparação"} | ` +
-        `Área: ${flFormatNumber(activityArea)} m² | ` +
-        `Ci = ${flFormatNumber(ci)} | ` +
-        `Rai = ${flFormatNumber(rai)} | ` +
-        `${type === "armazenamento" ? "qvi" : "qsi"} = ${flFormatNumber(q)} | ` +
-        `Cálculo: ${formula} = ${flFormatNumber(partialMJ)} MJ`
+        data.type === "armazenamento"
+          ? `${flFormatNumber(data.q)} MJ/m³ × ` +
+            `${flFormatNumber(data.height)} m × ` +
+            `${flFormatNumber(data.zoneArea)} m² × ` +
+            `${flFormatNumber(data.ci)} × ` +
+            `${flFormatNumber(data.rai)} = ` +
+            `${flFormatNumber(partial)} MJ`
+
+          : `${flFormatNumber(data.q)} MJ/m² × ` +
+            `${flFormatNumber(data.zoneArea)} m² × ` +
+            `${flFormatNumber(data.ci)} × ` +
+            `${flFormatNumber(data.rai)} = ` +
+            `${flFormatNumber(partial)} MJ`
     });
   });
 
-  if (totalActivityArea > area + 0.0001) {
-    alert(
-      `A soma das áreas das atividades (${flFormatNumber(totalActivityArea)} m²) ` +
-      `não pode ser superior à área total do compartimento (${flFormatNumber(area)} m²).`
+  if (totalZoneArea > area + 0.0001) {
+    throw new Error(
+      `A soma das áreas das atividades (${flFormatNumber(totalZoneArea)} m²) não pode ser superior à área total do compartimento (${flFormatNumber(area)} m²).`
     );
-
-    return null;
   }
 
-  if (totalActivityArea < area - 0.0001) {
-    const remaining =
-      area - totalActivityArea;
-
-    const confirmResult = confirm(
-      `As áreas das atividades totalizam ${flFormatNumber(totalActivityArea)} m², ` +
-      `ficando ${flFormatNumber(remaining)} m² sem atividade definida.\n\n` +
-      `Pretende continuar?`
+  if (
+    Math.abs(totalZoneArea - area) > 0.0001
+  ) {
+    throw new Error(
+      `A soma das áreas das atividades deve corresponder à área total do compartimento. Atual: ${flFormatNumber(totalZoneArea)} m²; necessário: ${flFormatNumber(area)} m².`
     );
-
-    if (!confirmResult) return null;
   }
 
   return {
@@ -2853,174 +3318,197 @@ function getProbabilisticCalculation(area) {
     memory
   };
 }
-function addFireloadItem() {
-  const quantity=Number(flById("fl-quantity")?.value || 0);
-  const unit=flById("fl-unit")?.value || "kg";
-  if (quantity<=0) { alert("Introduza uma quantidade válida."); return; }
-  const mode=flById("fl-entry-mode")?.value || "predefinido";
-  const item=mode === "manual" ? buildFireloadItemFromManual(quantity,unit) : buildFireloadItemFromPreset(quantity,unit);
-  if (!item) return;
-  fireloadItems.push(item); renderFireloadItems();
-  if (flById("fl-quantity")) flById("fl-quantity").value="";
-}
 
-function renderFireloadResult(area,calculation) {
-  const box=flById("fl-result"); if(!box) return;
-  box.className="panel risk-result show";
-  box.innerHTML=`
-    <div class="risk-badge info">Resultado</div>
-    <h3 style="margin-top:0;">Carga de incêndio modificada</h3>
-    <div style="font-size:2rem;font-weight:700;margin:12px 0 20px;">${flFormatNumber(calculation.density)} MJ/m²</div>
-    <ul class="criteria-list">
-      <li><strong>Carga de incêndio modificada (Qs)</strong><span>${flFormatNumber(calculation.totalMJ)} MJ</span></li>
-      <li><strong>Densidade da carga de incêndio modificada (qs)</strong><span>${flFormatNumber(calculation.density)} MJ/m²</span></li>
-      <li><strong>Área útil do compartimento (S)</strong><span>${flFormatNumber(area)} m²</span></li>
-    </ul>
-    <h4 class="risk-section-title">Memória de cálculo</h4>
-    <ul class="memory-list">${calculation.memory.map(item=>`<li><strong>${item.title}</strong><span>${item.detail}</span></li>`).join("")}</ul>
-    <p class="risk-legal-note">Ferramenta indicativa. O cálculo deve ser validado tecnicamente à luz do Despacho n.º 8954/2020 e do enquadramento SCIE aplicável.</p>
-  `;
-}
 function calculateFireloadProfessional() {
-  const method = flById("fl-method")?.value || "";
-  const area = Number(flById("fl-area")?.value || 0);
+
+  const method =
+    flById("fl-method")?.value || "";
+
+  const area =
+    Number(
+      flById("fl-area")?.value || 0
+    );
 
   if (!method) {
-    alert("Selecione o método de cálculo.");
+    alert(
+      "Selecione o tipo de cálculo."
+    );
     return;
   }
 
   if (area <= 0) {
-    alert("Introduza a área útil do compartimento.");
-    return;
-  }
-
-  if (method === "deterministico") {
-
-    if (!fireloadItems.length) {
-      alert("Adicione pelo menos um produto/material.");
-      return;
-    }
-
-    renderFireloadResult(
-      area,
-      getDeterministicCalculation(area)
+    alert(
+      "Introduza uma área válida para o compartimento corta-fogo."
     );
-
     return;
   }
 
   try {
 
     const calculation =
-      getProbabilisticCalculation(area);
+      method === "deterministico"
+        ? calculateDeterministicAPSEI(area)
+        : calculateProbabilisticAPSEI(area);
 
-    if (calculation) {
-      renderFireloadResult(
-        area,
-        calculation
-      );
-    }
+    renderFireloadResult(
+      area,
+      calculation
+    );
 
   } catch (error) {
 
     alert(error.message);
+
   }
 }
 
 function resetFireloadProfessional() {
 
   fireloadItems = [];
-  renderFireloadItems();
 
-  [
-    "fl-method",
-    "fl-area",
-    "fl-entry-mode",
-    "fl-product-select",
-    "fl-product-c",
-    "fl-product-r",
-    "fl-manual-name",
-    "fl-manual-category",
-    "fl-manual-hi",
-    "fl-manual-c",
-    "fl-manual-r",
-    "fl-manual-unit",
-    "fl-quantity",
-    "fl-unit"
-  ].forEach(id => {
+  fireloadStepData = {
+    method: "",
+    area: 0,
+    number: 0
+  };
 
-    const el = flById(id);
+  if (flById("fl-method"))
+    flById("fl-method").value = "";
 
-    if (!el) return;
+  if (flById("fl-area"))
+    flById("fl-area").value = "";
 
-    if (el.tagName === "SELECT") {
-      el.selectedIndex = 0;
-    } else {
-      el.value = "";
-    }
-  });
+  if (flById("fl-number"))
+    flById("fl-number").value = "";
 
-  flById("fl-deterministico")
+  if (flById("fl-products-container"))
+    flById("fl-products-container").innerHTML = "";
+
+  flById("fl-step-1")
+    ?.classList.remove("hidden");
+
+  flById("fl-step-2")
     ?.classList.add("hidden");
 
-  flById("fl-probabilistico")
-    ?.classList.add("hidden");
-
-  const result = flById("fl-result");
+  const result =
+    flById("fl-result");
 
   if (result) {
-    result.className = "panel risk-result";
+    result.className =
+      "panel risk-result";
+
     result.innerHTML = "";
   }
 
-  if (flById("fl-probabilistico")) {
-    ensureProbabilisticUI();
-  }
+  renderFireloadModeNote();
 }
+
 function initFireloadCalculator() {
 
-  if (!flById("fl-method")) return;
-
-  populateFireloadProductSelect();
-
-  populateFireloadCoefficientSelects();
-
-  ensureFireloadPresetCoefficients();
-
-  ensureProbabilisticUI();
-
-  renderFireloadEntryMode();
-
-  renderFireloadMode();
-
-  renderFireloadItems();
+  if (!flById("fl-method"))
+    return;
 
   flById("fl-method")
     ?.addEventListener(
       "change",
-      () => {
-        renderFireloadMode();
+      renderFireloadModeNote
+    );
 
-        if (
-          flById("fl-method")?.value === "probabilistico"
-        ) {
-          ensureProbabilisticUI();
-        }
+  flById("fl-next-btn")
+    ?.addEventListener("click", () => {
+
+      const method =
+        flById("fl-method")?.value || "";
+
+      const area =
+        Number(
+          flById("fl-area")?.value || 0
+        );
+
+      const number =
+        Number(
+          flById("fl-number")?.value || 0
+        );
+
+      if (!method) {
+        alert(
+          "Selecione o tipo de cálculo."
+        );
+        return;
       }
-    );
 
-  flById("fl-entry-mode")
-    ?.addEventListener(
-      "change",
-      renderFireloadEntryMode
-    );
+      if (area <= 0) {
+        alert(
+          "Introduza a área bruta total do compartimento corta-fogo."
+        );
+        return;
+      }
 
-  flById("fl-add-item-btn")
-    ?.addEventListener(
-      "click",
-      addFireloadItem
-    );
+      if (
+        !Number.isInteger(number) ||
+        number < 1 ||
+        number > 50
+      ) {
+        alert(
+          "Indique um número de produtos/atividades entre 1 e 50."
+        );
+        return;
+      }
+
+      fireloadStepData = {
+        method,
+        area,
+        number
+      };
+
+      buildFireloadRows(number);
+
+      flById("fl-step-1")
+        ?.classList.add("hidden");
+
+      flById("fl-step-2")
+        ?.classList.remove("hidden");
+
+      flById("fl-result")
+        ?.classList.remove("show");
+    });
+
+  flById("fl-add-product-btn")
+    ?.addEventListener("click", () => {
+
+      const container =
+        flById("fl-products-container");
+
+      if (!container) return;
+
+      const count =
+        container.querySelectorAll(
+          ".fireload-row"
+        ).length;
+
+      if (count >= 50) {
+        alert(
+          "O limite máximo é de 50 produtos/atividades."
+        );
+        return;
+      }
+
+      container.appendChild(
+        createFireloadRow(count)
+      );
+
+      renumberFireloadRows();
+    });
+
+  flById("fl-back-btn")
+    ?.addEventListener("click", () => {
+
+      flById("fl-step-2")
+        ?.classList.add("hidden");
+
+      flById("fl-step-1")
+        ?.classList.remove("hidden");
+    });
 
   flById("fl-calc-btn")
     ?.addEventListener(
@@ -3028,11 +3516,7 @@ function initFireloadCalculator() {
       calculateFireloadProfessional
     );
 
-  flById("fl-reset-btn")
-    ?.addEventListener(
-      "click",
-      resetFireloadProfessional
-    );
+  renderFireloadModeNote();
 }
 const CHECK_UT_LABELS = {
   I: "UT I – Habitacional",
