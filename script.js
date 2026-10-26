@@ -2236,75 +2236,125 @@ function getFireloadRowData(row) {
     q
   };
 }
-
 function updateFireloadRow(row) {
 
-  const typeSelect =
-    row.querySelector(".fl-row-type");
+  const typeSelect = row.querySelector(".fl-row-type");
+  const activitySelect = row.querySelector(".fl-row-activity");
+  const heightWrap = row.querySelector(".fl-row-height-wrap");
+  const ciBox = row.querySelector(".fl-row-ci");
+  const raiBox = row.querySelector(".fl-row-rai");
+  const qBox = row.querySelector(".fl-row-q");
 
-  const activitySelect =
-    row.querySelector(".fl-row-activity");
+  const type = typeSelect?.value || "";
+  const previousActivity = activitySelect?.value || "";
 
-  const heightWrap =
-    row.querySelector(".fl-row-height-wrap");
-
-  const ciBox =
-    row.querySelector(".fl-row-ci");
-
-  const raiBox =
-    row.querySelector(".fl-row-rai");
-
-  const qBox =
-    row.querySelector(".fl-row-q");
-
-  const type =
-    typeSelect?.value || "";
-
-  const previousActivity =
-    activitySelect?.value || "";
-
-
-  /* =====================================================
-     ATIVIDADE — FICA SEMPRE DISPONÍVEL
-     ===================================================== */
-
+  /*
+   * ATIVIDADE DO QUADRO II
+   * Só fica disponível depois de escolher
+   * Fabricação/Reparação ou Armazenamento.
+   */
   if (activitySelect) {
 
-    activitySelect.disabled = false;
+    if (!type) {
 
-    activitySelect.innerHTML =
-      '<option value="">Selecionar atividade...</option>' +
-      (type
-        ? fireloadActivityOptions(type)
-        : FIRELOAD_ACTIVITY_DATA
-            .filter(activity => {
-              return FIRELOAD_ACTIVITY_DATA.indexOf(activity) >= 0;
-            })
-            .map(activity => {
+      activitySelect.innerHTML =
+        '<option value="">Selecione primeiro o tipo de atividade...</option>';
 
-              const name = String(activity[0])
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
+      activitySelect.value = "";
+      activitySelect.disabled = true;
 
-              return `<option value="${name}">${name}</option>`;
+    } else {
 
-            })
-            .join("")
-      );
+      activitySelect.innerHTML =
+        '<option value="">Selecionar atividade...</option>' +
+        fireloadActivityOptions(type);
 
+      activitySelect.disabled = false;
 
-    if (
-      [...activitySelect.options]
-        .some(option =>
-          option.value === previousActivity
-        )
-    ) {
-      activitySelect.value =
-        previousActivity;
+      /*
+       * Mantém a atividade anteriormente escolhida
+       * apenas se continuar válida para o tipo selecionado.
+       */
+      const validPrevious =
+        [...activitySelect.options]
+          .some(option =>
+            option.value === previousActivity
+          );
+
+      if (validPrevious) {
+        activitySelect.value = previousActivity;
+      }
     }
   }
+
+  /*
+   * Obter dados automáticos
+   */
+  const data = getFireloadRowData(row);
+
+  /*
+   * ALTURA DE ARMAZENAMENTO
+   */
+  if (heightWrap) {
+
+    heightWrap.style.display =
+      data.type === "armazenamento"
+        ? "block"
+        : "none";
+
+    /*
+     * Se deixou de ser armazenamento,
+     * limpa a altura para evitar dados antigos.
+     */
+    if (data.type !== "armazenamento") {
+
+      const heightInput =
+        row.querySelector(".fl-row-height");
+
+      if (heightInput) {
+        heightInput.value = "";
+      }
+    }
+  }
+
+  /*
+   * CI AUTOMÁTICO
+   */
+  if (ciBox) {
+
+    ciBox.textContent =
+      data.ci > 0
+        ? `${fireloadCiLabel(data.ci)} — Ci = ${flFormatNumber(data.ci)}`
+        : "Selecione o produto/material.";
+  }
+
+  /*
+   * RAI AUTOMÁTICO
+   */
+  if (raiBox) {
+
+    raiBox.textContent =
+      data.rai > 0
+        ? `${fireloadRiskLabel(data.rai)} — Rai = ${flFormatNumber(data.rai)}`
+        : "Selecione o tipo e a atividade.";
+  }
+
+  /*
+   * QSI / QVI AUTOMÁTICO
+   */
+  if (qBox) {
+
+    qBox.textContent =
+      data.q > 0
+        ? `${flFormatNumber(data.q)} ${
+            data.type === "armazenamento"
+              ? "MJ/m³"
+              : "MJ/m²"
+          }`
+        : "—";
+  }
+}
+
 
 
   /* =====================================================
@@ -2406,12 +2456,12 @@ function createFireloadRow(index) {
     ">
 
       <h3 style="margin:0;">
-        ${
-          isProbabilistic
-            ? "Atividade"
-            : "Produto"
-        } ${index + 1}
-      </h3>
+  ${
+    isProbabilistic
+      ? "Zona / atividade"
+      : "Produto / material"
+  } ${index + 1}
+</h3>
 
       <button
         type="button"
