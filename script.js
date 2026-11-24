@@ -470,6 +470,9 @@ if (!nome || !empresa || !email || !telefone || !morada || !tipoEdificio) {
     morada,
     tipoEdificio,
     area: `${area} m²`,
+    numeroParticipantesSimulacro: byId("includeSimulacro")?.checked
+  ? result.simulacroPeople
+  : "N/A",
     distrito: result.district || "N/A",
     utilizacaoTipo: result.ut ? result.ut.label : "N/A",
     duracaoCoordenacao: byId("includeCoordenacao")?.checked ? "Valor mensal" : "N/A",
