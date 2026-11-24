@@ -82,19 +82,13 @@ function getFloorFactor(floors) {
   const factor = 1 + (0.10 + ((floors - 2) * 0.10));
 
   return Math.min(factor, 2.35);
-}
-function getSimulacroBasePrice(area) {
-  if (area <= 0) return 0;
-  if (area <= 900) return 280;
-  if (area >= 5000) return 1450;
-  return Math.round(280 + ((area - 900) / (5000 - 900)) * (1450 - 280));
-}
-
-function getSimulacroDiscountRate(area) {
-  if (area <= 2500) return 0;
-  if (area >= 5000) return 0.6;
-  return ((area - 2500) / (5000 - 2500)) * 0.6;
-}
+  }
+// Parâmetros de preço do simulacro
+const SIMULACRO_MIN_PRICE = 280;
+const SIMULACRO_INCLUDED_AREA = 100;
+const SIMULACRO_PRICE_PER_EXTRA_M2 = 0.12;
+const SIMULACRO_INCLUDED_PEOPLE = 10;
+const SIMULACRO_PRICE_PER_EXTRA_PERSON = 4;
 
 function calculateEstimate() {
   const mainService = byId("mainService")?.value || "";
@@ -102,6 +96,10 @@ function calculateEstimate() {
   const includeCoordenacao = byId("includeCoordenacao")?.checked || false;
   const includeSimulacro = byId("includeSimulacro")?.checked || false;
   const areaNum = parseFloat(byId("area")?.value || "0") || 0;
+  const simulacroPeople = parseInt(
+  byId("simulacroPeople")?.value || "10",
+  10
+) || 10;
   const floors = parseInt(byId("floors")?.value || "1") || 1;
   const district = byId("district")?.value || "";
   const utIndexValue = byId("utIndex")?.value;
@@ -279,23 +277,27 @@ const gross =
       discount: 0,
     };
   }
-
-  function calcSimulacroPrice() {
-    if (!includeSimulacro || areaNum <= 0) {
-      return { total: 0, discount: 0, hasDiscount: false };
-    }
-
-    const basePrice = getSimulacroBasePrice(areaNum);
-    const discountRate = getSimulacroDiscountRate(areaNum);
-    const total = basePrice * (1 - discountRate);
-    const discount = basePrice - total;
-
-    return {
-      total,
-      discount,
-      hasDiscount: discountRate > 0,
-    };
+function calcSimulacroPrice() {
+  if (!includeSimulacro || areaNum <= 0) {
+    return { total: 0, discount: 0 };
   }
+
+  const extraArea = Math.max(0, areaNum - SIMULACRO_INCLUDED_AREA);
+
+  const extraPeople = Math.max(
+    0,
+    simulacroPeople - SIMULACRO_INCLUDED_PEOPLE
+  );
+
+  const total = SIMULACRO_MIN_PRICE
+    + (extraArea * SIMULACRO_PRICE_PER_EXTRA_M2)
+    + (extraPeople * SIMULACRO_PRICE_PER_EXTRA_PERSON);
+
+  return {
+    total: Math.max(SIMULACRO_MIN_PRICE, total),
+    discount: 0
+  };
+}
 
   const mainCalc = calcMainPrice();
   const mapCalc = calcMAPPrice();
@@ -309,10 +311,7 @@ const gross =
   const coordenacaoPrice = coordenacaoCalc.total;
   const simulacroPrice = simulacroCalc.total;
 
-  const totalDiscount =
-    mainCalc.discount +
-    mapCalc.discount +
-    simulacroCalc.discount;
+  const totalDiscount = mainCalc.discount + mapCalc.discount;
 
   const totalPrice =
     mainPrice +
@@ -330,6 +329,7 @@ const gross =
   return {
     canShow,
     areaNum,
+    simulacroPeople,
     district,
     ut,
   
@@ -567,6 +567,7 @@ function init() {
   "includeMAP",
   "includeCoordenacao",
   "includeSimulacro",
+  "simulacroPeople",
   "area",
   "utIndex",
   "district",
