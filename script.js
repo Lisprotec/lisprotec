@@ -86,7 +86,7 @@ function getFloorFactor(floors) {
 // Parâmetros de preço do simulacro
 const SIMULACRO_MIN_PRICE = 280;
 const SIMULACRO_INCLUDED_AREA = 100;
-const SIMULACRO_PRICE_PER_EXTRA_M2 = 0.20;
+const SIMULACRO_PRICE_PER_EXTRA_M2 = 0.50;
 const SIMULACRO_INCLUDED_PEOPLE = 10;
 const SIMULACRO_PRICE_PER_EXTRA_PERSON = 4;
 
