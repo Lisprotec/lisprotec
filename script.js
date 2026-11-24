@@ -577,7 +577,20 @@ function init() {
     el && el.addEventListener("input", renderEstimate);
     el && el.addEventListener("change", renderEstimate);
   });
+const simulacroCheckbox = byId("includeSimulacro");
+const simulacroPeopleGroup = byId("simulacroPeopleGroup");
 
+function toggleSimulacroPeople() {
+  if (!simulacroCheckbox || !simulacroPeopleGroup) return;
+
+  simulacroPeopleGroup.classList.toggle(
+    "hidden",
+    !simulacroCheckbox.checked
+  );
+}
+
+simulacroCheckbox?.addEventListener("change", toggleSimulacroPeople);
+toggleSimulacroPeople();
   byId("proposal-form")?.addEventListener("submit", openProposalEmail);
   byId("contact-form")?.addEventListener("submit", openContactEmail);
   renderEstimate();
